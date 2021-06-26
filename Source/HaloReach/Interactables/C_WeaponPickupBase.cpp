@@ -14,7 +14,7 @@ void AC_WeaponPickupBase::SpawnWeapon(TSubclassOf<AC_BaseWeapon> WeaponClassToSp
 	if (Player)
 	{
 		Player->UpdateWeapons();
-		Player->BasicSetupWeapon(WeaponClassToSpawn, WeaponSocket1P, WeaponSocket3P);
+		Player->SetupWeaponSwitching(WeaponClassToSpawn, WeaponSocket1P, WeaponSocket3P, false);
 	}
 }
 

@@ -93,7 +93,7 @@ void AC_PlayerCharacter::BeginPlay()
 
 	// Spawns default gun, used in first person -- important to do combat stuff on server
 
-	SetupWeaponSwitching(DefaultWeaponClass, ("AR_1P_Socket"), ("AR_3P_Socket"));
+	SetupWeaponSwitching(DefaultWeaponClass, ("AR_1P_Socket"), ("AR_3P_Socket"), true);
 
 	// Sets the default settings of the character 
 	DefaultCameraHeight = CameraComp->GetRelativeLocation().Z;
@@ -405,38 +405,49 @@ void AC_PlayerCharacter::SpawnWeapon(TSubclassOf<AC_BaseWeapon> WeaponClass, FNa
 }
 
 // Used to spawn and setup a weapon
-void AC_PlayerCharacter::BasicSetupWeapon(TSubclassOf<AC_BaseWeapon> WeaponClass, FName WeaponSocket, FName Weapon3PSocket)
+//void AC_PlayerCharacter::BasicSetupWeapon(TSubclassOf<AC_BaseWeapon> WeaponClass, FName WeaponSocket, FName Weapon3PSocket)
+//{
+//	//SpawnWeapon(WeaponClass, WeaponSocket);
+//
+//	//// Play Weapon Equip Animation 
+//	//DefaultMesh->GetAnimInstance()->Montage_Play(CurrentWeapon->GetWeaponEquipMontage(), 1.0f);
+//
+//	// Set the weapon type
+//	//WeaponType = CurrentWeapon->Type;
+//	//OnWeaponTypeUpdate();
+//
+//	//// Update the 3P weapon mesh
+//	//UpdateWeapon3P(Combat.Weapon3P, CurrentWeapon, Weapon3PSocket);
+//
+//	//// Update the 3p holstered weapon mesh
+//	//if (HolsteredWeapon)
+//	//{
+//	//	UpdateWeapon3P(Combat.HolsteredWeapon3P, HolsteredWeapon, HolsteredWeapon->Socket3PHolstered);
+//	//}
+//}
+
+// Handles switching of weapons
+void AC_PlayerCharacter::SetupWeaponSwitching(TSubclassOf<AC_BaseWeapon> WeaponClass, FName WeaponSocket, FName Weapon3PSocket, bool bUpdateCurrentWeapon)
 {
+	// Sets the holstered weapon to the current weapon, then destroys current weapon
+	if(bUpdateCurrentWeapon)
+	{
+		if (CurrentWeapon)
+		{
+			HolsteredWeapon = CurrentWeapon;
+			CurrentWeapon->Destroy();
+		}
+	}
+
 	SpawnWeapon(WeaponClass, WeaponSocket);
 
-	//// Play Weapon Equip Animation 
 	DefaultMesh->GetAnimInstance()->Montage_Play(CurrentWeapon->GetWeaponEquipMontage(), 1.0f);
 
 	// Set the weapon type
 	WeaponType = CurrentWeapon->Type;
 	OnWeaponTypeUpdate();
 
-	// Update the 3P weapon mesh
-	UpdateWeapon3P(Combat.Weapon3P, CurrentWeapon, Weapon3PSocket);
-
-	// Update the 3p holstered weapon mesh
-	if (HolsteredWeapon) 
-	{
-		UpdateWeapon3P(Combat.HolsteredWeapon3P, HolsteredWeapon, HolsteredWeapon->Socket3PHolstered);
-	}
-}
-
-// Handles switching of weapons
-void AC_PlayerCharacter::SetupWeaponSwitching(TSubclassOf<AC_BaseWeapon> WeaponClass, FName WeaponSocket, FName Weapon3PSocket)
-{
-	// Sets the holstered weapon to the current weapon, then destroys current weapon
-	if (CurrentWeapon)
-	{
-		HolsteredWeapon = CurrentWeapon;
-		CurrentWeapon->Destroy();
-	}
-
-	BasicSetupWeapon(WeaponClass, WeaponSocket, Weapon3PSocket);
+	Update3PWeapons(Weapon3PSocket);
 }
 
 void AC_PlayerCharacter::SwitchWeapons()
@@ -461,7 +472,7 @@ void AC_PlayerCharacter::Multi_SwitchWeapons_Implementation()
 {
 	if (HolsteredWeapon)
 	{
-		SetupWeaponSwitching(HolsteredWeapon->BPRef, HolsteredWeapon->Socket1P, HolsteredWeapon->Socket3P);
+		SetupWeaponSwitching(HolsteredWeapon->BPRef, HolsteredWeapon->Socket1P, HolsteredWeapon->Socket3P, true);
 	}
 }
 
@@ -522,6 +533,28 @@ void AC_PlayerCharacter::OnWeaponTypeUpdate()
 	}
 }
 
+// REPLICATION TESTING
+
+void AC_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+}
+
+void AC_PlayerCharacter::Update3PWeapons(FName Weapon3PSocket)
+{
+	// Update the 3P weapon mesh
+	UpdateWeapon3P(Combat.Weapon3P, CurrentWeapon, Weapon3PSocket);
+
+	// Update the 3p holstered weapon mesh
+	if (HolsteredWeapon)
+	{
+		UpdateWeapon3P(Combat.HolsteredWeapon3P, HolsteredWeapon, HolsteredWeapon->Socket3PHolstered);
+	}
+}
+
+
+///////////////////////////////////////
+
 // organise 
 
 FVector AC_PlayerCharacter::GetPawnViewLocation() const
@@ -540,7 +573,7 @@ void AC_PlayerCharacter::StartFire()
 
 void AC_PlayerCharacter::EndFire()
 {
-	if(CurrentWeapon)
+	if (CurrentWeapon)
 	{
 		CurrentWeapon->StopAttack();
 		//UE_LOG(LogTemp, Log, TEXT("Player: STOP Attacked!"));
@@ -573,7 +606,7 @@ void AC_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 	// JUMP
 
-	PlayerInputComponent->BindAction("Jump", IE_Pressed,this, &AC_PlayerCharacter::JumpStart);
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AC_PlayerCharacter::JumpStart);
 
 	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &AC_PlayerCharacter::StartCrouch);
 	PlayerInputComponent->BindAction("Crouch", IE_Released, this, &AC_PlayerCharacter::EndCrouch);
@@ -591,12 +624,4 @@ void AC_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 	PlayerInputComponent->BindAction("Zoom", IE_Pressed, this, &AC_PlayerCharacter::BeginZoom);
 	PlayerInputComponent->BindAction("Zoom", IE_Released, this, &AC_PlayerCharacter::EndZoom);
-}
-
-
-// REPLICATION TESTING
-
-void AC_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 }

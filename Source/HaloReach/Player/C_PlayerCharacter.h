@@ -192,15 +192,15 @@ public:
 	// Applies any updates to the character when they change weapon type
 	void OnWeaponTypeUpdate();
 
-	void SetupWeaponSwitching(TSubclassOf<AC_BaseWeapon> WeaponClass, FName WeaponSocket, FName Weapon3PSocket);
+	void SetupWeaponSwitching(TSubclassOf<AC_BaseWeapon> WeaponClass, FName WeaponSocket, FName Weapon3PSocket, bool bUpdateCurrentWeapon);
 
-	void BasicSetupWeapon(TSubclassOf<AC_BaseWeapon> WeaponClass, FName WeaponSocket, FName Weapon3PSocket);
+	//void BasicSetupWeapon(TSubclassOf<AC_BaseWeapon> WeaponClass, FName WeaponSocket, FName Weapon3PSocket);
 
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 // REPLICATION TESTINGS
 
-
+	void Update3PWeapons(FName Weapon3PSocket);
 
 
 
