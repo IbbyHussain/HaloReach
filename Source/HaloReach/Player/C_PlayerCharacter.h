@@ -12,13 +12,6 @@
 class AC_BaseWeapon;
 class AC_Weapon3P;
 
-//UENUM(Blueprintable)
-//enum class EWeaponType : uint8
-//{
-//	PISTOL,
-//	RIFLE
-//};
-
 UENUM()
 enum class EMovementState : uint8
 {
@@ -203,6 +196,13 @@ public:
 	void Update3PWeapons(FName Weapon3PSocket);
 
 
+	UFUNCTION(Server, Reliable)
+		void Server_Update3PWeapons(FName Weapon3PSocket);
+	void Server_Update3PWeapons_Implementation(FName Weapon3PSocket);
+
+	UFUNCTION(Client, Reliable)
+	void Multi_Update3PWeapons(FName Weapon3PSocket);
+	void Multi_Update3PWeapons_Implementation(FName Weapon3PSocket);
 
 
 
