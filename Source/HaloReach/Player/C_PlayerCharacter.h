@@ -159,10 +159,10 @@ public:
 
 // COMBAT SYSTEM
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	AC_BaseWeapon* CurrentWeapon;
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	AC_BaseWeapon* HolsteredWeapon;
 
 	void SpawnWeapon(TSubclassOf<AC_BaseWeapon> WeaponClass, FName WeaponSocket);
@@ -201,8 +201,6 @@ public:
 // REPLICATION TESTINGS
 
 	void Update3PWeapons(FName Weapon3PSocket);
-
-
 
 
 
