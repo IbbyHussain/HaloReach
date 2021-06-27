@@ -164,7 +164,6 @@ public:
 	void SpawnWeapon3P();
 
 	void UpdateWeapon3P(AC_Weapon3P*& Weapon, AC_BaseWeapon* NewWeapon, FName Weapon3PSocket);
-	//void UpdateWeapon3P(FName Weapon3PSocket);
 
 	UFUNCTION()
 	void SwitchWeapons();
