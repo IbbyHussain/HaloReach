@@ -124,7 +124,21 @@ void AC_PlayerCharacter::BeginPlay()
 
 	DefaultFOV = CameraComp->FieldOfView;
 
-	UE_LOG(LogTemp, Error, TEXT("Array NUM: %d"), EquippedWeaponArray.Num());
+	if(HasAuthority())
+	{
+		for (auto x : EquippedWeapon3PArray)
+		{
+			UE_LOG(LogTemp, Error, TEXT("ELEMENTs before switch -- 3P -- : %s"), *x->GetName());
+		}
+
+		for (auto i : EquippedWeaponArray)
+		{
+			UE_LOG(LogTemp, Error, TEXT("ELEMENTs befrore switch -- 1P -- : %s"), *i->GetName());
+		}
+	}
+	
+
+	
 }
 
 void AC_PlayerCharacter::Tick(float DeltaTime)
@@ -393,7 +407,7 @@ void AC_PlayerCharacter::Multi_Interact_Implementation(FHitResult Hit)
 // COMBAT SYSTEM 
 
 // Spawn weapon in 1P
-void AC_PlayerCharacter::SpawnWeapon(TSubclassOf<AC_BaseWeapon> WeaponClass, AC_BaseWeapon* Weapon, FName WeaponSocket)
+void AC_PlayerCharacter::SpawnWeapon(TSubclassOf<AC_BaseWeapon> WeaponClass, AC_BaseWeapon*& Weapon, FName WeaponSocket)
 {
 	//Spawn new weapon in first person
 	FActorSpawnParameters SpawnParams;
@@ -417,13 +431,20 @@ void AC_PlayerCharacter::WeaponArrayChecks()
 
 void AC_PlayerCharacter::SwitchWeapons()
 {
-	EquippedWeaponArray.Swap(0, 1);
-	//EquippedWeapon3PArray.Swap(0, 1);
-	WeaponArrayChecks();
-	//WeaponArray3PChecks();
+	AC_BaseWeapon* TempWeapon = PrimaryWeapon;
+	PrimaryWeapon = SecondaryWeapon;
+	SecondaryWeapon = TempWeapon;
+
+
+	//EquippedWeaponArray.Swap(0, 1);
+	//WeaponArrayChecks();
+	WeaponArray3PChecks();
+
+	
+	
 }
 
-void AC_PlayerCharacter::SpawnWeapon3P(TSubclassOf<AC_Weapon3P> WeaponClass, AC_Weapon3P* Weapon, FName WeaponSocket)
+void AC_PlayerCharacter::SpawnWeapon3P(TSubclassOf<AC_Weapon3P> WeaponClass, AC_Weapon3P*& Weapon, FName WeaponSocket)
 {
 	//Spawn new weapon in first person
 	FActorSpawnParameters SpawnParams;
@@ -436,16 +457,86 @@ void AC_PlayerCharacter::SpawnWeapon3P(TSubclassOf<AC_Weapon3P> WeaponClass, AC_
 	Weapon->AttachToComponent(Mesh3P, FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocket);
 	Weapon->SetOwner(this);
 
-	//EquippedWeapon3PArray.Emplace(Weapon);
+	EquippedWeapon3PArray.Emplace(Weapon);
 }
+
+
+
 
 void AC_PlayerCharacter::WeaponArray3PChecks()
 {
-	EquippedWeapon3PArray[0]->AttachToComponent(Mesh3P, FAttachmentTransformRules::SnapToTargetIncludingScale, EquippedWeaponArray[0]->Socket3PHolstered);
-	EquippedWeapon3PArray[0]->WeaponMesh3P->SetSkeletalMesh(EquippedWeaponArray[0]->WeaponMesh->SkeletalMesh);
+	if(HasAuthority())
+	{
+		for (auto x : EquippedWeapon3PArray)
+		{
+			UE_LOG(LogTemp, Error, TEXT("ELEMENTs after switch -- 3P -- : %s"), *x->GetName());
+		}
 
-	EquippedWeapon3PArray[1]->AttachToComponent(Mesh3P, FAttachmentTransformRules::SnapToTargetIncludingScale, EquippedWeaponArray[1]->Socket3P);
-	EquippedWeapon3PArray[1]->WeaponMesh3P->SetSkeletalMesh(EquippedWeaponArray[1]->WeaponMesh->SkeletalMesh);
+		for (auto i : EquippedWeaponArray)
+		{
+			UE_LOG(LogTemp, Error, TEXT("ELEMENTs after switch -- 1P -- : %s"), *i->GetName());
+		}
+	}
+
+	WeaponType = EquippedWeaponArray[0]->Type;
+	OnWeaponTypeUpdate();
+
+
+	Server_ChangeSkeletalMesh(TestMesh, Primary3PWeapon->WeaponMesh3P);
+
+	// SetSkeletalMesh does not happen on server or client, Bugged? It only happens locally
+
+	/*if(HasAuthority())
+	{
+		UE_LOG(LogTemp, Log, TEXT("Primary wqeapon is: %s"), *PrimaryWeapon->GetName());
+		Primary3PWeapon->WeaponMesh3P->SetSkeletalMesh(PrimaryWeapon->WeaponMesh->SkeletalMesh);
+	}
+	
+	else
+	{
+		Server_Foo();
+	}*/
+
+
+	//Primary3PWeapon->AttachToComponent(Mesh3P, FAttachmentTransformRules::SnapToTargetIncludingScale, PrimaryWeapon->Socket3P);
+	/*Primary3PWeapon->WeaponMesh3P->SetSkeletalMesh(PrimaryWeapon->WeaponMesh->SkeletalMesh);
+
+	Secondary3PWeapon->AttachToComponent(Mesh3P, FAttachmentTransformRules::SnapToTargetIncludingScale, SecondaryWeapon->Socket3P);
+	Secondary3PWeapon->WeaponMesh3P->SetSkeletalMesh(SecondaryWeapon->WeaponMesh->SkeletalMesh);*/
+
+	// change this to magnum
+	/*EquippedWeapon3PArray[0]->AttachToComponent(Mesh3P, FAttachmentTransformRules::SnapToTargetIncludingScale, EquippedWeaponArray[0]->Socket3P);
+	EquippedWeapon3PArray[0]->WeaponMesh3P->SetSkeletalMesh(EquippedWeaponArray[0]->WeaponMesh->SkeletalMesh);*/
+
+	//EquippedWeapon3PArray[1]->AttachToComponent(Mesh3P, FAttachmentTransformRules::SnapToTargetIncludingScale, EquippedWeaponArray[1]->Socket3PHolstered);
+	//EquippedWeapon3PArray[1]->WeaponMesh3P->SetSkeletalMesh(EquippedWeaponArray[1]->WeaponMesh->SkeletalMesh);
+}
+
+void AC_PlayerCharacter::Server_Foo_Implementation()
+{
+	UE_LOG(LogTemp, Log, TEXT("Primary wqeapon is: %s"), *PrimaryWeapon->GetName());
+	Primary3PWeapon->WeaponMesh3P->SetSkeletalMesh(PrimaryWeapon->WeaponMesh->SkeletalMesh);
+}
+
+void AC_PlayerCharacter::ChangeSkeletalMesh(USkeletalMesh* SKMesh, USkinnedMeshComponent* SkinnedMesh)
+{
+}
+
+void AC_PlayerCharacter::Server_ChangeSkeletalMesh_Implementation(USkeletalMesh* SKMesh, USkinnedMeshComponent* SkinnedMesh)
+{
+	if(HasAuthority())
+	{
+		Multi_ChangeSkeletalMesh(SKMesh, SkinnedMesh);
+		SkinnedMesh->SetSkeletalMesh(SKMesh, false);
+	}
+}
+
+void AC_PlayerCharacter::Multi_ChangeSkeletalMesh_Implementation(USkeletalMesh* SKMesh, USkinnedMeshComponent* SkinnedMesh)
+{
+	if(!HasAuthority())
+	{
+		SkinnedMesh->SetSkeletalMesh(SKMesh, false);
+	}
 }
 
 
@@ -453,7 +544,7 @@ void AC_PlayerCharacter::WeaponArray3PChecks()
 
 
 
-
+//EquippedWeapon3PArray[0]->WeaponMesh3P->SetSkeletalMesh(EquippedWeaponArray[0]->WeaponMesh->SkeletalMesh);
 
 void AC_PlayerCharacter::OnWeaponTypeUpdate()
 {
@@ -483,6 +574,7 @@ void AC_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 
 	DOREPLIFETIME(AC_PlayerCharacter, EquippedWeaponArray);
 	DOREPLIFETIME(AC_PlayerCharacter, EquippedWeapon3PArray);
+	DOREPLIFETIME(AC_PlayerCharacter, CombatState);
 	//DOREPLIFETIME(AC_PlayerCharacter, Combat);
 
 }
@@ -490,7 +582,6 @@ void AC_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 ///////////////////////////////////////
 
 // organise 
-
 FVector AC_PlayerCharacter::GetPawnViewLocation() const
 {
 	return CameraComp->GetComponentLocation();

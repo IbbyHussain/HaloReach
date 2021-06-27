@@ -98,6 +98,7 @@ private:
 
 	EMovementState MovementState;
 
+	UPROPERTY(Replicated)
 	ECombatState CombatState;
 
 // OVERRIDE METHODS
@@ -172,7 +173,7 @@ public:
 // REPLICATION TESTINGS
 
 	// Will spawn a weapon of any type, in 1P
-	void SpawnWeapon(TSubclassOf<AC_BaseWeapon> WeaponClass, AC_BaseWeapon* Weapon, FName WeaponSocket);
+	void SpawnWeapon(TSubclassOf<AC_BaseWeapon> WeaponClass, AC_BaseWeapon*& Weapon, FName WeaponSocket);
 
 	// Arraty which keeps track of equipped weapons
 	UPROPERTY(Transient, Replicated)
@@ -182,7 +183,7 @@ public:
 
 	void SwitchWeapons();
 
-	void SpawnWeapon3P(TSubclassOf<AC_Weapon3P> WeaponClass, AC_Weapon3P* Weapon, FName WeaponSocket);
+	void SpawnWeapon3P(TSubclassOf<AC_Weapon3P> WeaponClass, AC_Weapon3P*& Weapon, FName WeaponSocket);
 
 	// Arraty which keeps track of equipped weapons in 3P
 	UPROPERTY(Transient, Replicated)
@@ -198,17 +199,27 @@ public:
 	UPROPERTY(Replicated)
 	AC_Weapon3P* Secondary3PWeapon;
 
+	bool bSwitch;
+
+	UFUNCTION(Server, Reliable)
+		void Server_Foo();
+	void Server_Foo_Implementation();
 
 
+// Replicated change skeletal mesh
 
+	void ChangeSkeletalMesh(USkeletalMesh* SKMesh, USkinnedMeshComponent* SkinnedMesh);
 
+	UFUNCTION(Server, Reliable)
+	void Server_ChangeSkeletalMesh(USkeletalMesh* SKMesh, USkinnedMeshComponent* SkinnedMesh);
+	void Server_ChangeSkeletalMesh_Implementation(USkeletalMesh* SKMesh, USkinnedMeshComponent* SkinnedMesh);
 
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_ChangeSkeletalMesh(USkeletalMesh* SKMesh, USkinnedMeshComponent* SkinnedMesh);
+	void Multi_ChangeSkeletalMesh_Implementation(USkeletalMesh* SKMesh, USkinnedMeshComponent* SkinnedMesh);
 
-
-
-
-
-
+	UPROPERTY(EditDefaultsOnly, Category = "Player | PlayerComponents")
+	USkeletalMesh* TestMesh;
 
 	// Weapons -----
 
