@@ -163,7 +163,7 @@ public:
 
 	void SpawnWeapon3P();
 
-	void UpdateWeapon3P(AC_Weapon3P*& Weapon, AC_BaseWeapon* NewWeapon, FName Weapon3PSocket);
+	void UpdateWeapon3P(FName Weapon3PSocket);
 
 	UFUNCTION()
 	void SwitchWeapons();
@@ -193,17 +193,6 @@ public:
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 // REPLICATION TESTINGS
-
-	void Update3PWeapons(FName Weapon3PSocket);
-
-
-	UFUNCTION(Server, Reliable)
-	void Server_Update3PWeapons(FName Weapon3PSocket);
-	void Server_Update3PWeapons_Implementation(FName Weapon3PSocket);
-
-	UFUNCTION(Client, Reliable)
-	void Multi_Update3PWeapons(FName Weapon3PSocket);
-	void Multi_Update3PWeapons_Implementation(FName Weapon3PSocket);
 
 	UFUNCTION(Server, Reliable)
 	void Server_SpawnWeapon3P();

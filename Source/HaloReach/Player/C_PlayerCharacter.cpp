@@ -86,18 +86,14 @@ void AC_PlayerCharacter::BeginPlay()
 	//HUD = Cast<AC_PlayerHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
 
 	// Spawns the equipped and holstered weapon in third person
-	SpawnWeapon3P();
+	
 
 	// Spawns default gun, used in first person -- important to do combat stuff on server
 	if(HasAuthority())
 	{
-		//// Spawns the equipped weapon in third person
-		//SpawnWeapon3P(Combat.Weapon3P, Combat.WeaponClass3P, ("ARSocket"));
-
-		//// Spawns the holstered weapon in third person
-		//SpawnWeapon3P(Combat.HolsteredWeapon3P, Combat.HolsteredWeaponClass3P, ("Rifle_3P_Holstered_Socket"));
-
+		SpawnWeapon3P();
 		SetupWeaponSwitching(DefaultWeaponClass, ("AR_1P_Socket"), ("AR_3P_Socket"), true);
+		UpdateWeapon3P(("AR_3P_Socket"));
 	}
 
 
@@ -440,15 +436,7 @@ void AC_PlayerCharacter::SetupWeaponSwitching(TSubclassOf<AC_BaseWeapon> WeaponC
 	WeaponType = CurrentWeapon->Type;
 	OnWeaponTypeUpdate();
 
-	UpdateWeapon3P(Combat.Weapon3P, CurrentWeapon, Weapon3PSocket);
-
-	// Update the 3p holstered weapon mesh
-	if (HolsteredWeapon)
-	{
-		UpdateWeapon3P(Combat.HolsteredWeapon3P, HolsteredWeapon, HolsteredWeapon->Socket3PHolstered);
-	}
-
-	//Update3PWeapons(Weapon3PSocket);
+	//UpdateWeapon3P(Weapon3PSocket);
 }
 
 void AC_PlayerCharacter::SwitchWeapons()
@@ -474,6 +462,7 @@ void AC_PlayerCharacter::Multi_SwitchWeapons_Implementation()
 	if (HolsteredWeapon)
 	{
 		SetupWeaponSwitching(HolsteredWeapon->BPRef, HolsteredWeapon->Socket1P, HolsteredWeapon->Socket3P, true);
+		UpdateWeapon3P(CurrentWeapon->Socket3P);
 	}
 }
 
@@ -527,15 +516,6 @@ void AC_PlayerCharacter::SpawnWeapon3P()
 	
 }
 
-void AC_PlayerCharacter::UpdateWeapon3P(AC_Weapon3P*& Weapon, AC_BaseWeapon* NewWeapon, FName Weapon3PSocket)
-{
-	// Attach new 3P Weapon mesh to 3P character mesh
-	Weapon->AttachToComponent(Mesh3P, FAttachmentTransformRules::SnapToTargetIncludingScale, Weapon3PSocket); //Combat.Weapon3P
-
-	// Set the skeletal mesh of 3P gun to the 1P gun
-	Weapon->WeaponMesh3P->SetSkeletalMesh(NewWeapon->WeaponMesh->SkeletalMesh); //Combat.Weapon3P
-}
-
 void AC_PlayerCharacter::Server_SpawnWeapon3P_Implementation()
 {
 	// Spawn a currently equipped weapon in 3P 
@@ -556,6 +536,27 @@ void AC_PlayerCharacter::Server_SpawnWeapon3P_Implementation()
 	Combat.HolsteredWeapon3P = GetWorld()->SpawnActor<AC_Weapon3P>(Combat.HolsteredWeaponClass3P, WeaponSpawn3PHolsteredLocation, WeaponSpawn3PHolsteredRotation, SpawnParams);
 	Combat.HolsteredWeapon3P->SetOwner(this);
 }
+
+void AC_PlayerCharacter::UpdateWeapon3P(FName Weapon3PSocket)
+{
+	// 3P currently equipped gun
+	Combat.Weapon3P->AttachToComponent(Mesh3P, FAttachmentTransformRules::SnapToTargetIncludingScale, Weapon3PSocket);
+	Combat.Weapon3P->WeaponMesh3P->SetSkeletalMesh(CurrentWeapon->WeaponMesh->SkeletalMesh);
+
+	// 3P holstered gun
+	if(HolsteredWeapon)
+	{
+		Combat.HolsteredWeapon3P->AttachToComponent(Mesh3P, FAttachmentTransformRules::SnapToTargetIncludingScale, HolsteredWeapon->Socket3PHolstered);
+		Combat.HolsteredWeapon3P->WeaponMesh3P->SetSkeletalMesh(HolsteredWeapon->WeaponMesh->SkeletalMesh);
+	}
+}
+
+
+
+
+
+
+
 
 void AC_PlayerCharacter::OnWeaponTypeUpdate()
 {
@@ -591,46 +592,6 @@ void AC_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	//DOREPLIFETIME(AC_PlayerCharacter, Combat);
 
 }
-
-void AC_PlayerCharacter::Update3PWeapons(FName Weapon3PSocket)
-{
-	//if (HasAuthority()) 
-	//{
-	//	UpdateWeapon3P(Combat.Weapon3P, CurrentWeapon, Weapon3PSocket);
-
-	//	// Update the 3p holstered weapon mesh
-	//	if (HolsteredWeapon)
-	//	{
-	//		UpdateWeapon3P(Combat.HolsteredWeapon3P, HolsteredWeapon, HolsteredWeapon->Socket3PHolstered);
-	//	}
-	//}
-
-	//else
-	//{
-	//	Server_Update3PWeapons(Weapon3PSocket);
-	//}
-}
-
-void AC_PlayerCharacter::Server_Update3PWeapons_Implementation(FName Weapon3PSocket)
-{
-	Multi_Update3PWeapons(Weapon3PSocket);
-}
-
-void AC_PlayerCharacter::Multi_Update3PWeapons_Implementation(FName Weapon3PSocket)
-{
-	// Update the 3P weapon mesh
-	UpdateWeapon3P(Combat.Weapon3P, CurrentWeapon, Weapon3PSocket);
-
-	// Update the 3p holstered weapon mesh
-	if (HolsteredWeapon)
-	{
-		UpdateWeapon3P(Combat.HolsteredWeapon3P, HolsteredWeapon, HolsteredWeapon->Socket3PHolstered);
-	}
-}
-
-
-
-
 
 ///////////////////////////////////////
 
