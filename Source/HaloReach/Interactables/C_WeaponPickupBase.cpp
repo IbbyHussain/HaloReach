@@ -13,14 +13,15 @@ void AC_WeaponPickupBase::SpawnWeapon(TSubclassOf<AC_BaseWeapon> WeaponClassToSp
 {
 	if (Player)
 	{
-		if(Player->HasAuthority())
-		{
-			Player->UpdateWeapons();
-			Player->SetupWeaponSwitching(WeaponClassToSpawn, WeaponSocket1P, WeaponSocket3P, false);
-			Player->UpdateWeapon3P(WeaponSocket3P);
-		}
 		
-		//Player->Update3PWeapons(WeaponSocket3P);
+
+		
+		Player->UpdateWeapons();
+		Player->SpawnWeapon(WeaponClassToSpawn, WeaponSocket1P, Player);
+
+		
+
+		Player->SetupWeaponSwitching(WeaponSocket3P);
 	}
 }
 
