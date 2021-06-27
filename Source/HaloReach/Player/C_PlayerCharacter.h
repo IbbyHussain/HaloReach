@@ -159,44 +159,18 @@ public:
 	UPROPERTY(Replicated)
 	AC_BaseWeapon* HolsteredWeapon;
 
-	void SpawnWeapon(TSubclassOf<AC_BaseWeapon> WeaponClass, FName WeaponSocket);
-
-	void SpawnWeapon3P();
-
-	void UpdateWeapon3P(FName Weapon3PSocket);
-
-	UFUNCTION()
-	void SwitchWeapons();
-
-	UFUNCTION(Server, Reliable)
-	void Server_SwitchWeapons();
-	void Server_SwitchWeapons_Implementation();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void Multi_SwitchWeapons();
-	void Multi_SwitchWeapons_Implementation();
-
-
-	// Will handle and switch weapons depending on what weapons are equipped
-	void UpdateWeapons();
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player | PlayerComponents")
 	EWeaponType WeaponType;
-
-	// Applies any updates to the character when they change weapon type
-	void OnWeaponTypeUpdate();
-
-	void SetupWeaponSwitching(TSubclassOf<AC_BaseWeapon> WeaponClass, FName WeaponSocket, FName Weapon3PSocket, bool bUpdateCurrentWeapon);
-
-	//void BasicSetupWeapon(TSubclassOf<AC_BaseWeapon> WeaponClass, FName WeaponSocket, FName Weapon3PSocket);
 
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 // REPLICATION TESTINGS
 
-	UFUNCTION(Server, Reliable)
-	void Server_SpawnWeapon3P();
-	void Server_SpawnWeapon3P_Implementation();
+	void SpawnWeapon(TSubclassOf<AC_BaseWeapon> WeaponClass, FName WeaponSocket);
+
+	// Applies any updates to the character when they change weapon type
+	void OnWeaponTypeUpdate();
+
 
 
 

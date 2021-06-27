@@ -85,20 +85,11 @@ void AC_PlayerCharacter::BeginPlay()
 	HUD = Cast<AC_PlayerHUD>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetHUD());
 	//HUD = Cast<AC_PlayerHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
 
-	// Spawns the equipped and holstered weapon in third person
-	
-
-	// Spawns default gun, used in first person -- important to do combat stuff on server
-	if(HasAuthority())
-	{
-		SpawnWeapon3P();
-		SetupWeaponSwitching(DefaultWeaponClass, ("AR_1P_Socket"), ("AR_3P_Socket"), true);
-		UpdateWeapon3P(("AR_3P_Socket"));
-	}
 
 
+	SpawnWeapon(DefaultWeaponClass, ("AR_1P_Socket"));
 
-	//Update3PWeapons(("AR_3P_Socket"));
+
 
 	// Sets the default settings of the character 
 	DefaultCameraHeight = CameraComp->GetRelativeLocation().Z;
@@ -391,13 +382,6 @@ void AC_PlayerCharacter::Multi_Interact_Implementation(FHitResult Hit)
 	}
 }
 
-
-
-
-
-
-
-
 // COMBAT SYSTEM 
 
 // Spawn weapon in 1P
@@ -415,141 +399,7 @@ void AC_PlayerCharacter::SpawnWeapon(TSubclassOf<AC_BaseWeapon> WeaponClass, FNa
 	CurrentWeapon->SetOwner(this);
 }
 
-// Handles switching of weapons
-void AC_PlayerCharacter::SetupWeaponSwitching(TSubclassOf<AC_BaseWeapon> WeaponClass, FName WeaponSocket, FName Weapon3PSocket, bool bUpdateCurrentWeapon)
-{
-	// Sets the holstered weapon to the current weapon, then destroys current weapon
-	if(bUpdateCurrentWeapon)
-	{
-		if (CurrentWeapon)
-		{
-			HolsteredWeapon = CurrentWeapon;
-			CurrentWeapon->Destroy();
-		}
-	}
 
-	SpawnWeapon(WeaponClass, WeaponSocket);
-
-	DefaultMesh->GetAnimInstance()->Montage_Play(CurrentWeapon->GetWeaponEquipMontage(), 1.0f);
-
-	// Set the weapon type
-	WeaponType = CurrentWeapon->Type;
-	OnWeaponTypeUpdate();
-
-	//UpdateWeapon3P(Weapon3PSocket);
-}
-
-void AC_PlayerCharacter::SwitchWeapons()
-{
-	if(HasAuthority())
-	{
-		Multi_SwitchWeapons();
-	}
-
-	else
-	{
-		Server_SwitchWeapons();
-	}
-}
-
-void AC_PlayerCharacter::Server_SwitchWeapons_Implementation()
-{
-	Multi_SwitchWeapons();
-}
-
-void AC_PlayerCharacter::Multi_SwitchWeapons_Implementation()
-{
-	if (HolsteredWeapon)
-	{
-		SetupWeaponSwitching(HolsteredWeapon->BPRef, HolsteredWeapon->Socket1P, HolsteredWeapon->Socket3P, true);
-		UpdateWeapon3P(CurrentWeapon->Socket3P);
-	}
-}
-
-// When we pick up weapon
-void AC_PlayerCharacter::UpdateWeapons()
-{
-	// If there is no holstered weapon, make current weapon holstered and equip new weapon
-	if (CurrentWeapon && (HolsteredWeapon == nullptr))
-	{
-		HolsteredWeapon = CurrentWeapon;
-		UE_LOG(LogTemp, Log, TEXT("Swap 1"));
-		CurrentWeapon->Destroy();
-	}
-
-	// If there is a holstered and current weapon, swap current weapon for new weapon. This keeps holstered weapon
-	else if(CurrentWeapon && HolsteredWeapon)
-	{
-		CurrentWeapon = CurrentWeapon;
-		UE_LOG(LogTemp, Log, TEXT("Swap 2"));
-		CurrentWeapon->Destroy();
-	}
-}
-
-void AC_PlayerCharacter::SpawnWeapon3P()
-{
-	if(HasAuthority())
-	{
-		// Spawn a currently equipped weapon in 3P 
-		FActorSpawnParameters SpawnParams;
-
-		FTransform Weapon3PTransform = Mesh3P->GetSocketTransform(("ARSocket"), ERelativeTransformSpace::RTS_World);
-		FVector WeaponSpawn3PLocation = Weapon3PTransform.GetLocation();
-		FRotator WeaponSpawn3PRotation = Weapon3PTransform.GetRotation().Rotator();
-
-		Combat.Weapon3P = GetWorld()->SpawnActor<AC_Weapon3P>(Combat.WeaponClass3P, WeaponSpawn3PLocation, WeaponSpawn3PRotation, SpawnParams);
-		Combat.Weapon3P->SetOwner(this);
-
-		// Spawn a holstered weapon in 3P
-		FTransform Weapon3PHolsteredTransform = Mesh3P->GetSocketTransform(("Rifle_3P_Holstered_Socket"), ERelativeTransformSpace::RTS_World);
-		FVector WeaponSpawn3PHolsteredLocation = Weapon3PHolsteredTransform.GetLocation();
-		FRotator WeaponSpawn3PHolsteredRotation = Weapon3PHolsteredTransform.GetRotation().Rotator();
-
-		Combat.HolsteredWeapon3P = GetWorld()->SpawnActor<AC_Weapon3P>(Combat.HolsteredWeaponClass3P, WeaponSpawn3PHolsteredLocation, WeaponSpawn3PHolsteredRotation, SpawnParams);
-		Combat.HolsteredWeapon3P->SetOwner(this);
-	}
-
-	else
-	{
-		Server_SpawnWeapon3P();
-	}
-	
-}
-
-void AC_PlayerCharacter::Server_SpawnWeapon3P_Implementation()
-{
-	// Spawn a currently equipped weapon in 3P 
-	FActorSpawnParameters SpawnParams;
-
-	FTransform Weapon3PTransform = Mesh3P->GetSocketTransform(("ARSocket"), ERelativeTransformSpace::RTS_World);
-	FVector WeaponSpawn3PLocation = Weapon3PTransform.GetLocation();
-	FRotator WeaponSpawn3PRotation = Weapon3PTransform.GetRotation().Rotator();
-
-	Combat.Weapon3P = GetWorld()->SpawnActor<AC_Weapon3P>(Combat.WeaponClass3P, WeaponSpawn3PLocation, WeaponSpawn3PRotation, SpawnParams);
-	Combat.Weapon3P->SetOwner(this);
-
-	// Spawn a holstered weapon in 3P
-	FTransform Weapon3PHolsteredTransform = Mesh3P->GetSocketTransform(("Rifle_3P_Holstered_Socket"), ERelativeTransformSpace::RTS_World);
-	FVector WeaponSpawn3PHolsteredLocation = Weapon3PHolsteredTransform.GetLocation();
-	FRotator WeaponSpawn3PHolsteredRotation = Weapon3PHolsteredTransform.GetRotation().Rotator();
-
-	Combat.HolsteredWeapon3P = GetWorld()->SpawnActor<AC_Weapon3P>(Combat.HolsteredWeaponClass3P, WeaponSpawn3PHolsteredLocation, WeaponSpawn3PHolsteredRotation, SpawnParams);
-	Combat.HolsteredWeapon3P->SetOwner(this);
-}
-
-void AC_PlayerCharacter::UpdateWeapon3P(FName Weapon3PSocket)
-{
-	// 3P currently equipped gun
-	Combat.Weapon3P->AttachToComponent(Mesh3P, FAttachmentTransformRules::SnapToTargetIncludingScale, Weapon3PSocket);
-	Combat.Weapon3P->WeaponMesh3P->SetSkeletalMesh(CurrentWeapon->WeaponMesh->SkeletalMesh);
-
-	// 3P holstered gun
-	if(HolsteredWeapon)
-	{
-		Combat.HolsteredWeapon3P->AttachToComponent(Mesh3P, FAttachmentTransformRules::SnapToTargetIncludingScale, HolsteredWeapon->Socket3PHolstered);
-		Combat.HolsteredWeapon3P->WeaponMesh3P->SetSkeletalMesh(HolsteredWeapon->WeaponMesh->SkeletalMesh);
-	}
-}
 
 
 
@@ -572,13 +422,6 @@ void AC_PlayerCharacter::OnWeaponTypeUpdate()
 
 	}
 }
-
-
-
-
-
-
-
 
 
 // REPLICATION TESTING
@@ -655,7 +498,7 @@ void AC_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 	// COMBAT
 
-	PlayerInputComponent->BindAction("SwitchWeapons", IE_Pressed, this, &AC_PlayerCharacter::SwitchWeapons);
+	//PlayerInputComponent->BindAction("SwitchWeapons", IE_Pressed, this, &AC_PlayerCharacter::SwitchWeapons);
 
 	//PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AC_PlayerCharacter::FireWeapon);
 
