@@ -30,5 +30,5 @@ protected:
 	virtual void OnOverlapEnd() override;
 
 	virtual void BeginPlay() override;
-	
+
 };
