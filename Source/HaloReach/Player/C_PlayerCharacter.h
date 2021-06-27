@@ -62,23 +62,18 @@ public:
 	UPROPERTY(Replicated)
 	AC_BaseWeapon* HolsteredWeapon;*/
 
-	//UPROPERTY(EditDefaultsOnly, Category = "Combat")
-	//TSubclassOf<AC_BaseWeapon> DefaultWeaponClass;
+	UPROPERTY(EditDefaultsOnly, Category = "Combat | StarterWeapons")
+	TSubclassOf<AC_BaseWeapon> DefaultPrimaryWeaponClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Combat | StarterWeapons")
+	TSubclassOf<AC_BaseWeapon> DefaultSecondaryWeaponClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
-	TSubclassOf<AC_Weapon3P> WeaponClass3P;
-
-	// The weapon shown in thrid person.
-	UPROPERTY()
-	AC_Weapon3P* Weapon3P;
-
+	TSubclassOf<AC_Weapon3P> PrimaryWeapon3PClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
-	TSubclassOf<AC_Weapon3P> HolsteredWeaponClass3P;
+	TSubclassOf<AC_Weapon3P> SecondaryWeapon3PClass;
 
-	// The Holstered weapon shown in thrid person.
-	UPROPERTY()
-	AC_Weapon3P* HolsteredWeapon3P;
 
 	FCombat()
 	{
@@ -154,22 +149,57 @@ public:
 // COMBAT SYSTEM
 
 	UPROPERTY(Replicated)
-	AC_BaseWeapon* CurrentWeapon;
+	AC_BaseWeapon* PrimaryWeapon;
 
 	UPROPERTY(Replicated)
-	AC_BaseWeapon* HolsteredWeapon;
+	AC_BaseWeapon* SecondaryWeapon;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player | PlayerComponents")
 	EWeaponType WeaponType;
 
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-// REPLICATION TESTINGS
-
-	void SpawnWeapon(TSubclassOf<AC_BaseWeapon> WeaponClass, FName WeaponSocket);
-
 	// Applies any updates to the character when they change weapon type
 	void OnWeaponTypeUpdate();
+
+
+
+
+
+
+
+
+// REPLICATION TESTINGS
+
+	// Will spawn a weapon of any type, in 1P
+	void SpawnWeapon(TSubclassOf<AC_BaseWeapon> WeaponClass, AC_BaseWeapon* Weapon, FName WeaponSocket);
+
+	// Arraty which keeps track of equipped weapons
+	UPROPERTY(Transient, Replicated)
+	TArray<AC_BaseWeapon*>EquippedWeaponArray;
+
+	void WeaponArrayChecks();
+
+	void SwitchWeapons();
+
+	void SpawnWeapon3P(TSubclassOf<AC_Weapon3P> WeaponClass, AC_Weapon3P* Weapon, FName WeaponSocket);
+
+	// Arraty which keeps track of equipped weapons in 3P
+	UPROPERTY(Transient, Replicated)
+	TArray<AC_Weapon3P*> EquippedWeapon3PArray;
+
+	void WeaponArray3PChecks();
+
+	// The weapon shown in thrid person.
+	UPROPERTY(Replicated)
+	AC_Weapon3P* Primary3PWeapon;
+
+	// The Holstered weapon shown in thrid person.
+	UPROPERTY(Replicated)
+	AC_Weapon3P* Secondary3PWeapon;
+
+
+
 
 
 
@@ -201,10 +231,6 @@ public:
 	void BeginZoom();
 
 	void EndZoom();
-
-	UPROPERTY(EditDefaultsOnly, Category = "Combat")
-	TSubclassOf<AC_BaseWeapon> DefaultWeaponClass;
-
 
 // Class Declarations
 

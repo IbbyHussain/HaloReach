@@ -16,6 +16,7 @@
 #include "HaloReach/Interactables/Weapons/C_BaseWeapon.h"
 #include "HaloReach/Interactables/Weapons/C_Weapon3P.h"
 #include "Net/UnrealNetwork.h"
+#include "Kismet/KismetArrayLibrary.h"
 
 AC_PlayerCharacter::AC_PlayerCharacter()
 {
@@ -72,8 +73,6 @@ AC_PlayerCharacter::AC_PlayerCharacter()
 
 	ZoomInterpSpeed = 20.0f;
 
-	CurrentWeapon = nullptr;
-	HolsteredWeapon = nullptr;
 }
 
 void AC_PlayerCharacter::BeginPlay()
@@ -86,9 +85,16 @@ void AC_PlayerCharacter::BeginPlay()
 	//HUD = Cast<AC_PlayerHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
 
 
+	if(HasAuthority())
+	{
+		SpawnWeapon(Combat.DefaultPrimaryWeaponClass, PrimaryWeapon, ("AR_1P_Socket"));
+		SpawnWeapon(Combat.DefaultSecondaryWeaponClass, SecondaryWeapon, ("MG_1P_Socket"));
+		WeaponArrayChecks();
 
-	SpawnWeapon(DefaultWeaponClass, ("AR_1P_Socket"));
+		SpawnWeapon3P(Combat.PrimaryWeapon3PClass, Primary3PWeapon, ("AR_3P_Socket"));
+		SpawnWeapon3P(Combat.SecondaryWeapon3PClass, Secondary3PWeapon, ("Pistol_3P_Holstered_Socket"));
 
+	}
 
 
 	// Sets the default settings of the character 
@@ -117,6 +123,8 @@ void AC_PlayerCharacter::BeginPlay()
 	// FOV Setup
 
 	DefaultFOV = CameraComp->FieldOfView;
+
+	UE_LOG(LogTemp, Error, TEXT("Array NUM: %d"), EquippedWeaponArray.Num());
 }
 
 void AC_PlayerCharacter::Tick(float DeltaTime)
@@ -385,7 +393,7 @@ void AC_PlayerCharacter::Multi_Interact_Implementation(FHitResult Hit)
 // COMBAT SYSTEM 
 
 // Spawn weapon in 1P
-void AC_PlayerCharacter::SpawnWeapon(TSubclassOf<AC_BaseWeapon> WeaponClass, FName WeaponSocket)
+void AC_PlayerCharacter::SpawnWeapon(TSubclassOf<AC_BaseWeapon> WeaponClass, AC_BaseWeapon* Weapon, FName WeaponSocket)
 {
 	//Spawn new weapon in first person
 	FActorSpawnParameters SpawnParams;
@@ -394,12 +402,51 @@ void AC_PlayerCharacter::SpawnWeapon(TSubclassOf<AC_BaseWeapon> WeaponClass, FNa
 	FVector WeaponSpawnLocation = WeaponTransform.GetLocation();
 	FRotator WeaponSpawnRotation = WeaponTransform.GetRotation().Rotator();
 
-	CurrentWeapon = GetWorld()->SpawnActor<AC_BaseWeapon>(WeaponClass, WeaponSpawnLocation, WeaponSpawnRotation, SpawnParams); //Combat.CurrentWeapon
-	CurrentWeapon->AttachToComponent(DefaultMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocket);
-	CurrentWeapon->SetOwner(this);
+	Weapon = GetWorld()->SpawnActor<AC_BaseWeapon>(WeaponClass, WeaponSpawnLocation, WeaponSpawnRotation, SpawnParams); 
+	Weapon->AttachToComponent(DefaultMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocket);
+	Weapon->SetOwner(this);
+
+	EquippedWeaponArray.Emplace(Weapon);
 }
 
+void AC_PlayerCharacter::WeaponArrayChecks()
+{
+	EquippedWeaponArray[0]->SetActorHiddenInGame(false);
+	EquippedWeaponArray[1]->SetActorHiddenInGame(true);
+}
 
+void AC_PlayerCharacter::SwitchWeapons()
+{
+	EquippedWeaponArray.Swap(0, 1);
+	//EquippedWeapon3PArray.Swap(0, 1);
+	WeaponArrayChecks();
+	//WeaponArray3PChecks();
+}
+
+void AC_PlayerCharacter::SpawnWeapon3P(TSubclassOf<AC_Weapon3P> WeaponClass, AC_Weapon3P* Weapon, FName WeaponSocket)
+{
+	//Spawn new weapon in first person
+	FActorSpawnParameters SpawnParams;
+
+	FTransform WeaponTransform = Mesh3P->GetSocketTransform(WeaponSocket, ERelativeTransformSpace::RTS_World);
+	FVector WeaponSpawnLocation = WeaponTransform.GetLocation();
+	FRotator WeaponSpawnRotation = WeaponTransform.GetRotation().Rotator();
+
+	Weapon = GetWorld()->SpawnActor<AC_Weapon3P>(WeaponClass, WeaponSpawnLocation, WeaponSpawnRotation, SpawnParams);
+	Weapon->AttachToComponent(Mesh3P, FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocket);
+	Weapon->SetOwner(this);
+
+	//EquippedWeapon3PArray.Emplace(Weapon);
+}
+
+void AC_PlayerCharacter::WeaponArray3PChecks()
+{
+	EquippedWeapon3PArray[0]->AttachToComponent(Mesh3P, FAttachmentTransformRules::SnapToTargetIncludingScale, EquippedWeaponArray[0]->Socket3PHolstered);
+	EquippedWeapon3PArray[0]->WeaponMesh3P->SetSkeletalMesh(EquippedWeaponArray[0]->WeaponMesh->SkeletalMesh);
+
+	EquippedWeapon3PArray[1]->AttachToComponent(Mesh3P, FAttachmentTransformRules::SnapToTargetIncludingScale, EquippedWeaponArray[1]->Socket3P);
+	EquippedWeapon3PArray[1]->WeaponMesh3P->SetSkeletalMesh(EquippedWeaponArray[1]->WeaponMesh->SkeletalMesh);
+}
 
 
 
@@ -423,15 +470,19 @@ void AC_PlayerCharacter::OnWeaponTypeUpdate()
 	}
 }
 
-
 // REPLICATION TESTING
 
 void AC_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AC_PlayerCharacter, CurrentWeapon);
-	DOREPLIFETIME(AC_PlayerCharacter, HolsteredWeapon);
+	DOREPLIFETIME(AC_PlayerCharacter, PrimaryWeapon);
+	DOREPLIFETIME(AC_PlayerCharacter, SecondaryWeapon);
+	DOREPLIFETIME(AC_PlayerCharacter, Primary3PWeapon);
+	DOREPLIFETIME(AC_PlayerCharacter, Secondary3PWeapon);
+
+	DOREPLIFETIME(AC_PlayerCharacter, EquippedWeaponArray);
+	DOREPLIFETIME(AC_PlayerCharacter, EquippedWeapon3PArray);
 	//DOREPLIFETIME(AC_PlayerCharacter, Combat);
 
 }
@@ -447,18 +498,18 @@ FVector AC_PlayerCharacter::GetPawnViewLocation() const
 
 void AC_PlayerCharacter::StartFire()
 {
-	if (CurrentWeapon)
+	if (EquippedWeaponArray[0])
 	{
-		CurrentWeapon->Attack();
+		EquippedWeaponArray[0]->Attack();
 		//UE_LOG(LogTemp, Log, TEXT("Player: Attacked!"));
 	}
 }
 
 void AC_PlayerCharacter::EndFire()
 {
-	if (CurrentWeapon)
+	if (EquippedWeaponArray[0])
 	{
-		CurrentWeapon->StopAttack();
+		EquippedWeaponArray[0]->StopAttack();
 		//UE_LOG(LogTemp, Log, TEXT("Player: STOP Attacked!"));
 	}
 }
@@ -498,9 +549,8 @@ void AC_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 	// COMBAT
 
-	//PlayerInputComponent->BindAction("SwitchWeapons", IE_Pressed, this, &AC_PlayerCharacter::SwitchWeapons);
+	PlayerInputComponent->BindAction("SwitchWeapons", IE_Pressed, this, &AC_PlayerCharacter::SwitchWeapons);
 
-	//PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AC_PlayerCharacter::FireWeapon);
 
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AC_PlayerCharacter::StartFire);
 	PlayerInputComponent->BindAction("Fire", IE_Released, this, &AC_PlayerCharacter::EndFire);
