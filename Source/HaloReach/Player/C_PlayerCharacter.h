@@ -69,13 +69,16 @@ public:
 	TSubclassOf<AC_Weapon3P> WeaponClass3P;
 
 	// The weapon shown in thrid person.
-	
+	UPROPERTY()
+	AC_Weapon3P* Weapon3P;
 
 
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
 	TSubclassOf<AC_Weapon3P> HolsteredWeaponClass3P;
 
-	// The Holstered weapon shown in thrid person
+	// The Holstered weapon shown in thrid person.
+	UPROPERTY()
+	AC_Weapon3P* HolsteredWeapon3P;
 
 	FCombat()
 	{
@@ -156,7 +159,7 @@ public:
 	UPROPERTY(Replicated)
 	AC_BaseWeapon* HolsteredWeapon;
 
-	void SpawnWeapon(TSubclassOf<AC_BaseWeapon> WeaponClass, FName WeaponSocket, AActor* NewOwner);
+	void SpawnWeapon(TSubclassOf<AC_BaseWeapon> WeaponClass, FName WeaponSocket);
 
 	void SpawnWeapon3P();
 
@@ -183,7 +186,7 @@ public:
 	// Applies any updates to the character when they change weapon type
 	void OnWeaponTypeUpdate();
 
-	void SetupWeaponSwitching(FName Weapon3PSocket);
+	void SetupWeaponSwitching(TSubclassOf<AC_BaseWeapon> WeaponClass, FName WeaponSocket, FName Weapon3PSocket, bool bUpdateCurrentWeapon);
 
 	//void BasicSetupWeapon(TSubclassOf<AC_BaseWeapon> WeaponClass, FName WeaponSocket, FName Weapon3PSocket);
 
@@ -195,26 +198,12 @@ public:
 	void Server_SpawnWeapon3P();
 	void Server_SpawnWeapon3P_Implementation();
 
-	//UFUNCTION(NetMulticast, Reliable)
-	//void Multi_SpawnWeapon3P();
-	//void Multi_SpawnWeapon3P_Implementation();
-
-	UFUNCTION(Server, Reliable)
-	void Server_UpdateWeapon3P(FName Weapon3PSocket);
-	void Server_UpdateWeapon3P_Implementation(FName Weapon3PSocket);
-
-	//UFUNCTION(NetMulticast, Reliable)
-	//void Multi_UpdateWeapon3P(FName Weapon3PSocket);
-	//void Multi_UpdateWeapon3P_Implementation(FName Weapon3PSocket);
 
 
-	UPROPERTY(Replicated)
-	AC_Weapon3P* HolsteredWeapon3P;
 
-	UPROPERTY(Replicated)
-	AC_Weapon3P* Weapon3P;
 
-	void CheckWeapons();
+
+
 
 
 	// Weapons -----
