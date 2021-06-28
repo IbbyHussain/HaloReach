@@ -3,6 +3,7 @@
 
 #include "HaloReach/Interactables/Weapons/C_BaseWeapon.h"
 #include "HaloReach/Player/C_PlayerCharacter.h"
+#include "Net/UnrealNetwork.h"
 
 AC_BaseWeapon::AC_BaseWeapon()
 {
@@ -36,4 +37,11 @@ void AC_BaseWeapon::Attack()
 void AC_BaseWeapon::StopAttack()
 {
 
+}
+
+void AC_BaseWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	//DOREPLIFETIME(AC_BaseWeapon, Type);
 }

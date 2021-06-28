@@ -155,8 +155,11 @@ public:
 	UPROPERTY(Replicated)
 	AC_BaseWeapon* SecondaryWeapon;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player | PlayerComponents")
-	EWeaponType WeaponType;
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player | PlayerComponents")
+	//EWeaponType WeaponType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Defaults, Replicated)
+	TEnumAsByte<EWeaponType> WeaponType;
 
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
@@ -202,13 +205,11 @@ public:
 	bool bSwitch;
 
 	UFUNCTION(Server, Reliable)
-		void Server_Foo();
-	void Server_Foo_Implementation();
+	void Server_WeaponArray3PChecks(EWeaponType NewType, FName Socket3P, FName Socket3PHolstered);
+	void Server_WeaponArray3PChecks_Implementation(EWeaponType NewType, FName Socket3P, FName Socket3PHolstered);
 
 
 // Replicated change skeletal mesh
-
-	void ChangeSkeletalMesh(USkeletalMesh* SKMesh, USkinnedMeshComponent* SkinnedMesh);
 
 	UFUNCTION(Server, Reliable)
 	void Server_ChangeSkeletalMesh(USkeletalMesh* SKMesh, USkinnedMeshComponent* SkinnedMesh);
@@ -220,6 +221,18 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Player | PlayerComponents")
 	USkeletalMesh* TestMesh;
+
+
+
+
+
+
+
+
+
+
+
+
 
 	// Weapons -----
 

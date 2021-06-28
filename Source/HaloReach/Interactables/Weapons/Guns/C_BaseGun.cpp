@@ -17,6 +17,8 @@ AC_BaseGun::AC_BaseGun()
 	// Rounds per minute
 	RateOfFire = 600.0f;
 
+	bReplicates = true;
+
 	NetUpdateFrequency = 30.0f;
 	MinNetUpdateFrequency = 10.0f;
 }

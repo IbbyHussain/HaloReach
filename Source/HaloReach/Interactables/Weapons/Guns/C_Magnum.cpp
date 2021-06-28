@@ -14,5 +14,6 @@ void AC_Magnum::BeginPlay()
 
 	Type = EWeaponType::PISTOL;
 
+
 }
 

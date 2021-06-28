@@ -431,11 +431,6 @@ void AC_PlayerCharacter::WeaponArrayChecks()
 
 void AC_PlayerCharacter::SwitchWeapons()
 {
-	/*AC_BaseWeapon* TempWeapon = PrimaryWeapon;
-	PrimaryWeapon = SecondaryWeapon;
-	SecondaryWeapon = TempWeapon;*/
-
-
 	EquippedWeaponArray.Swap(0, 1);
 	WeaponArrayChecks();
 	WeaponArray3PChecks();
@@ -459,52 +454,33 @@ void AC_PlayerCharacter::SpawnWeapon3P(TSubclassOf<AC_Weapon3P> WeaponClass, AC_
 
 void AC_PlayerCharacter::WeaponArray3PChecks()
 {
-	
-	WeaponType = EquippedWeaponArray[0]->Type;
-	OnWeaponTypeUpdate();
-	// SetSkeletalMesh does not happen on server or client, Bugged? It only happens locally
+	// Changes the skeletal mesh's of the 3P weapons using a server RPC as SetSkeletalMesh does not replicate properly
+	Server_ChangeSkeletalMesh(EquippedWeaponArray[0]->WeaponMesh->SkeletalMesh, EquippedWeapon3PArray[0]->WeaponMesh3P);
+	Server_ChangeSkeletalMesh(EquippedWeaponArray[1]->WeaponMesh->SkeletalMesh, EquippedWeapon3PArray[1]->WeaponMesh3P);
 
 	if(HasAuthority())
 	{
-		
+		// Updates weapon type to currently equipped weapon, this will update the ABP and location of DefaultMesh
+		WeaponType = EquippedWeaponArray[0]->Type;
+		OnWeaponTypeUpdate();
 
 		EquippedWeapon3PArray[0]->AttachToComponent(Mesh3P, FAttachmentTransformRules::SnapToTargetIncludingScale, EquippedWeaponArray[0]->Socket3P);
-		Server_ChangeSkeletalMesh(EquippedWeaponArray[0]->WeaponMesh->SkeletalMesh, EquippedWeapon3PArray[0]->WeaponMesh3P);
-
 		EquippedWeapon3PArray[1]->AttachToComponent(Mesh3P, FAttachmentTransformRules::SnapToTargetIncludingScale, EquippedWeaponArray[1]->Socket3PHolstered);
-		Server_ChangeSkeletalMesh(EquippedWeaponArray[1]->WeaponMesh->SkeletalMesh, EquippedWeapon3PArray[1]->WeaponMesh3P);
-
-
-
-
-		/*Primary3PWeapon->AttachToComponent(Mesh3P, FAttachmentTransformRules::SnapToTargetIncludingScale, PrimaryWeapon->Socket3P);
-		Server_ChangeSkeletalMesh(PrimaryWeapon->WeaponMesh->SkeletalMesh, Primary3PWeapon->WeaponMesh3P);
-
-		Secondary3PWeapon->AttachToComponent(Mesh3P, FAttachmentTransformRules::SnapToTargetIncludingScale, SecondaryWeapon->Socket3PHolstered);
-		Server_ChangeSkeletalMesh(SecondaryWeapon->WeaponMesh->SkeletalMesh, Secondary3PWeapon->WeaponMesh3P);*/
 	}
-	
-	
 
-
-
-	
-	
+	else
+	{
+		Server_WeaponArray3PChecks(EquippedWeaponArray[0]->Type, EquippedWeaponArray[0]->Socket3P, EquippedWeaponArray[1]->Socket3PHolstered);
+	}
 }
 
-void AC_PlayerCharacter::Server_Foo_Implementation()
+void AC_PlayerCharacter::Server_WeaponArray3PChecks_Implementation(EWeaponType NewType, FName Socket3P, FName Socket3PHolstered)
 {
-	UE_LOG(LogTemp, Log, TEXT("Primary wqeapon is: %s"), *PrimaryWeapon->GetName());
-	Primary3PWeapon->AttachToComponent(Mesh3P, FAttachmentTransformRules::SnapToTargetIncludingScale, PrimaryWeapon->Socket3P);
-	//Server_ChangeSkeletalMesh(PrimaryWeapon->WeaponMesh->SkeletalMesh, Primary3PWeapon->WeaponMesh3P);
+	WeaponType = NewType;
+	OnWeaponTypeUpdate();
 
-	Secondary3PWeapon->AttachToComponent(Mesh3P, FAttachmentTransformRules::SnapToTargetIncludingScale, SecondaryWeapon->Socket3P);
-	//Server_ChangeSkeletalMesh(SecondaryWeapon->WeaponMesh->SkeletalMesh, Secondary3PWeapon->WeaponMesh3P);n->Socket3P);
-
-}
-
-void AC_PlayerCharacter::ChangeSkeletalMesh(USkeletalMesh* SKMesh, USkinnedMeshComponent* SkinnedMesh)
-{
+	EquippedWeapon3PArray[0]->AttachToComponent(Mesh3P, FAttachmentTransformRules::SnapToTargetIncludingScale, Socket3P);
+	EquippedWeapon3PArray[1]->AttachToComponent(Mesh3P, FAttachmentTransformRules::SnapToTargetIncludingScale, Socket3PHolstered);
 }
 
 void AC_PlayerCharacter::Server_ChangeSkeletalMesh_Implementation(USkeletalMesh* SKMesh, USkinnedMeshComponent* SkinnedMesh)
@@ -560,6 +536,8 @@ void AC_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	DOREPLIFETIME(AC_PlayerCharacter, EquippedWeaponArray);
 	DOREPLIFETIME(AC_PlayerCharacter, EquippedWeapon3PArray);
 	DOREPLIFETIME(AC_PlayerCharacter, CombatState);
+	DOREPLIFETIME(AC_PlayerCharacter, WeaponType);
+
 	//DOREPLIFETIME(AC_PlayerCharacter, Combat);
 
 }

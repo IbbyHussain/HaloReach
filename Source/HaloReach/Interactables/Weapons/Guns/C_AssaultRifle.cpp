@@ -13,4 +13,5 @@ void AC_AssaultRifle::BeginPlay()
 	Super::BeginPlay();
 
 	Type = EWeaponType::RIFLE;
+
 }

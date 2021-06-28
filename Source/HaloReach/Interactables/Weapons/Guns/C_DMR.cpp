@@ -13,5 +13,4 @@ void AC_DMR::BeginPlay()
 	Super::BeginPlay();
 
 	Type = EWeaponType::RIFLE;
-
 }
