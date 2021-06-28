@@ -19,6 +19,10 @@ private:
 	AC_AssaultRifle();
 
 	virtual void BeginPlay() override;
+
+	virtual void Attack() override;
+
+	virtual void StopAttack() override;
 public:
 
 	

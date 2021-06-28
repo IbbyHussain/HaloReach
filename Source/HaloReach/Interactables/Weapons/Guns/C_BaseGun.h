@@ -19,10 +19,6 @@ protected:
 
 	virtual void BeginPlay() override;
 
-	virtual void Attack() override;
-
-	virtual void StopAttack() override;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "hit")
 	TSubclassOf<UDamageType> DamageType;
 
@@ -55,11 +51,19 @@ protected:
 
 // AUTOMATIC
 
-	void StartFire();
-
-	void StopFire();
+	void StartAutoFire();
+	void StopAutoFire();
 
 	FTimerHandle AutomaticFireHandle;
+
+// SEMI
+
+	void StartSemiFire();
+
+	FTimerHandle SemiFireHandle;
+
+
+// Replication
 
 	UFUNCTION(Server, Reliable)
 	void Server_Fire();

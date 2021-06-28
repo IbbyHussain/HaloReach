@@ -15,3 +15,13 @@ void AC_AssaultRifle::BeginPlay()
 	Type = EWeaponType::RIFLE;
 
 }
+
+void AC_AssaultRifle::Attack()
+{
+	StartAutoFire();
+}
+
+void AC_AssaultRifle::StopAttack()
+{
+	StopAutoFire();
+}

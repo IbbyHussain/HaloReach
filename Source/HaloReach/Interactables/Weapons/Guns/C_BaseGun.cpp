@@ -27,20 +27,8 @@ void AC_BaseGun::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Divide by 60 to get per minute
+	// Divide by 60 to get per minute --- RPM
 	TimeBetweenShots = 60.0f / RateOfFire;
-}
-
-// Overriden from base class
-void AC_BaseGun::Attack()
-{
-	StartFire();
-}
-
-void AC_BaseGun::StopAttack()
-{
-	//	Super::Attack();
-	StopFire();
 }
 
 void AC_BaseGun::Fire()
@@ -50,9 +38,6 @@ void AC_BaseGun::Fire()
 	if(!(MyOwner->HasAuthority()))
 	{
 		Server_Fire();
-		//UE_LOG(LogTemp, Log, TEXT("CLIENT CALLED SERVER_FIRE()"));
-
-		//return;
 	}
 
 	if(MyOwner)
@@ -85,6 +70,7 @@ void AC_BaseGun::Fire()
 
 			// Head shot damage should only be applied when shields = 0
 
+			// Head shot multiplier 
 			float ActualDamage = BaseDamage;
 			if (SurfaceType == SURFACE_FLESHVULNERABLE)
 			{
@@ -95,6 +81,7 @@ void AC_BaseGun::Fire()
 
 			DrawDebugLine(GetWorld(), EyeLocation, TraceEnd, FColor::Red, false, 1.0f, 0, 1.0f);
 
+			// Plays particle effect (Impact Effect) depending on physical material hit
 			UParticleSystem* SelectedEffect = nullptr;
 			switch (SurfaceType)
 			{
@@ -134,7 +121,7 @@ void AC_BaseGun::PlayFireEffects()
 }
 
 
-void AC_BaseGun::StartFire()
+void AC_BaseGun::StartAutoFire()
 {
 	// This ensures that a player cannot fire shots faster than fire rate by just rapidly clicking. 
 	// Clamp this so if First delay is -ve use 0 -- Max uses largest value
@@ -144,14 +131,30 @@ void AC_BaseGun::StartFire()
 	GetWorldTimerManager().SetTimer(AutomaticFireHandle, this, &AC_BaseGun::Fire, TimeBetweenShots, true, FirstDelay);
 }
 
-void AC_BaseGun::StopFire()
+void AC_BaseGun::StopAutoFire()
 {
 	GetWorldTimerManager().ClearTimer(AutomaticFireHandle);
 }
 
+void AC_BaseGun::StartSemiFire()
+{
+	float FirstDelay = FMath::Max(LastFireTime + TimeBetweenShots - GetWorld()->TimeSeconds, 0.0f);
+
+	GetWorldTimerManager().SetTimer(SemiFireHandle, this, &AC_BaseGun::Fire, TimeBetweenShots, false, FirstDelay);
+}
+
+
+
+
+
+
+
+
+
+// Replication
+
 void AC_BaseGun::Server_Fire_Implementation()
 {
-	//UE_LOG(LogTemp, Log, TEXT("CLIENT EXECUTED SERVER_FIRE"));
 	Fire();
 }
 
@@ -168,5 +171,5 @@ void AC_BaseGun::Server_StopFire_Implementation()
 
 void AC_BaseGun::Multi_StopFire_Implementation()
 {
-	StopFire();
+	StopAutoFire();
 }
