@@ -477,7 +477,7 @@ void AC_PlayerCharacter::WeaponArray3PChecks()
 void AC_PlayerCharacter::Server_WeaponArray3PChecks_Implementation(EWeaponType NewType, FName Socket3P, FName Socket3PHolstered)
 {
 	WeaponType = NewType;
-	OnWeaponTypeUpdate(); // Does not replicate for clients 
+	OnWeaponTypeUpdate();
 
 	EquippedWeapon3PArray[0]->AttachToComponent(Mesh3P, FAttachmentTransformRules::SnapToTargetIncludingScale, Socket3P);
 	EquippedWeapon3PArray[1]->AttachToComponent(Mesh3P, FAttachmentTransformRules::SnapToTargetIncludingScale, Socket3PHolstered);
@@ -505,6 +505,7 @@ void AC_PlayerCharacter::Multi_ChangeSkeletalMesh_Implementation(USkeletalMesh* 
 
 
 
+//EquippedWeapon3PArray[0]->WeaponMesh3P->SetSkeletalMesh(EquippedWeaponArray[0]->WeaponMesh->SkeletalMesh);
 
 void AC_PlayerCharacter::OnWeaponTypeUpdate()
 {

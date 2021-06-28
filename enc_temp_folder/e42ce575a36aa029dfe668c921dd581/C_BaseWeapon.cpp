@@ -38,3 +38,10 @@ void AC_BaseWeapon::StopAttack()
 {
 
 }
+
+void AC_BaseWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	//DOREPLIFETIME(AC_BaseWeapon, Type);
+}

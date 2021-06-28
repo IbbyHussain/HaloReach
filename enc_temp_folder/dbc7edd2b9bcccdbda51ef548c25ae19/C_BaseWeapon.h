@@ -35,7 +35,16 @@ public:
 
 	UAnimMontage* GetWeaponEquipMontage();
 
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Defaults, Replicated)
+	//TEnumAsByte<EWeaponType> Type;
+
 	EWeaponType Type;
+
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+
+
+
 
 protected:
 
