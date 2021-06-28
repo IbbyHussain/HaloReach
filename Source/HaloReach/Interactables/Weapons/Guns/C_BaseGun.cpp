@@ -12,11 +12,6 @@
 
 AC_BaseGun::AC_BaseGun()
 {
-	BaseDamage = 15.0f;
-
-	// Rounds per minute
-	RateOfFire = 600.0f;
-
 	bReplicates = true;
 
 	NetUpdateFrequency = 30.0f;
@@ -27,8 +22,8 @@ void AC_BaseGun::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Divide by 60 to get per minute --- RPM
-	TimeBetweenShots = 60.0f / RateOfFire;
+	// Divide by 60 to get per minute
+	WeaponStats.TimeBetweenShots = 60.0f / WeaponStats.RateOfFire;
 }
 
 void AC_BaseGun::Fire()
@@ -42,65 +37,76 @@ void AC_BaseGun::Fire()
 
 	if(MyOwner)
 	{
-		//UE_LOG(LogTemp, Log, TEXT("SERVER FIRED"));
-
-		FVector EyeLocation;
-		FRotator EyeRotation;
-		MyOwner->GetActorEyesViewPoint(EyeLocation, EyeRotation);
-
-		FVector ShotDirection = EyeRotation.Vector();
-		FVector TraceEnd = EyeLocation + (ShotDirection * 5000);
-
-		FCollisionQueryParams QueryParams;
-
-		QueryParams.AddIgnoredActor(MyOwner);
-		QueryParams.AddIgnoredActor(this);
-		QueryParams.bTraceComplex = true;
-		QueryParams.bReturnPhysicalMaterial = true;
-
-		FHitResult Hit;
-
-		bool bHit = GetWorld()->LineTraceSingleByChannel(Hit, EyeLocation, TraceEnd, COLLISION_WEAPON, QueryParams);
-
-		if(bHit)
+		if(WeaponStats.CurrentAmmo > 0)
 		{
-			AActor* HitActor = Hit.GetActor();
+			//UE_LOG(LogTemp, Log, TEXT("SERVER FIRED"));
 
-			EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
+			WeaponStats.CurrentAmmo -= 1;
 
-			// Head shot damage should only be applied when shields = 0
+			FVector EyeLocation;
+			FRotator EyeRotation;
+			MyOwner->GetActorEyesViewPoint(EyeLocation, EyeRotation);
 
-			// Head shot multiplier 
-			float ActualDamage = BaseDamage;
-			if (SurfaceType == SURFACE_FLESHVULNERABLE)
+			FVector ShotDirection = EyeRotation.Vector();
+			FVector TraceEnd = EyeLocation + (ShotDirection * 5000);
+
+			FCollisionQueryParams QueryParams;
+
+			QueryParams.AddIgnoredActor(MyOwner);
+			QueryParams.AddIgnoredActor(this);
+			QueryParams.bTraceComplex = true;
+			QueryParams.bReturnPhysicalMaterial = true;
+
+			FHitResult Hit;
+
+			bool bHit = GetWorld()->LineTraceSingleByChannel(Hit, EyeLocation, TraceEnd, COLLISION_WEAPON, QueryParams);
+
+			if (bHit)
 			{
-				ActualDamage *= 3.0f;
+				AActor* HitActor = Hit.GetActor();
+
+				EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
+
+				// Head shot damage should only be applied when shields = 0
+
+				// Head shot multiplier 
+				float ActualDamage = WeaponStats.BaseDamage;
+				if (SurfaceType == SURFACE_FLESHVULNERABLE)
+				{
+					ActualDamage *= 3.0f;
+				}
+
+				UGameplayStatics::ApplyPointDamage(HitActor, ActualDamage, ShotDirection, Hit, MyOwner->GetInstigatorController(), this, DamageType);
+
+				DrawDebugLine(GetWorld(), EyeLocation, TraceEnd, FColor::Red, false, 1.0f, 0, 1.0f);
+
+				// Plays particle effect (Impact Effect) depending on physical material hit
+				UParticleSystem* SelectedEffect = nullptr;
+				switch (SurfaceType)
+				{
+				case SURFACE_FLESHDEFAULT:
+				case SURFACE_FLESHVULNERABLE:
+					SelectedEffect = FleshImpactEffect;
+					break;
+
+				default:
+					SelectedEffect = DefaultImpactEffect;
+					break;
+				}
+
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SelectedEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
 			}
 
-			UGameplayStatics::ApplyPointDamage(HitActor, ActualDamage, ShotDirection, Hit, MyOwner->GetInstigatorController(), this, DamageType);
+			PlayFireEffects();
 
-			DrawDebugLine(GetWorld(), EyeLocation, TraceEnd, FColor::Red, false, 1.0f, 0, 1.0f);
-
-			// Plays particle effect (Impact Effect) depending on physical material hit
-			UParticleSystem* SelectedEffect = nullptr;
-			switch (SurfaceType)
-			{
-			case SURFACE_FLESHDEFAULT:
-			case SURFACE_FLESHVULNERABLE:
-				SelectedEffect = FleshImpactEffect;
-				break;
-
-			default:
-				SelectedEffect = DefaultImpactEffect;
-				break;
-			}
-
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SelectedEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
+			WeaponStats.LastFireTime = GetWorld()->TimeSeconds;
 		}
 
-		PlayFireEffects();
-
-		LastFireTime = GetWorld()->TimeSeconds;
+		else 
+		{
+			// Auto reload if no ammo left
+			Reload();
+		}
 	}
 }
 
@@ -120,15 +126,18 @@ void AC_BaseGun::PlayFireEffects()
 	}
 }
 
+void AC_BaseGun::Reload()
+{
+	WeaponStats.CurrentAmmo = WeaponStats.MaxMagazineAmmo;
+}
 
 void AC_BaseGun::StartAutoFire()
 {
 	// This ensures that a player cannot fire shots faster than fire rate by just rapidly clicking. 
 	// Clamp this so if First delay is -ve use 0 -- Max uses largest value
 	
-	float FirstDelay = FMath::Max(LastFireTime + TimeBetweenShots - GetWorld()->TimeSeconds, 0.0f);
-
-	GetWorldTimerManager().SetTimer(AutomaticFireHandle, this, &AC_BaseGun::Fire, TimeBetweenShots, true, FirstDelay);
+	float FirstDelay = FMath::Max(WeaponStats.LastFireTime + WeaponStats.TimeBetweenShots - GetWorld()->TimeSeconds, 0.0f);
+	GetWorldTimerManager().SetTimer(AutomaticFireHandle, this, &AC_BaseGun::Fire, WeaponStats.TimeBetweenShots, true, FirstDelay);
 }
 
 void AC_BaseGun::StopAutoFire()
@@ -138,9 +147,8 @@ void AC_BaseGun::StopAutoFire()
 
 void AC_BaseGun::StartSemiFire()
 {
-	float FirstDelay = FMath::Max(LastFireTime + TimeBetweenShots - GetWorld()->TimeSeconds, 0.0f);
-
-	GetWorldTimerManager().SetTimer(SemiFireHandle, this, &AC_BaseGun::Fire, TimeBetweenShots, false, FirstDelay);
+	float FirstDelay = FMath::Max(WeaponStats.LastFireTime + WeaponStats.TimeBetweenShots - GetWorld()->TimeSeconds, 0.0f);
+	GetWorldTimerManager().SetTimer(SemiFireHandle, this, &AC_BaseGun::Fire, WeaponStats.TimeBetweenShots, false, FirstDelay);
 }
 
 

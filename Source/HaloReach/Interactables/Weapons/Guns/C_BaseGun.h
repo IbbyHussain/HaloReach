@@ -6,16 +6,61 @@
 #include "HaloReach/Interactables/Weapons/C_BaseWeapon.h"
 #include "C_BaseGun.generated.h"
 
+USTRUCT(BlueprintType)
+struct FWeaponStats
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Weapon Stats")
+	float BaseDamage;
+
+	// RPM
+	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Weapon Stats")
+	float RateOfFire;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Weapon Stats")
+	float ReloadSpeed;
+
+	// Max ammo in a magazine
+	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Weapon Stats")
+	int32 MaxMagazineAmmo;
+
+	// Max ammo in reserves
+	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Weapon Stats")
+	int32 MaxReservesAmmo;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Base Weapon | Weapon Stats")
+	int32 CurrentAmmo;
+
+	float LastFireTime;
+
+	float TimeBetweenShots;
+
+	FWeaponStats()
+	{
+		BaseDamage = 10.0f;
+		RateOfFire = 600.0f;
+
+		ReloadSpeed = 1.0f;
+		MaxMagazineAmmo = 32;
+		MaxReservesAmmo = 224;
+
+		CurrentAmmo = MaxMagazineAmmo;
+	}
+};
+
 UCLASS()
 class HALOREACH_API AC_BaseGun : public AC_BaseWeapon
 {
 	GENERATED_BODY()
 
 protected:
-	AC_BaseGun();
 
-	UFUNCTION(BlueprintCallable)
-	void Fire();
+	
+
+	AC_BaseGun();
 
 	virtual void BeginPlay() override;
 
@@ -34,20 +79,16 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "hit")
 	FName MuzzleSocketName;
 
-	void PlayFireEffects();
-
 	UPROPERTY(EditDefaultsOnly, Category = "Hit")
 	TSubclassOf<UMatineeCameraShake> FireShake;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "hit")
-	float BaseDamage;
+	// A basic fire function which uses a line trace and applies damage
+	void Fire();
 
-	float LastFireTime;
+	// Plays particle effects for weapon
+	void PlayFireEffects();
 
-	UPROPERTY(EditDefaultsOnly, Category = "Hit")
-	float RateOfFire;
-
-	float TimeBetweenShots;
+	void Reload();
 
 // AUTOMATIC
 
@@ -61,7 +102,6 @@ protected:
 	void StartSemiFire();
 
 	FTimerHandle SemiFireHandle;
-
 
 // Replication
 
@@ -84,5 +124,9 @@ protected:
 
 private:
 
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "hello")
+	FWeaponStats WeaponStats;
 	
 };

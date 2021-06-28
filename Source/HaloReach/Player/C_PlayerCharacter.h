@@ -179,7 +179,7 @@ public:
 	void SpawnWeapon(TSubclassOf<AC_BaseWeapon> WeaponClass, AC_BaseWeapon*& Weapon, FName WeaponSocket);
 
 	// Arraty which keeps track of equipped weapons
-	UPROPERTY(Transient, Replicated)
+	UPROPERTY(Transient, BlueprintReadOnly, Replicated)
 	TArray<AC_BaseWeapon*>EquippedWeaponArray;
 
 	void WeaponArrayChecks();
