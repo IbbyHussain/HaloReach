@@ -439,9 +439,6 @@ void AC_PlayerCharacter::SwitchWeapons()
 	//EquippedWeaponArray.Swap(0, 1);
 	//WeaponArrayChecks();
 	WeaponArray3PChecks();
-
-	
-	
 }
 
 void AC_PlayerCharacter::SpawnWeapon3P(TSubclassOf<AC_Weapon3P> WeaponClass, AC_Weapon3P*& Weapon, FName WeaponSocket)
@@ -460,49 +457,25 @@ void AC_PlayerCharacter::SpawnWeapon3P(TSubclassOf<AC_Weapon3P> WeaponClass, AC_
 	EquippedWeapon3PArray.Emplace(Weapon);
 }
 
-
-
-
 void AC_PlayerCharacter::WeaponArray3PChecks()
 {
-	if(HasAuthority())
-	{
-		for (auto x : EquippedWeapon3PArray)
-		{
-			UE_LOG(LogTemp, Error, TEXT("ELEMENTs after switch -- 3P -- : %s"), *x->GetName());
-		}
-
-		for (auto i : EquippedWeaponArray)
-		{
-			UE_LOG(LogTemp, Error, TEXT("ELEMENTs after switch -- 1P -- : %s"), *i->GetName());
-		}
-	}
-
 	WeaponType = EquippedWeaponArray[0]->Type;
 	OnWeaponTypeUpdate();
 
-
-	Server_ChangeSkeletalMesh(TestMesh, Primary3PWeapon->WeaponMesh3P);
-
 	// SetSkeletalMesh does not happen on server or client, Bugged? It only happens locally
 
-	/*if(HasAuthority())
+	if(HasAuthority())
 	{
-		UE_LOG(LogTemp, Log, TEXT("Primary wqeapon is: %s"), *PrimaryWeapon->GetName());
-		Primary3PWeapon->WeaponMesh3P->SetSkeletalMesh(PrimaryWeapon->WeaponMesh->SkeletalMesh);
+		Primary3PWeapon->AttachToComponent(Mesh3P, FAttachmentTransformRules::SnapToTargetIncludingScale, PrimaryWeapon->Socket3P);
+		Server_ChangeSkeletalMesh(PrimaryWeapon->WeaponMesh->SkeletalMesh, Primary3PWeapon->WeaponMesh3P);
+
+		Secondary3PWeapon->AttachToComponent(Mesh3P, FAttachmentTransformRules::SnapToTargetIncludingScale, SecondaryWeapon->Socket3PHolstered);
+		Server_ChangeSkeletalMesh(SecondaryWeapon->WeaponMesh->SkeletalMesh, Secondary3PWeapon->WeaponMesh3P);
 	}
 	
-	else
-	{
-		Server_Foo();
-	}*/
+	
 
 
-	//Primary3PWeapon->AttachToComponent(Mesh3P, FAttachmentTransformRules::SnapToTargetIncludingScale, PrimaryWeapon->Socket3P);
-	/*Primary3PWeapon->WeaponMesh3P->SetSkeletalMesh(PrimaryWeapon->WeaponMesh->SkeletalMesh);
-
-	Secondary3PWeapon->AttachToComponent(Mesh3P, FAttachmentTransformRules::SnapToTargetIncludingScale, SecondaryWeapon->Socket3P);
-	Secondary3PWeapon->WeaponMesh3P->SetSkeletalMesh(SecondaryWeapon->WeaponMesh->SkeletalMesh);*/
 
 	// change this to magnum
 	/*EquippedWeapon3PArray[0]->AttachToComponent(Mesh3P, FAttachmentTransformRules::SnapToTargetIncludingScale, EquippedWeaponArray[0]->Socket3P);
@@ -515,7 +488,12 @@ void AC_PlayerCharacter::WeaponArray3PChecks()
 void AC_PlayerCharacter::Server_Foo_Implementation()
 {
 	UE_LOG(LogTemp, Log, TEXT("Primary wqeapon is: %s"), *PrimaryWeapon->GetName());
-	Primary3PWeapon->WeaponMesh3P->SetSkeletalMesh(PrimaryWeapon->WeaponMesh->SkeletalMesh);
+	Primary3PWeapon->AttachToComponent(Mesh3P, FAttachmentTransformRules::SnapToTargetIncludingScale, PrimaryWeapon->Socket3P);
+	//Server_ChangeSkeletalMesh(PrimaryWeapon->WeaponMesh->SkeletalMesh, Primary3PWeapon->WeaponMesh3P);
+
+	Secondary3PWeapon->AttachToComponent(Mesh3P, FAttachmentTransformRules::SnapToTargetIncludingScale, SecondaryWeapon->Socket3P);
+	//Server_ChangeSkeletalMesh(SecondaryWeapon->WeaponMesh->SkeletalMesh, Secondary3PWeapon->WeaponMesh3P);n->Socket3P);
+
 }
 
 void AC_PlayerCharacter::ChangeSkeletalMesh(USkeletalMesh* SKMesh, USkinnedMeshComponent* SkinnedMesh)
