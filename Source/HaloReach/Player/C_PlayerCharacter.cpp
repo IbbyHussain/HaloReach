@@ -509,6 +509,10 @@ void AC_PlayerCharacter::Reload()
 		if(Gun)
 		{
 			Gun->Reload();
+			DefaultMesh->GetAnimInstance()->Montage_Play(Gun->GetWeaponReloadMontage(), 1.0f);
+			Mesh3P->GetAnimInstance()->Montage_Play(Gun->GetWeapon3PReloadMontage(), 1.0f);
+			
+
 		}
 	}
 }

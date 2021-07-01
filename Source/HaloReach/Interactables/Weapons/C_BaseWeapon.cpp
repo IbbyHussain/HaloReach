@@ -29,6 +29,31 @@ UAnimMontage* AC_BaseWeapon::GetWeaponEquipMontage()
 	return WeaponEquipAnimation;
 }
 
+UAnimMontage* AC_BaseWeapon::GetWeaponReloadMontage()
+{
+	return ReloadAnimation;
+}
+
+UAnimMontage* AC_BaseWeapon::GetWeaponFireMontage()
+{
+	return FireAnimation;
+}
+
+UAnimMontage* AC_BaseWeapon::GetWeapon3PEquipMontage()
+{
+	return Equip3PMontage;
+}
+
+UAnimMontage* AC_BaseWeapon::GetWeapon3PReloadMontage()
+{
+	return Reload3PMontage;
+}
+
+UAnimMontage* AC_BaseWeapon::GetWeapon3PFireMontage()
+{
+	return Fire3PMontage;
+}
+
 void AC_BaseWeapon::Attack()
 {
 	//UE_LOG(LogTemp, Log, TEXT("Attacked!"));

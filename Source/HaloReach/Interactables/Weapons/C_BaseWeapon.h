@@ -33,7 +33,22 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	FName Socket3PHolstered;
 
+	// Getters for 1P anim montages
+
 	UAnimMontage* GetWeaponEquipMontage();
+
+	UAnimMontage* GetWeaponReloadMontage();
+
+	UAnimMontage* GetWeaponFireMontage();
+
+	// Getters for 3P anim montages
+
+	UAnimMontage* GetWeapon3PEquipMontage();
+
+	UAnimMontage* GetWeapon3PReloadMontage();
+
+	UAnimMontage* GetWeapon3PFireMontage();
+
 
 	EWeaponType Type;
 
@@ -42,14 +57,23 @@ public:
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, Category = "Combat | Animations")
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon | Animations | 1P")
 	UAnimMontage* WeaponEquipAnimation;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon | Animations")
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon | Animations | 1P")
 	UAnimMontage* ReloadAnimation;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon | Animations")
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon | Animations | 1P")
 	UAnimMontage* FireAnimation;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon | Animations | 3P")
+	UAnimMontage* Equip3PMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon | Animations | 3P")
+	UAnimMontage* Reload3PMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon | Animations | 3P")
+	UAnimMontage* Fire3PMontage;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	class AC_PlayerCharacter* Player;

@@ -133,27 +133,24 @@ void AC_BaseGun::Reload()
 {
 	//WeaponStats.CurrentAmmo = WeaponStats.MaxMagazineAmmo;
 
+	// If we dont have max ammo in magazine
 	if(WeaponStats.CurrentAmmo != WeaponStats.MaxMagazineAmmo)
 	{
-
-		UE_LOG(LogTemp, Log, TEXT("Current ammo was not max magizien ammo"))
-
+		// push unused ammo back into reserves
 		WeaponStats.MaxReservesAmmo += WeaponStats.CurrentAmmo;
 
+		// if there is enough ammo in reserves to fully restock current magazine, then do so
 		if(WeaponStats.MaxReservesAmmo >= WeaponStats.MaxMagazineAmmo)
 		{
 			WeaponStats.MaxReservesAmmo -= WeaponStats.MaxMagazineAmmo;
 			WeaponStats.CurrentAmmo = WeaponStats.MaxMagazineAmmo;
-
-			UE_LOG(LogTemp, Log, TEXT("Reserve ammo was greater or equal to max magizien ammo"))
 		}
 
+		// if there is not enough ammo in reserves to give a full mag, set current mag to whatever ammo is left in reserves
 		else if(WeaponStats.MaxReservesAmmo > 0 && WeaponStats.MaxReservesAmmo < WeaponStats.MaxMagazineAmmo)
 		{
 			WeaponStats.CurrentAmmo = WeaponStats.MaxReservesAmmo;
 			WeaponStats.MaxReservesAmmo = 0;
-			UE_LOG(LogTemp, Log, TEXT("Reserve ammo was less than or equal to max magizien ammo"))
-
 		}
 
 		UpdateAmmoCounter();
