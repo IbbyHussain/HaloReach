@@ -79,4 +79,27 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, category = "Colour")
 	FColor NoTint;
+
+	// Weapons
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UImage* PrimaryWeaponImage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UImage* SecondaryWeaponImage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UTextBlock* PrimaryMaxAmmoText;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UTextBlock* SecondaryMaxAmmoText;
+
+	// Updates the primary and secondary weapon images
+	UFUNCTION(BlueprintCallable)
+	void UpdateWeaponImages();
+
+	// Update the max ammo text for primary and secondary weapons
+	UFUNCTION(BlueprintCallable)
+	void UpdateAmmoText();
+
 };

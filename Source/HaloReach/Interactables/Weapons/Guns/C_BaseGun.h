@@ -28,7 +28,7 @@ public:
 	int32 MaxMagazineAmmo;
 
 	// Max ammo in reserves
-	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Weapon Stats")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Base Weapon | Weapon Stats")
 	int32 MaxReservesAmmo;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Base Weapon | Weapon Stats")

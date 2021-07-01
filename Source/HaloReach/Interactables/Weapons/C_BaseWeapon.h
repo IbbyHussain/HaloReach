@@ -37,6 +37,9 @@ public:
 
 	EWeaponType Type;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,  Category = "Weapon")
+	UTexture2D* WeaponIcon;
+
 protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Combat | Animations")
@@ -48,6 +51,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon | Animations")
 	UAnimMontage* FireAnimation;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	class AC_PlayerCharacter* Player;
 
 // ATTACKING

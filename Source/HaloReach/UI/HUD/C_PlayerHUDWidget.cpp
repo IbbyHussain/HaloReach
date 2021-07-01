@@ -10,6 +10,11 @@
 #include "Components/TextBlock.h"
 #include "Net/UnrealNetwork.h"
 
+#include "Kismet/GameplayStatics.h"
+#include "HaloReach/Player/C_PlayerCharacter.h"
+#include "HaloReach/Interactables/Weapons/C_BaseWeapon.h"
+#include "HaloReach/Interactables/Weapons/Guns/C_BaseGun.h"
+
 UC_PlayerHUDWidget::UC_PlayerHUDWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	//PlayerCharacter* Character = Cast<PlayerCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0));
@@ -159,3 +164,41 @@ void UC_PlayerHUDWidget::UpdateShieldBars(float Shields)
 	}
 }
 
+
+void UC_PlayerHUDWidget::UpdateWeaponImages()
+{
+	APlayerController* const PC = Cast<APlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	if(PC)
+	{
+		AC_PlayerCharacter* Player = Cast<AC_PlayerCharacter>(PC->GetPawn());
+		if (Player)
+		{
+			//AC_BaseGun* Weapon = Cast<AC_BaseGun>(Player->EquippedWeaponArray[0]);
+			if(Player->EquippedWeaponArray[0] && Player->EquippedWeaponArray[1])
+			{
+				PrimaryWeaponImage->SetBrushFromTexture(Player->EquippedWeaponArray[0]->WeaponIcon);
+				SecondaryWeaponImage->SetBrushFromTexture(Player->EquippedWeaponArray[1]->WeaponIcon);
+			}
+		}
+	}
+}
+
+void UC_PlayerHUDWidget::UpdateAmmoText()
+{
+	AC_PlayerCharacter* Player = Cast<AC_PlayerCharacter>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn());
+	if (Player)
+	{
+		AC_BaseGun* PrimaryWeapon = Cast<AC_BaseGun>(Player->EquippedWeaponArray[0]);
+		AC_BaseGun* SecondaryWeapon = Cast<AC_BaseGun>(Player->EquippedWeaponArray[1]);
+
+		if(PrimaryWeapon)
+		{
+			PrimaryMaxAmmoText->SetText(FText::FromString(FString::FromInt(PrimaryWeapon->WeaponStats.MaxReservesAmmo)));
+		}
+
+		if(SecondaryWeapon)
+		{
+			SecondaryMaxAmmoText->SetText(FText::FromString(FString::FromInt(SecondaryWeapon->WeaponStats.MaxReservesAmmo)));
+		}
+	}
+}
