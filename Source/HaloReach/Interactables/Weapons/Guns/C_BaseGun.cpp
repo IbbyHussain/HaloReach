@@ -16,6 +16,8 @@ AC_BaseGun::AC_BaseGun()
 
 	NetUpdateFrequency = 30.0f;
 	MinNetUpdateFrequency = 10.0f;
+
+	bCanFire = true;
 }
 
 void AC_BaseGun::BeginPlay()
@@ -24,6 +26,8 @@ void AC_BaseGun::BeginPlay()
 
 	// Divide by 60 to get per minute
 	WeaponStats.TimeBetweenShots = 60.0f / WeaponStats.RateOfFire;
+
+	WeaponStats.ReloadLength = ReloadAnimation->GetPlayLength();
 
 	UpdateAmmoCounter();
 }
@@ -39,7 +43,7 @@ void AC_BaseGun::Fire()
 
 	if(MyOwner)
 	{
-		if(WeaponStats.CurrentAmmo > 0)
+		if(WeaponStats.CurrentAmmo > 0 && bCanFire)
 		{
 			//UE_LOG(LogTemp, Log, TEXT("SERVER FIRED"));
 
@@ -108,7 +112,11 @@ void AC_BaseGun::Fire()
 		else 
 		{
 			// Auto reload if no ammo left
-			Reload();
+			AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(MyOwner);
+			if(PlayerCharacter)
+			{
+				PlayerCharacter->Reload(); // Calls player reload, so montages can be played
+			}
 		}
 	}
 }
@@ -134,7 +142,7 @@ void AC_BaseGun::Reload()
 	//WeaponStats.CurrentAmmo = WeaponStats.MaxMagazineAmmo;
 
 	// If we dont have max ammo in magazine
-	if(WeaponStats.CurrentAmmo != WeaponStats.MaxMagazineAmmo)
+	if(WeaponStats.CurrentAmmo != WeaponStats.MaxMagazineAmmo )
 	{
 		// push unused ammo back into reserves
 		WeaponStats.MaxReservesAmmo += WeaponStats.CurrentAmmo;
@@ -153,8 +161,18 @@ void AC_BaseGun::Reload()
 			WeaponStats.MaxReservesAmmo = 0;
 		}
 
+		// Time before can fire again 
+		bCanFire = false;
+		GetWorldTimerManager().SetTimer(ReloadHandle, this, &AC_BaseGun::ResetCanFire, WeaponStats.ReloadLength, false);
+
 		UpdateAmmoCounter();
 	}
+}
+
+void AC_BaseGun::ResetCanFire()
+{
+	bCanFire = true;
+	GetWorldTimerManager().ClearTimer(ReloadHandle);
 }
 
 void AC_BaseGun::StartAutoFire()

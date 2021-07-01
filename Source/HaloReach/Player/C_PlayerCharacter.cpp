@@ -508,18 +508,16 @@ void AC_PlayerCharacter::Reload()
 		AC_BaseGun* Gun = Cast<AC_BaseGun>(EquippedWeaponArray[0]);
 		if(Gun)
 		{
-			Gun->Reload();
-			DefaultMesh->GetAnimInstance()->Montage_Play(Gun->GetWeaponReloadMontage(), 1.0f);
-			Mesh3P->GetAnimInstance()->Montage_Play(Gun->GetWeapon3PReloadMontage(), 1.0f);
-			
-
+			if(Gun->WeaponStats.CurrentAmmo != Gun->WeaponStats.MaxMagazineAmmo && Gun->WeaponStats.MaxReservesAmmo != 0)
+			{
+				Gun->Reload();
+				DefaultMesh->GetAnimInstance()->Montage_Play(Gun->GetWeaponReloadMontage(), 1.0f);
+				Mesh3P->GetAnimInstance()->Montage_Play(Gun->GetWeapon3PReloadMontage(), 1.0f);
+				
+			}
 		}
 	}
 }
-
-
-
-
 
 void AC_PlayerCharacter::OnWeaponTypeUpdate()
 {

@@ -171,8 +171,6 @@ public:
 
 
 
-
-
 // REPLICATION TESTINGS
 
 	// Will spawn a weapon of any type, in 1P
@@ -222,7 +220,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Player | PlayerComponents")
 	USkeletalMesh* TestMesh;
 
-	// Used for 3P ABP
 
 
 

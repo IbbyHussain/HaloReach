@@ -23,6 +23,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Weapon Stats")
 	float ReloadSpeed;
 
+	// Time of reload animation 
+	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Weapon Stats")
+	float ReloadLength;
+
 	// Max ammo in a magazine
 	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Weapon Stats")
 	int32 MaxMagazineAmmo;
@@ -109,6 +113,14 @@ protected:
 	void StartSemiFire();
 
 	FTimerHandle SemiFireHandle;
+
+// RELOAD
+
+	FTimerHandle ReloadHandle;
+
+	bool bCanFire;
+
+	void ResetCanFire();
 
 // Replication
 
