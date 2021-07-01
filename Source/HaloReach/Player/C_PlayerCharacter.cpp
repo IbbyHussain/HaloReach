@@ -15,6 +15,7 @@
 #include <HaloReach/HaloReach.h>
 #include "HaloReach/Interactables/Weapons/C_BaseWeapon.h"
 #include "HaloReach/Interactables/Weapons/C_Weapon3P.h"
+#include "HaloReach/Interactables/Weapons/Guns/C_BaseGun.h"
 #include "Net/UnrealNetwork.h"
 #include "Kismet/KismetArrayLibrary.h"
 
@@ -500,7 +501,17 @@ void AC_PlayerCharacter::Multi_ChangeSkeletalMesh_Implementation(USkeletalMesh* 
 	}
 }
 
-
+void AC_PlayerCharacter::Reload()
+{
+	if(EquippedWeaponArray[0])
+	{
+		AC_BaseGun* Gun = Cast<AC_BaseGun>(EquippedWeaponArray[0]);
+		if(Gun)
+		{
+			Gun->Reload();
+		}
+	}
+}
 
 
 
@@ -610,4 +621,6 @@ void AC_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 	PlayerInputComponent->BindAction("Zoom", IE_Pressed, this, &AC_PlayerCharacter::BeginZoom);
 	PlayerInputComponent->BindAction("Zoom", IE_Released, this, &AC_PlayerCharacter::EndZoom);
+
+	PlayerInputComponent->BindAction("Reload", IE_Pressed,  this, &AC_PlayerCharacter::Reload);
 }

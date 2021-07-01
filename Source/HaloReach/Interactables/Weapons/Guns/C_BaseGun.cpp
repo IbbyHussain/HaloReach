@@ -39,8 +39,6 @@ void AC_BaseGun::Fire()
 
 	if(MyOwner)
 	{
-		//UpdateAmmoCounter();
-
 		if(WeaponStats.CurrentAmmo > 0)
 		{
 			//UE_LOG(LogTemp, Log, TEXT("SERVER FIRED"));
@@ -133,9 +131,33 @@ void AC_BaseGun::PlayFireEffects()
 
 void AC_BaseGun::Reload()
 {
-	WeaponStats.CurrentAmmo = WeaponStats.MaxMagazineAmmo;
+	//WeaponStats.CurrentAmmo = WeaponStats.MaxMagazineAmmo;
 
-	UpdateAmmoCounter();
+	if(WeaponStats.CurrentAmmo != WeaponStats.MaxMagazineAmmo)
+	{
+
+		UE_LOG(LogTemp, Log, TEXT("Current ammo was not max magizien ammo"))
+
+		WeaponStats.MaxReservesAmmo += WeaponStats.CurrentAmmo;
+
+		if(WeaponStats.MaxReservesAmmo >= WeaponStats.MaxMagazineAmmo)
+		{
+			WeaponStats.MaxReservesAmmo -= WeaponStats.MaxMagazineAmmo;
+			WeaponStats.CurrentAmmo = WeaponStats.MaxMagazineAmmo;
+
+			UE_LOG(LogTemp, Log, TEXT("Reserve ammo was greater or equal to max magizien ammo"))
+		}
+
+		else if(WeaponStats.MaxReservesAmmo > 0 && WeaponStats.MaxReservesAmmo < WeaponStats.MaxMagazineAmmo)
+		{
+			WeaponStats.CurrentAmmo = WeaponStats.MaxReservesAmmo;
+			WeaponStats.MaxReservesAmmo = 0;
+			UE_LOG(LogTemp, Log, TEXT("Reserve ammo was less than or equal to max magizien ammo"))
+
+		}
+
+		UpdateAmmoCounter();
+	}
 }
 
 void AC_BaseGun::StartAutoFire()

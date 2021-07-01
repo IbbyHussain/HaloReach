@@ -88,8 +88,6 @@ protected:
 	// Plays particle effects for weapon
 	void PlayFireEffects();
 
-	void Reload();
-
 // AMMO COUNTER
 
 	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon")
@@ -139,5 +137,7 @@ public:
 	FWeaponStats WeaponStats;
 
 	UTexture2D* CurrentAmmoImage;
+
+	void Reload();
 	
 };
