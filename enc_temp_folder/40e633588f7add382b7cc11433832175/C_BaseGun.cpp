@@ -24,6 +24,8 @@ void AC_BaseGun::BeginPlay()
 
 	// Divide by 60 to get per minute
 	WeaponStats.TimeBetweenShots = 60.0f / WeaponStats.RateOfFire;
+
+	UpdateAmmoCounter();
 }
 
 void AC_BaseGun::Fire()
@@ -37,13 +39,14 @@ void AC_BaseGun::Fire()
 
 	if(MyOwner)
 	{
-		UpdateAmmoCounter();
+		//UpdateAmmoCounter();
 
 		if(WeaponStats.CurrentAmmo > 0)
 		{
 			//UE_LOG(LogTemp, Log, TEXT("SERVER FIRED"));
 
 			WeaponStats.CurrentAmmo -= 1;
+			UpdateAmmoCounter();
 
 			FVector EyeLocation;
 			FRotator EyeRotation;
