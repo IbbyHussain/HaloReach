@@ -94,6 +94,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* SecondaryMaxAmmoText;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UImage* AmmoCounterImage;
+
 	// Updates the primary and secondary weapon images
 	UFUNCTION(BlueprintCallable)
 	void UpdateWeaponImages();
@@ -101,5 +104,8 @@ public:
 	// Update the max ammo text for primary and secondary weapons
 	UFUNCTION(BlueprintCallable)
 	void UpdateAmmoText();
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateAmmoImage();
 
 };

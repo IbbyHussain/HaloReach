@@ -24,8 +24,6 @@ void AC_BaseGun::BeginPlay()
 
 	// Divide by 60 to get per minute
 	WeaponStats.TimeBetweenShots = 60.0f / WeaponStats.RateOfFire;
-
-	UpdateAmmoCounter();
 }
 
 void AC_BaseGun::Fire()

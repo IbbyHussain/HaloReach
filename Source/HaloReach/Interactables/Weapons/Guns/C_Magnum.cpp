@@ -21,3 +21,37 @@ void AC_Magnum::Attack()
 {
 	StartSemiFire();
 }
+
+void AC_Magnum::UpdateAmmoCounter()
+{
+	switch (WeaponStats.CurrentAmmo)
+	{
+	case 8:
+		SetCurrentAmmoImage(AmmoCounterImageArray[8]);
+		break;
+	case 7:
+		SetCurrentAmmoImage(AmmoCounterImageArray[7]);
+		break;
+	case 6:
+		SetCurrentAmmoImage(AmmoCounterImageArray[6]);
+		break;
+	case 5:
+		SetCurrentAmmoImage(AmmoCounterImageArray[5]);
+		break;
+	case 4:
+		SetCurrentAmmoImage(AmmoCounterImageArray[4]);
+		break;
+	case 3:
+		SetCurrentAmmoImage(AmmoCounterImageArray[3]);
+		break;
+	case 2:
+		SetCurrentAmmoImage(AmmoCounterImageArray[2]);
+		break;
+	case 1:
+		SetCurrentAmmoImage(AmmoCounterImageArray[1]);
+		break;
+	case 0:
+		SetCurrentAmmoImage(AmmoCounterImageArray[0]);
+		break;
+	}
+}

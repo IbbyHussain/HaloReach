@@ -90,6 +90,15 @@ protected:
 
 	void Reload();
 
+// AMMO COUNTER
+
+	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon")
+	TArray<UTexture2D*> AmmoCounterImageArray;
+
+	void SetCurrentAmmoImage(UTexture2D* NewTexture);
+
+	virtual void UpdateAmmoCounter();
+
 // AUTOMATIC
 
 	void StartAutoFire();
@@ -128,5 +137,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "hello")
 	FWeaponStats WeaponStats;
+
+	UTexture2D* CurrentAmmoImage;
 	
 };

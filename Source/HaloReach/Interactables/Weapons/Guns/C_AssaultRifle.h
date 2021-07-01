@@ -23,6 +23,9 @@ private:
 	virtual void Attack() override;
 
 	virtual void StopAttack() override;
+
+	virtual void UpdateAmmoCounter() override;
+
 public:
 
 	

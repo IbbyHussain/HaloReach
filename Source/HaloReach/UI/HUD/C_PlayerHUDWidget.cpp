@@ -202,3 +202,16 @@ void UC_PlayerHUDWidget::UpdateAmmoText()
 		}
 	}
 }
+
+void UC_PlayerHUDWidget::UpdateAmmoImage()
+{
+	AC_PlayerCharacter* Player = Cast<AC_PlayerCharacter>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn());
+	if (Player)
+	{
+		AC_BaseGun* PrimaryWeapon = Cast<AC_BaseGun>(Player->EquippedWeaponArray[0]);
+		if(PrimaryWeapon)
+		{
+			AmmoCounterImage->SetBrushFromTexture(PrimaryWeapon->CurrentAmmoImage);
+		}
+	}
+}
