@@ -38,6 +38,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Base Weapon | Weapon Stats")
 	int32 CurrentAmmo;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Weapon Stats")
+	bool bCanZoom;
+
 	float LastFireTime;
 
 	float TimeBetweenShots;
@@ -151,5 +154,6 @@ public:
 	UTexture2D* CurrentAmmoImage;
 
 	void Reload();
+
 	
 };

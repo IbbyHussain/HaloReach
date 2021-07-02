@@ -259,6 +259,8 @@ public:
 
 	void EndZoom();
 
+	bool bCanZoom;
+
 // Class Declarations
 
 	class AC_PlayerHUD* HUD;

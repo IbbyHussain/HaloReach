@@ -75,6 +75,8 @@ AC_PlayerCharacter::AC_PlayerCharacter()
 	ZoomInterpSpeed = 20.0f;
 
 	bCanSwitch = true;
+	bCanZoom = true;
+
 
 }
 
@@ -439,12 +441,16 @@ void AC_PlayerCharacter::SwitchWeapons()
 		EquippedWeaponArray.Swap(0, 1);
 		WeaponArrayChecks();
 		WeaponArray3PChecks();
+
+		// If zoomed in while switching, stop zooming
+		EndZoom();
 	}
 }
 
 void AC_PlayerCharacter::ResetCanSwitch()
 {
 	bCanSwitch = true;
+	bCanZoom = true;
 }
 
 void AC_PlayerCharacter::SpawnWeapon3P(TSubclassOf<AC_Weapon3P> WeaponClass, AC_Weapon3P*& Weapon, FName WeaponSocket)
@@ -523,7 +529,14 @@ void AC_PlayerCharacter::Reload()
 				Gun->Reload();
 				DefaultMesh->GetAnimInstance()->Montage_Play(Gun->GetWeaponReloadMontage(), 1.0f);
 				Mesh3P->GetAnimInstance()->Montage_Play(Gun->GetWeapon3PReloadMontage(), 1.0f);
+
 				bCanSwitch = false;
+				bCanZoom = false;
+
+				// If we are zoomed in when reload starts
+				EndZoom();
+
+				// Allows for zooming and switching after reload
 				GetWorldTimerManager().SetTimer(SwitchHandle, this, &AC_PlayerCharacter::ResetCanSwitch, Gun->WeaponStats.ReloadLength, false);
 				
 			}
@@ -594,7 +607,19 @@ void AC_PlayerCharacter::EndFire()
 
 void AC_PlayerCharacter::BeginZoom()
 {
-	bZoomIn = true;
+	if (EquippedWeaponArray[0])
+	{
+		AC_BaseGun* Gun = Cast<AC_BaseGun>(EquippedWeaponArray[0]);
+		if (Gun)
+		{
+			// If weapon has zoom and if player can zoom
+			if (Gun->WeaponStats.bCanZoom && bCanZoom)
+			{
+				bZoomIn = true;
+			}
+		}
+	}
+	
 }
 
 void AC_PlayerCharacter::EndZoom()
