@@ -169,7 +169,13 @@ public:
 	void Reload();
 
 
+// WEAPON SWITCHING
 
+	bool bCanSwitch;
+
+	FTimerHandle SwitchHandle;
+
+	void ResetCanSwitch();
 
 // REPLICATION TESTINGS
 

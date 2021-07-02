@@ -74,6 +74,8 @@ AC_PlayerCharacter::AC_PlayerCharacter()
 
 	ZoomInterpSpeed = 20.0f;
 
+	bCanSwitch = true;
+
 }
 
 void AC_PlayerCharacter::BeginPlay()
@@ -432,9 +434,17 @@ void AC_PlayerCharacter::WeaponArrayChecks()
 
 void AC_PlayerCharacter::SwitchWeapons()
 {
-	EquippedWeaponArray.Swap(0, 1);
-	WeaponArrayChecks();
-	WeaponArray3PChecks();
+	if(bCanSwitch)
+	{
+		EquippedWeaponArray.Swap(0, 1);
+		WeaponArrayChecks();
+		WeaponArray3PChecks();
+	}
+}
+
+void AC_PlayerCharacter::ResetCanSwitch()
+{
+	bCanSwitch = true;
 }
 
 void AC_PlayerCharacter::SpawnWeapon3P(TSubclassOf<AC_Weapon3P> WeaponClass, AC_Weapon3P*& Weapon, FName WeaponSocket)
@@ -513,6 +523,8 @@ void AC_PlayerCharacter::Reload()
 				Gun->Reload();
 				DefaultMesh->GetAnimInstance()->Montage_Play(Gun->GetWeaponReloadMontage(), 1.0f);
 				Mesh3P->GetAnimInstance()->Montage_Play(Gun->GetWeapon3PReloadMontage(), 1.0f);
+				bCanSwitch = false;
+				GetWorldTimerManager().SetTimer(SwitchHandle, this, &AC_PlayerCharacter::ResetCanSwitch, Gun->WeaponStats.ReloadLength, false);
 				
 			}
 		}
