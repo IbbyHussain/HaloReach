@@ -440,6 +440,8 @@ void AC_PlayerCharacter::SwitchWeapons()
 {
 	if(bCanSwitch)
 	{
+		EndFire();
+
 		EquippedWeaponArray.Swap(0, 1);
 		WeaponArrayChecks();
 		WeaponArray3PChecks();
@@ -447,14 +449,19 @@ void AC_PlayerCharacter::SwitchWeapons()
 
 		if(Gun)
 		{
+			
 
 			DefaultMesh->GetAnimInstance()->Montage_Play(Gun->GetWeaponEquipMontage(), 1.0f);
+			//float AnimLength = Gun->GetWeaponEquipMontage()->RateScale * DefaultAnimLength;
+
 			Mesh3P->GetAnimInstance()->Montage_Play(Gun->GetWeapon3PEquipMontage(), 1.0f);
 	
 			bCanZoom = false;
 			bCanSwitch = false;
 			bCanFire = false;
 			bCanReload = false;
+
+			UE_LOG(LogTemp, Log, TEXT("Weapon switch length is: %f"), Gun->WeaponStats.SwitchLength);
 
 			GetWorldTimerManager().SetTimer(SwitchResetHandle, this, &AC_PlayerCharacter::ResetCanSwitch, Gun->WeaponStats.SwitchLength, false);
 		}
@@ -545,6 +552,7 @@ void AC_PlayerCharacter::Reload()
 		{
 			if(Gun->WeaponStats.CurrentAmmo != Gun->WeaponStats.MaxMagazineAmmo && Gun->WeaponStats.MaxReservesAmmo != 0 && bCanReload)
 			{
+
 				Gun->Reload();
 				DefaultMesh->GetAnimInstance()->Montage_Play(Gun->GetWeaponReloadMontage(), 1.0f);
 				Mesh3P->GetAnimInstance()->Montage_Play(Gun->GetWeapon3PReloadMontage(), 1.0f);

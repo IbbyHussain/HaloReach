@@ -27,9 +27,9 @@ void AC_BaseGun::BeginPlay()
 	// Divide by 60 to get per minute
 	WeaponStats.TimeBetweenShots = 60.0f / WeaponStats.RateOfFire;
 
-	WeaponStats.ReloadLength = ReloadAnimation->GetPlayLength();
+	WeaponStats.ReloadLength = ReloadAnimation->GetPlayLength() / ReloadAnimation->RateScale;
 
-	WeaponStats.SwitchLength = WeaponEquipAnimation->GetPlayLength();
+	WeaponStats.SwitchLength = WeaponEquipAnimation->GetPlayLength() / WeaponEquipAnimation->RateScale;
 
 	UpdateAmmoCounter();
 }
