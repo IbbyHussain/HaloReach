@@ -76,6 +76,8 @@ AC_PlayerCharacter::AC_PlayerCharacter()
 
 	bCanSwitch = true;
 	bCanZoom = true;
+	bCanReload = true;
+	bCanFire = true;
 
 
 }
@@ -441,7 +443,22 @@ void AC_PlayerCharacter::SwitchWeapons()
 		EquippedWeaponArray.Swap(0, 1);
 		WeaponArrayChecks();
 		WeaponArray3PChecks();
+		AC_BaseGun* Gun = Cast<AC_BaseGun>(EquippedWeaponArray[0]);
 
+		if(Gun)
+		{
+
+			DefaultMesh->GetAnimInstance()->Montage_Play(Gun->GetWeaponEquipMontage(), 1.0f);
+			Mesh3P->GetAnimInstance()->Montage_Play(Gun->GetWeapon3PEquipMontage(), 1.0f);
+	
+			bCanZoom = false;
+			bCanSwitch = false;
+			bCanFire = false;
+			bCanReload = false;
+
+			GetWorldTimerManager().SetTimer(SwitchResetHandle, this, &AC_PlayerCharacter::ResetCanSwitch, Gun->WeaponStats.SwitchLength, false);
+		}
+	
 		// If zoomed in while switching, stop zooming
 		EndZoom();
 	}
@@ -451,6 +468,8 @@ void AC_PlayerCharacter::ResetCanSwitch()
 {
 	bCanSwitch = true;
 	bCanZoom = true;
+	bCanReload = true;
+	bCanFire = true;
 }
 
 void AC_PlayerCharacter::SpawnWeapon3P(TSubclassOf<AC_Weapon3P> WeaponClass, AC_Weapon3P*& Weapon, FName WeaponSocket)
@@ -524,12 +543,13 @@ void AC_PlayerCharacter::Reload()
 		AC_BaseGun* Gun = Cast<AC_BaseGun>(EquippedWeaponArray[0]);
 		if(Gun)
 		{
-			if(Gun->WeaponStats.CurrentAmmo != Gun->WeaponStats.MaxMagazineAmmo && Gun->WeaponStats.MaxReservesAmmo != 0)
+			if(Gun->WeaponStats.CurrentAmmo != Gun->WeaponStats.MaxMagazineAmmo && Gun->WeaponStats.MaxReservesAmmo != 0 && bCanReload)
 			{
 				Gun->Reload();
 				DefaultMesh->GetAnimInstance()->Montage_Play(Gun->GetWeaponReloadMontage(), 1.0f);
 				Mesh3P->GetAnimInstance()->Montage_Play(Gun->GetWeapon3PReloadMontage(), 1.0f);
 
+				bCanReload = false;
 				bCanSwitch = false;
 				bCanZoom = false;
 
@@ -537,11 +557,18 @@ void AC_PlayerCharacter::Reload()
 				EndZoom();
 
 				// Allows for zooming and switching after reload
-				GetWorldTimerManager().SetTimer(SwitchHandle, this, &AC_PlayerCharacter::ResetCanSwitch, Gun->WeaponStats.ReloadLength, false);
+				GetWorldTimerManager().SetTimer(ReloadResetHandle, this, &AC_PlayerCharacter::ResetCanReload, Gun->WeaponStats.ReloadLength, false);
 				
 			}
 		}
 	}
+}
+
+void AC_PlayerCharacter::ResetCanReload()
+{
+	bCanReload = true;
+	bCanSwitch = true;
+	bCanZoom = true;
 }
 
 void AC_PlayerCharacter::OnWeaponTypeUpdate()
@@ -589,7 +616,7 @@ FVector AC_PlayerCharacter::GetPawnViewLocation() const
 
 void AC_PlayerCharacter::StartFire()
 {
-	if (EquippedWeaponArray[0])
+	if (EquippedWeaponArray[0] && bCanFire)
 	{
 		EquippedWeaponArray[0]->Attack();
 		//UE_LOG(LogTemp, Log, TEXT("Player: Attacked!"));

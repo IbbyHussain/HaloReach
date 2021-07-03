@@ -29,6 +29,8 @@ void AC_BaseGun::BeginPlay()
 
 	WeaponStats.ReloadLength = ReloadAnimation->GetPlayLength();
 
+	WeaponStats.SwitchLength = WeaponEquipAnimation->GetPlayLength();
+
 	UpdateAmmoCounter();
 }
 

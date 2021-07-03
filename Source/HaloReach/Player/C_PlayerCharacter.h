@@ -166,16 +166,26 @@ public:
 	// Applies any updates to the character when they change weapon type
 	void OnWeaponTypeUpdate();
 
-	void Reload();
-
+	
+	bool bCanFire;
 
 // WEAPON SWITCHING
 
 	bool bCanSwitch;
 
-	FTimerHandle SwitchHandle;
+	FTimerHandle SwitchResetHandle;
 
 	void ResetCanSwitch();
+
+// WEAPON RELOADING
+
+	bool bCanReload;
+
+	FTimerHandle ReloadResetHandle;
+
+	void ResetCanReload();
+
+	void Reload();
 
 // REPLICATION TESTINGS
 

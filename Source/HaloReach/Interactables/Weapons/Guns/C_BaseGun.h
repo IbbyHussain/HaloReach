@@ -27,6 +27,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Weapon Stats")
 	float ReloadLength;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Weapon Stats")
+	float SwitchLength;
+
 	// Max ammo in a magazine
 	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Weapon Stats")
 	int32 MaxMagazineAmmo;
