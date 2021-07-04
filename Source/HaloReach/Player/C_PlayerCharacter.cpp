@@ -560,7 +560,7 @@ void AC_PlayerCharacter::Reload()
 				// Call Server RPC for clients 
 				if (!HasAuthority())
 				{
-					//Server_Reload(Gun->GetWeapon3PReloadMontage());
+					Server_Reload(Gun->GetWeapon3PReloadMontage());
 				}
 
 			
