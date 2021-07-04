@@ -207,6 +207,16 @@ public:
 
 	void ResetCanSwitch();
 
+	UPROPERTY(ReplicatedUsing = OnRep_Switch)
+	bool bIsSwitching;
+
+	UFUNCTION()
+	void OnRep_Switch();
+
+	UFUNCTION(Server, Reliable)
+	void Server_Switch(UAnimMontage* Montage);
+	void Server_Switch_Implementation(UAnimMontage* Montage);
+
 // WEAPON RELOADING
 
 	UPROPERTY(ReplicatedUsing = OnRep_Reload)

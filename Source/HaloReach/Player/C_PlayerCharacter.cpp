@@ -454,11 +454,17 @@ void AC_PlayerCharacter::SwitchWeapons()
 
 		if(Gun)
 		{
-
 			DefaultMesh->GetAnimInstance()->Montage_Play(Gun->GetWeaponEquipMontage(), 1.0f);
 
-			Mesh3P->GetAnimInstance()->Montage_Play(Gun->GetWeapon3PEquipMontage(), 1.0f);
-	
+			bIsSwitching = !bIsSwitching;
+			
+			// Call Server RPC for clients 
+			if (!HasAuthority())
+			{
+				Server_Switch(Gun->GetWeapon3PEquipMontage());
+			}
+			
+
 			bCanZoom = false;
 			bCanSwitch = false;
 			bCanFire = false;
@@ -474,14 +480,23 @@ void AC_PlayerCharacter::SwitchWeapons()
 	}
 }
 
-
-
 void AC_PlayerCharacter::ResetCanSwitch()
 {
 	bCanSwitch = true;
 	bCanZoom = true;
 	bCanReload = true;
 	bCanFire = true;
+}
+
+void AC_PlayerCharacter::OnRep_Switch()
+{
+	AC_BaseGun* Gun = Cast<AC_BaseGun>(EquippedWeaponArray[0]);
+	Mesh3P->GetAnimInstance()->Montage_Play(Gun->GetWeapon3PEquipMontage(), 1.0f);
+}
+
+void AC_PlayerCharacter::Server_Switch_Implementation(UAnimMontage* Montage)
+{
+	Mesh3P->GetAnimInstance()->Montage_Play(Montage, 1.0f);
 }
 
 void AC_PlayerCharacter::SpawnWeapon3P(TSubclassOf<AC_Weapon3P> WeaponClass, AC_Weapon3P*& Weapon, FName WeaponSocket)
@@ -639,6 +654,7 @@ void AC_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	DOREPLIFETIME(AC_PlayerCharacter, bIsReloading);
 	DOREPLIFETIME(AC_PlayerCharacter, bIsFiring);
 	DOREPLIFETIME(AC_PlayerCharacter, bStopFiring);
+	DOREPLIFETIME(AC_PlayerCharacter, bIsSwitching);
 
 
 
@@ -658,8 +674,6 @@ void AC_PlayerCharacter::StartFire()
 {
 	if (EquippedWeaponArray[0] && bCanFire)
 	{
-		//OnWeaponFire();
-
 		EquippedWeaponArray[0]->Attack();
 	}
 }
@@ -668,7 +682,6 @@ void AC_PlayerCharacter::EndFire()
 {
 	if (EquippedWeaponArray[0])
 	{
-		//OnWeaponStopFire();
 		EquippedWeaponArray[0]->StopAttack();
 	}
 }
