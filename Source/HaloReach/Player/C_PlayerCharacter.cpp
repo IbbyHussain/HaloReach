@@ -554,17 +554,13 @@ void AC_PlayerCharacter::Reload()
 		{
 			if(Gun->WeaponStats.CurrentAmmo != Gun->WeaponStats.MaxMagazineAmmo && Gun->WeaponStats.MaxReservesAmmo != 0 && bCanReload)
 			{
+				// The OnRep only works on server 
+				bIsReloading = !bIsReloading;
 				
-
-				if(HasAuthority())
+				// Call Server RPC for clients 
+				if (!HasAuthority())
 				{
-					bIsReloading = !bIsReloading;
-					//OnRep_Reload();
-				}
-
-				else
-				{
-					Server_Reload(Gun->GetWeapon3PReloadMontage());
+					//Server_Reload(Gun->GetWeapon3PReloadMontage());
 				}
 
 			
