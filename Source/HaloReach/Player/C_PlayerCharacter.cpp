@@ -431,8 +431,6 @@ void AC_PlayerCharacter::SpawnWeapon(TSubclassOf<AC_BaseWeapon> WeaponClass, AC_
 	Weapon->SetOwner(this);
 
 	AC_BaseGun* Gun = Cast<AC_BaseGun>(Weapon);
-	Gun->OnFireWeapon.AddDynamic(this, &AC_PlayerCharacter::OnWeaponFire);
-	Gun->OnStopFireWeapon.AddDynamic(this, &AC_PlayerCharacter::OnWeaponStopFire);
 
 	EquippedWeaponArray.Emplace(Weapon);
 }
@@ -456,7 +454,6 @@ void AC_PlayerCharacter::SwitchWeapons()
 
 		if(Gun)
 		{
-			
 
 			DefaultMesh->GetAnimInstance()->Montage_Play(Gun->GetWeaponEquipMontage(), 1.0f);
 
@@ -661,6 +658,8 @@ void AC_PlayerCharacter::StartFire()
 {
 	if (EquippedWeaponArray[0] && bCanFire)
 	{
+		//OnWeaponFire();
+
 		EquippedWeaponArray[0]->Attack();
 	}
 }
@@ -669,6 +668,7 @@ void AC_PlayerCharacter::EndFire()
 {
 	if (EquippedWeaponArray[0])
 	{
+		//OnWeaponStopFire();
 		EquippedWeaponArray[0]->StopAttack();
 	}
 }
@@ -701,10 +701,13 @@ void AC_PlayerCharacter::OnWeaponFire()
 
 	AC_BaseGun* Gun = Cast<AC_BaseGun>(EquippedWeaponArray[0]);
 
-	// Call Server RPC for clients 
-	if (!HasAuthority())
+	if(Gun)
 	{
-		Server_Fire(Gun->GetWeapon3PFireMontage());
+		// Call Server RPC for clients 
+		if (!HasAuthority())
+		{
+			Server_Fire(Gun->GetWeapon3PFireMontage());
+		}
 	}
 }
 
@@ -713,12 +716,15 @@ void AC_PlayerCharacter::OnWeaponStopFire()
 	bStopFiring = !bStopFiring;
 
 	AC_BaseGun* Gun = Cast<AC_BaseGun>(EquippedWeaponArray[0]);
-
-	if (!HasAuthority())
+	if(Gun)
 	{
-		Server_StopFire(Gun->GetWeapon3PFireMontage());
+		if (!HasAuthority())
+		{
+			Server_StopFire(Gun->GetWeapon3PFireMontage());
+		}
 	}
 }
+
 
 void AC_PlayerCharacter::BeginZoom()
 {

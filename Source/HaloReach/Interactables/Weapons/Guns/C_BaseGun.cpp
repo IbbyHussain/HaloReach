@@ -52,7 +52,14 @@ void AC_BaseGun::Fire()
 			WeaponStats.CurrentAmmo -= 1;
 			UpdateAmmoCounter();
 
-			OnFireWeapon.Broadcast();
+			//OnFireWeapon.Broadcast();
+
+			AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(MyOwner);
+			if(PlayerCharacter)
+			{
+				PlayerCharacter->OnWeaponFire();
+			}
+
 
 			FVector EyeLocation;
 			FRotator EyeRotation;
@@ -120,9 +127,10 @@ void AC_BaseGun::Fire()
 			if(PlayerCharacter)
 			{
 				PlayerCharacter->Reload(); // Calls player reload, so montages can be played
+				PlayerCharacter->OnWeaponStopFire();
 			}
 
-			OnStopFireWeapon.Broadcast();
+			//OnStopFireWeapon.Broadcast();
 		}
 	}
 }
@@ -171,7 +179,7 @@ void AC_BaseGun::Reload()
 		bCanFire = false;
 		GetWorldTimerManager().SetTimer(ReloadHandle, this, &AC_BaseGun::ResetCanFire, WeaponStats.ReloadLength, false);
 
-		OnStopFireWeapon.Broadcast();
+		//OnStopFireWeapon.Broadcast();
 
 		UpdateAmmoCounter();
 	}
@@ -196,8 +204,18 @@ void AC_BaseGun::StartAutoFire()
 
 void AC_BaseGun::StopAutoFire()
 {
-	OnStopFireWeapon.Broadcast();
+	//OnStopFireWeapon.Broadcast();
 
+	AActor* MyOwner = GetOwner();
+	if(MyOwner)
+	{
+		AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(MyOwner);
+		if (PlayerCharacter)
+		{
+			PlayerCharacter->OnWeaponStopFire();
+		}
+	}
+	
 	UpdateAmmoCounter();
 	GetWorldTimerManager().ClearTimer(AutomaticFireHandle);
 }
@@ -233,21 +251,20 @@ void AC_BaseGun::UpdateAmmoCounter()
 
 void AC_BaseGun::Server_Fire_Implementation()
 {
-	Fire();
+	//Fire();
 }
 
 void AC_BaseGun::Multi_Fire_Implementation()
 {
-	Fire();
+	//Fire();
 }
-
 
 void AC_BaseGun::Server_StopFire_Implementation()
 {
-	Multi_StopFire();
+	//Multi_StopFire();
 }
 
 void AC_BaseGun::Multi_StopFire_Implementation()
 {
-	StopAutoFire();
+	//StopAutoFire();
 }
