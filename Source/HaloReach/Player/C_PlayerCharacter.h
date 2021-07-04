@@ -179,6 +179,17 @@ public:
 
 // WEAPON RELOADING
 
+	UPROPERTY(ReplicatedUsing = OnRep_Reload)
+	bool bIsReloading;
+
+	UFUNCTION()
+	void OnRep_Reload();
+
+	UFUNCTION(Server, Reliable)
+	void Server_Reload(UAnimMontage* Montage);
+	void Server_Reload_Implementation(UAnimMontage* Montage);
+
+
 	bool bCanReload;
 
 	FTimerHandle ReloadResetHandle;

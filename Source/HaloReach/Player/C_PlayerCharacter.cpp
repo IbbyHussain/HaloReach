@@ -79,6 +79,8 @@ AC_PlayerCharacter::AC_PlayerCharacter()
 	bCanReload = true;
 	bCanFire = true;
 
+	bIsReloading = false;
+
 
 }
 
@@ -452,7 +454,6 @@ void AC_PlayerCharacter::SwitchWeapons()
 			
 
 			DefaultMesh->GetAnimInstance()->Montage_Play(Gun->GetWeaponEquipMontage(), 1.0f);
-			//float AnimLength = Gun->GetWeaponEquipMontage()->RateScale * DefaultAnimLength;
 
 			Mesh3P->GetAnimInstance()->Montage_Play(Gun->GetWeapon3PEquipMontage(), 1.0f);
 	
@@ -545,6 +546,7 @@ void AC_PlayerCharacter::Multi_ChangeSkeletalMesh_Implementation(USkeletalMesh* 
 
 void AC_PlayerCharacter::Reload()
 {
+	
 	if(EquippedWeaponArray[0])
 	{
 		AC_BaseGun* Gun = Cast<AC_BaseGun>(EquippedWeaponArray[0]);
@@ -552,10 +554,23 @@ void AC_PlayerCharacter::Reload()
 		{
 			if(Gun->WeaponStats.CurrentAmmo != Gun->WeaponStats.MaxMagazineAmmo && Gun->WeaponStats.MaxReservesAmmo != 0 && bCanReload)
 			{
+				
 
+				if(HasAuthority())
+				{
+					bIsReloading = !bIsReloading;
+					//OnRep_Reload();
+				}
+
+				else
+				{
+					Server_Reload(Gun->GetWeapon3PReloadMontage());
+				}
+
+			
 				Gun->Reload();
 				DefaultMesh->GetAnimInstance()->Montage_Play(Gun->GetWeaponReloadMontage(), 1.0f);
-				Mesh3P->GetAnimInstance()->Montage_Play(Gun->GetWeapon3PReloadMontage(), 1.0f);
+				
 
 				bCanReload = false;
 				bCanSwitch = false;
@@ -570,6 +585,17 @@ void AC_PlayerCharacter::Reload()
 			}
 		}
 	}
+}
+
+void AC_PlayerCharacter::OnRep_Reload()
+{
+	AC_BaseGun* Gun = Cast<AC_BaseGun>(EquippedWeaponArray[0]);
+	Mesh3P->GetAnimInstance()->Montage_Play(Gun->GetWeapon3PReloadMontage(), 1.0f);
+}
+
+void AC_PlayerCharacter::Server_Reload_Implementation(UAnimMontage* Montage)
+{
+	Mesh3P->GetAnimInstance()->Montage_Play(Montage, 1.0f);
 }
 
 void AC_PlayerCharacter::ResetCanReload()
@@ -609,6 +635,10 @@ void AC_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	DOREPLIFETIME(AC_PlayerCharacter, EquippedWeapon3PArray);
 	DOREPLIFETIME(AC_PlayerCharacter, CombatState);
 	DOREPLIFETIME(AC_PlayerCharacter, WeaponType);
+
+	DOREPLIFETIME(AC_PlayerCharacter, bIsReloading);
+
+
 
 	//DOREPLIFETIME(AC_PlayerCharacter, Combat);
 
