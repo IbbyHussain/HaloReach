@@ -761,6 +761,16 @@ void AC_PlayerCharacter::EndZoom()
 	bZoomIn = false;
 }
 
+void AC_PlayerCharacter::PlayMontage(UAnimMontage* Montage)
+{
+	DefaultMesh->GetAnimInstance()->Montage_Play(Montage, 1.0f);
+}
+
+void AC_PlayerCharacter::StopMontage(UAnimMontage* Montage)
+{
+	DefaultMesh->GetAnimInstance()->Montage_Stop(1.0f, Montage);
+}
+
 // INPUT
 
 void AC_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

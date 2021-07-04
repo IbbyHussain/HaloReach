@@ -166,7 +166,10 @@ public:
 	// Applies any updates to the character when they change weapon type
 	void OnWeaponTypeUpdate();
 
-	
+	void PlayMontage(UAnimMontage* Montage);
+
+	void StopMontage(UAnimMontage* Montage);
+
 	
 
 // WEAPON FIRE

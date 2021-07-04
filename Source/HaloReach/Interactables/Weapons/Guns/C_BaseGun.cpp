@@ -58,6 +58,7 @@ void AC_BaseGun::Fire()
 			if(PlayerCharacter)
 			{
 				PlayerCharacter->OnWeaponFire();
+				PlayerCharacter->PlayMontage(GetWeaponFireMontage());
 			}
 
 
@@ -128,6 +129,7 @@ void AC_BaseGun::Fire()
 			{
 				PlayerCharacter->Reload(); // Calls player reload, so montages can be played
 				PlayerCharacter->OnWeaponStopFire();
+				PlayerCharacter->StopMontage(GetWeaponFireMontage());
 			}
 
 			//OnStopFireWeapon.Broadcast();
@@ -213,6 +215,7 @@ void AC_BaseGun::StopAutoFire()
 		if (PlayerCharacter)
 		{
 			PlayerCharacter->OnWeaponStopFire();
+			PlayerCharacter->StopMontage(GetWeaponFireMontage());
 		}
 	}
 	
@@ -251,20 +254,20 @@ void AC_BaseGun::UpdateAmmoCounter()
 
 void AC_BaseGun::Server_Fire_Implementation()
 {
-	//Fire();
+	Fire();
 }
 
 void AC_BaseGun::Multi_Fire_Implementation()
 {
-	//Fire();
+	Fire();
 }
 
 void AC_BaseGun::Server_StopFire_Implementation()
 {
-	//Multi_StopFire();
+	Multi_StopFire();
 }
 
 void AC_BaseGun::Multi_StopFire_Implementation()
 {
-	//StopAutoFire();
+	StopAutoFire();
 }
