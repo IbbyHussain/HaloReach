@@ -6,6 +6,10 @@
 #include "HaloReach/Interactables/Weapons/C_BaseWeapon.h"
 #include "C_BaseGun.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFireWeapon);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStopFireWeapon);
+
+
 USTRUCT(BlueprintType)
 struct FWeaponStats
 {
@@ -157,6 +161,12 @@ public:
 	UTexture2D* CurrentAmmoImage;
 
 	void Reload();
+
+	UPROPERTY(BlueprintAssignable, Category = "Delegates")
+	FOnFireWeapon OnFireWeapon;
+
+	UPROPERTY(BlueprintAssignable, Category = "Delegates")
+	FOnStopFireWeapon OnStopFireWeapon;
 
 	
 };

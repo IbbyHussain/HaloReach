@@ -80,6 +80,7 @@ AC_PlayerCharacter::AC_PlayerCharacter()
 	bCanFire = true;
 
 	bIsReloading = false;
+	bIsFiring = false;
 
 
 }
@@ -429,6 +430,10 @@ void AC_PlayerCharacter::SpawnWeapon(TSubclassOf<AC_BaseWeapon> WeaponClass, AC_
 	Weapon->AttachToComponent(DefaultMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocket);
 	Weapon->SetOwner(this);
 
+	AC_BaseGun* Gun = Cast<AC_BaseGun>(Weapon);
+	Gun->OnFireWeapon.AddDynamic(this, &AC_PlayerCharacter::OnWeaponFire);
+	Gun->OnStopFireWeapon.AddDynamic(this, &AC_PlayerCharacter::OnWeaponStopFire);
+
 	EquippedWeaponArray.Emplace(Weapon);
 }
 
@@ -471,6 +476,8 @@ void AC_PlayerCharacter::SwitchWeapons()
 		EndZoom();
 	}
 }
+
+
 
 void AC_PlayerCharacter::ResetCanSwitch()
 {
@@ -633,6 +640,8 @@ void AC_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	DOREPLIFETIME(AC_PlayerCharacter, WeaponType);
 
 	DOREPLIFETIME(AC_PlayerCharacter, bIsReloading);
+	DOREPLIFETIME(AC_PlayerCharacter, bIsFiring);
+	DOREPLIFETIME(AC_PlayerCharacter, bStopFiring);
 
 
 
@@ -653,7 +662,6 @@ void AC_PlayerCharacter::StartFire()
 	if (EquippedWeaponArray[0] && bCanFire)
 	{
 		EquippedWeaponArray[0]->Attack();
-		//UE_LOG(LogTemp, Log, TEXT("Player: Attacked!"));
 	}
 }
 
@@ -662,7 +670,53 @@ void AC_PlayerCharacter::EndFire()
 	if (EquippedWeaponArray[0])
 	{
 		EquippedWeaponArray[0]->StopAttack();
-		//UE_LOG(LogTemp, Log, TEXT("Player: STOP Attacked!"));
+	}
+}
+
+void AC_PlayerCharacter::OnRep_Fire()
+{
+	AC_BaseGun* Gun = Cast<AC_BaseGun>(EquippedWeaponArray[0]);
+	Mesh3P->GetAnimInstance()->Montage_Play(Gun->GetWeapon3PFireMontage(), 1.0f);
+}
+
+void AC_PlayerCharacter::Server_Fire_Implementation(UAnimMontage* Montage)
+{
+	Mesh3P->GetAnimInstance()->Montage_Play(Montage, 1.0f);
+}
+
+void AC_PlayerCharacter::OnRep_StopFire()
+{
+	AC_BaseGun* Gun = Cast<AC_BaseGun>(EquippedWeaponArray[0]);
+	Mesh3P->GetAnimInstance()->Montage_Stop(0.1f, Gun->GetWeapon3PFireMontage());
+}
+
+void AC_PlayerCharacter::Server_StopFire_Implementation(UAnimMontage* Montage)
+{
+	Mesh3P->GetAnimInstance()->Montage_Stop(0.1f, Montage);
+}
+
+void AC_PlayerCharacter::OnWeaponFire()
+{
+	bIsFiring = !bIsFiring;
+
+	AC_BaseGun* Gun = Cast<AC_BaseGun>(EquippedWeaponArray[0]);
+
+	// Call Server RPC for clients 
+	if (!HasAuthority())
+	{
+		Server_Fire(Gun->GetWeapon3PFireMontage());
+	}
+}
+
+void AC_PlayerCharacter::OnWeaponStopFire()
+{
+	bStopFiring = !bStopFiring;
+
+	AC_BaseGun* Gun = Cast<AC_BaseGun>(EquippedWeaponArray[0]);
+
+	if (!HasAuthority())
+	{
+		Server_StopFire(Gun->GetWeapon3PFireMontage());
 	}
 }
 

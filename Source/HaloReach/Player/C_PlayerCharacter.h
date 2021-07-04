@@ -167,7 +167,37 @@ public:
 	void OnWeaponTypeUpdate();
 
 	
+	
+
+// WEAPON FIRE
+
 	bool bCanFire;
+
+	UPROPERTY(ReplicatedUsing = OnRep_Fire)
+	bool bIsFiring;
+
+	UFUNCTION()
+	void OnRep_Fire();
+
+	UFUNCTION(Server, Reliable)
+	void Server_Fire(UAnimMontage* Montage);
+	void Server_Fire_Implementation(UAnimMontage* Montage);
+
+	UPROPERTY(ReplicatedUsing = OnRep_StopFire)
+	bool bStopFiring;
+
+	UFUNCTION()
+	void OnRep_StopFire();
+
+	UFUNCTION(Server, Reliable)
+	void Server_StopFire(UAnimMontage* Montage);
+	void Server_StopFire_Implementation(UAnimMontage* Montage);
+
+	UFUNCTION()
+	void OnWeaponFire();
+
+	UFUNCTION()
+	void OnWeaponStopFire();
 
 // WEAPON SWITCHING
 
@@ -188,7 +218,6 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_Reload(UAnimMontage* Montage);
 	void Server_Reload_Implementation(UAnimMontage* Montage);
-
 
 	bool bCanReload;
 

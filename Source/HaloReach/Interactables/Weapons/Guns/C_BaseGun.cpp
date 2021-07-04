@@ -52,6 +52,8 @@ void AC_BaseGun::Fire()
 			WeaponStats.CurrentAmmo -= 1;
 			UpdateAmmoCounter();
 
+			OnFireWeapon.Broadcast();
+
 			FVector EyeLocation;
 			FRotator EyeRotation;
 			MyOwner->GetActorEyesViewPoint(EyeLocation, EyeRotation);
@@ -119,6 +121,8 @@ void AC_BaseGun::Fire()
 			{
 				PlayerCharacter->Reload(); // Calls player reload, so montages can be played
 			}
+
+			OnStopFireWeapon.Broadcast();
 		}
 	}
 }
@@ -167,6 +171,8 @@ void AC_BaseGun::Reload()
 		bCanFire = false;
 		GetWorldTimerManager().SetTimer(ReloadHandle, this, &AC_BaseGun::ResetCanFire, WeaponStats.ReloadLength, false);
 
+		OnStopFireWeapon.Broadcast();
+
 		UpdateAmmoCounter();
 	}
 }
@@ -190,6 +196,8 @@ void AC_BaseGun::StartAutoFire()
 
 void AC_BaseGun::StopAutoFire()
 {
+	OnStopFireWeapon.Broadcast();
+
 	UpdateAmmoCounter();
 	GetWorldTimerManager().ClearTimer(AutomaticFireHandle);
 }
