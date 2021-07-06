@@ -164,6 +164,9 @@ void AC_PlayerCharacter::Tick(float DeltaTime)
 	float NewFOV = FMath::FInterpTo(CameraComp->FieldOfView, TargetFOV, DeltaTime, ZoomInterpSpeed);
 	CameraComp->SetFieldOfView(NewFOV);
 
+	float Pitch = UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetControlRotation().Quaternion().X;
+
+	UE_LOG(LogTemp, Log, TEXT("Pitch: %f"), Pitch);
 }
 
 // HEALTH SYSTEM
@@ -569,6 +572,7 @@ void AC_PlayerCharacter::Reload()
 	if(EquippedWeaponArray[0])
 	{
 		AC_BaseGun* Gun = Cast<AC_BaseGun>(EquippedWeaponArray[0]);
+
 		if(Gun)
 		{
 			if(Gun->WeaponStats.CurrentAmmo != Gun->WeaponStats.MaxMagazineAmmo && Gun->WeaponStats.MaxReservesAmmo != 0 && bCanReload)
@@ -582,6 +586,13 @@ void AC_PlayerCharacter::Reload()
 					Server_Reload(Gun->GetWeapon3PReloadMontage());
 				}
 
+				AC_BaseGun* GunPTR;
+				GunPTR->WeaponStats;
+
+
+				AC_BaseGun& GunREF = *Gun;
+
+			
 			
 				Gun->Reload();
 				DefaultMesh->GetAnimInstance()->Montage_Play(Gun->GetWeaponReloadMontage(), 1.0f);
