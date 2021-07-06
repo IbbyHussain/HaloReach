@@ -164,9 +164,9 @@ void AC_PlayerCharacter::Tick(float DeltaTime)
 	float NewFOV = FMath::FInterpTo(CameraComp->FieldOfView, TargetFOV, DeltaTime, ZoomInterpSpeed);
 	CameraComp->SetFieldOfView(NewFOV);
 
-	float Pitch = UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetControlRotation().Quaternion().X;
+	//float Pitch = UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetControlRotation().Quaternion().X;
 
-	UE_LOG(LogTemp, Log, TEXT("Pitch: %f"), Pitch);
+	//UE_LOG(LogTemp, Log, TEXT("Pitch: %f"), Pitch);
 }
 
 // HEALTH SYSTEM
