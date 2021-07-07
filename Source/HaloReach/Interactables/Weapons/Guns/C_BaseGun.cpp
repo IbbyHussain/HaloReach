@@ -8,16 +8,49 @@
 #include "HaloReach/HaloReach.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "TimerManager.h"
+#include "Camera/CameraComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "Engine/Engine.h"
+#include "UnrealClient.h"
+#include "Kismet/KismetMathLibrary.h"
 
 AC_BaseGun::AC_BaseGun()
 {
+	PrimaryActorTick.bCanEverTick = true;
+
 	bReplicates = true;
 
 	NetUpdateFrequency = 30.0f;
 	MinNetUpdateFrequency = 10.0f;
 
 	bCanFire = true;
+
+	// Recoil Timeline
+
+	RecoilTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("Recoil Timeline"));
+
+	RecoilInterpFunction.BindUFunction(this, FName("RecoilTimelineFloatReturn"));
+	RecoilTimelineFinished.BindUFunction(this, FName("OnRecoilTimelineFinished"));
+	RecoilTimelineUpdate.BindUFunction(this, FName("OnEventEvent"));
+
+
+	ReturnTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("Return Timeline"));
+
+	ReturnInterpFunction.BindUFunction(this, FName("ReturnTimelineFloatReturn"));
+	ReturnTimelineFinished.BindUFunction(this, FName("OnReturnTimelineFinished"));
+
+
+
+
+}
+
+void AC_BaseGun::Tick(float Delta)
+{
+	Super::Tick(Delta);
+
+	UE_LOG(LogTemp, Error, TEXT("Status: %s "), (RecoilTimeline->IsPlaying() ? TEXT("TIMER IS PLAYING") : TEXT("TIMER IS NOT PLAYING")));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("changed start rotation value"), (bHasTimerPaused ? TEXT("TIMER IS PAUSED") : TEXT("TIMER IS NOT PAUSED")));
+
 }
 
 void AC_BaseGun::BeginPlay()
@@ -32,6 +65,23 @@ void AC_BaseGun::BeginPlay()
 	WeaponStats.SwitchLength = WeaponEquipAnimation->GetPlayLength() / WeaponEquipAnimation->RateScale;
 
 	UpdateAmmoCounter();
+
+	// Recoil Timeline
+
+	if(FDefaultCurve)
+	{
+		RecoilTimeline->AddInterpFloat(FDefaultCurve, RecoilInterpFunction, FName("Alpha"));
+		RecoilTimeline->SetTimelineFinishedFunc(RecoilTimelineFinished);
+		RecoilTimeline->SetTimelinePostUpdateFunc(RecoilTimelineUpdate);
+		RecoilTimeline->SetLooping(false);
+	}
+
+	if(FReturnCurve)
+	{
+		ReturnTimeline->AddInterpFloat(FReturnCurve, ReturnInterpFunction, FName("Charlie"));
+		ReturnTimeline->SetTimelineFinishedFunc(ReturnTimelineFinished);
+		ReturnTimeline->SetLooping(false);
+	}
 }
 
 void AC_BaseGun::Fire()
@@ -49,10 +99,11 @@ void AC_BaseGun::Fire()
 		{
 			//UE_LOG(LogTemp, Log, TEXT("SERVER FIRED"));
 
+			StartRecoil();
+
 			WeaponStats.CurrentAmmo -= 1;
 			UpdateAmmoCounter();
 
-			//OnFireWeapon.Broadcast();
 
 			AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(MyOwner);
 			if(PlayerCharacter)
@@ -131,8 +182,6 @@ void AC_BaseGun::Fire()
 				PlayerCharacter->OnWeaponStopFire();
 				PlayerCharacter->StopMontage(GetWeaponFireMontage());
 			}
-
-			//OnStopFireWeapon.Broadcast();
 		}
 	}
 }
@@ -177,6 +226,8 @@ void AC_BaseGun::Reload()
 			WeaponStats.MaxReservesAmmo = 0;
 		}
 
+		bIsRecoilTimelineFinished = true;
+
 		// Time before can fire again 
 		bCanFire = false;
 		GetWorldTimerManager().SetTimer(ReloadHandle, this, &AC_BaseGun::ResetCanFire, WeaponStats.ReloadLength, false);
@@ -206,8 +257,6 @@ void AC_BaseGun::StartAutoFire()
 
 void AC_BaseGun::StopAutoFire()
 {
-	//OnStopFireWeapon.Broadcast();
-
 	AActor* MyOwner = GetOwner();
 	if(MyOwner)
 	{
@@ -216,6 +265,7 @@ void AC_BaseGun::StopAutoFire()
 		{
 			PlayerCharacter->OnWeaponStopFire();
 			PlayerCharacter->StopMontage(GetWeaponFireMontage());
+			StopRecoil();
 		}
 	}
 	
@@ -236,19 +286,180 @@ void AC_BaseGun::SetCurrentAmmoImage(UTexture2D* NewTexture)
 	CurrentAmmoImage = NewTexture;
 }
 
-// Virtual Functions
-void AC_BaseGun::UpdateAmmoCounter()
-{
+// WEAPON RECOIL 
 
+void AC_BaseGun::StartRecoil()
+{
+	AActor* MyOwner = GetOwner();
+	if (MyOwner)
+	{
+		AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(MyOwner);
+		if (PlayerCharacter)
+		{
+			StopReturnTimeline();
+
+			RecoilTimeline->SetPlayRate(1.0f);
+
+			// Should only be set once, when player first fires
+			if(bSetOriginalRotation)
+			{
+				OriginalRotation = PlayerCharacter->CameraComp->GetComponentRotation();
+				bSetOriginalRotation = false;
+			}
+
+			
+			if(bIsRecoilTimelineFinished)// If finished)
+			{
+				bIsRecoilTimelineFinished = false;
+				RecoilTimeline->PlayFromStart();
+			}
+
+			else
+			{
+				RecoilTimeline->Play();
+			}
+		}
+	}
+}
+
+void AC_BaseGun::StopRecoil()
+{
+	StopRecoilTimeline();
+	bSetOriginalRotation = true;
+	ReturnRecoil();
 }
 
 
 
 
+void AC_BaseGun::RecoilTimelineFloatReturn(float Alpha)
+{
+
+}
+
+void AC_BaseGun::OnRecoilTimelineFinished()
+{
+	ReturnRecoil();
+}
+
+void AC_BaseGun::StopRecoilTimeline()
+{
+	if (RecoilTimeline->IsPlaying())
+	{
+		RecoilTimeline->Stop();
+	}
+}
+
+void AC_BaseGun::OnEventEvent()
+{
+	UpdateRecoil(FRecoilPitchCurve->GetFloatValue(RecoilTimeline->GetPlaybackPosition()), 
+		FRecoilYawCurve->GetFloatValue(RecoilTimeline->GetPlaybackPosition()));
+}
+
+void AC_BaseGun::ChangeOriginalRotation()
+{
+	AActor* MyOwner = GetOwner();
+	if (MyOwner)
+	{
+		AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(MyOwner);
+		if (PlayerCharacter)
+		{
+			UCameraComponent* Cam = PlayerCharacter->CameraComp;
+
+			float CameraPitch = Cam->GetComponentRotation().Pitch;
+
+			// Pitch setup
+			float MaxPitch = OriginalRotation.Pitch + 15.0f;
+			float MinPitch = OriginalRotation.Pitch - 15.0f;
+
+			bool bPitch = CameraPitch >= MaxPitch || CameraPitch <= MinPitch;
+
+			// Yaw setup
+
+			float CameraYaw = Cam->GetComponentRotation().Yaw;
+
+			float MaxYaw = OriginalRotation.Yaw + 10.0f;
+			float MinYaw = OriginalRotation.Yaw - 10.0f;
+
+			bool bYaw = CameraYaw >= MaxYaw || CameraYaw <= MinYaw;
+
+
+			if (bPitch || bYaw)
+			{
+				OriginalRotation = Cam->GetComponentRotation();
+				//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("changed start rotation value")));
+			}
+		}
+	}
+}
+
+void AC_BaseGun::UpdateRecoil(float Pitch, float Yaw)
+{
+	ChangeOriginalRotation();
+
+	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+
+	if (PC)
+	{
+		PC->AddPitchInput(Pitch);
+		PC->AddYawInput(Yaw);
+	}
+}
 
 
 
 
+void AC_BaseGun::ReturnTimelineFloatReturn(float Value)
+{
+	float MouseX, MouseY;
+	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	PC->GetInputMouseDelta(MouseX, MouseY);
+
+	bool bMouseX = MouseX >= 0.5 || MouseX <= -0.5;
+	bool bMouseY = MouseY >= 0.5 || MouseY <= -0.5;
+
+	//UE_LOG(LogTemp, Log, TEXT("Mouse x: %f"), MouseX);
+
+	if(MouseX || MouseY)
+	{
+		StopReturnTimeline();
+
+		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("mouse input detected")));
+	}
+
+	else
+	{
+		float CPitch = PC->GetControlRotation().Pitch;
+		float CYaw = PC->GetControlRotation().Yaw;
+		float CRoll = PC->GetControlRotation().Roll;
+
+		float OriginalPitch = OriginalRotation.Pitch;
+		float OriginalYaw = OriginalRotation.Yaw;
+
+		FRotator NewRotation = UKismetMathLibrary::RLerp(FRotator(CPitch, CYaw, CRoll), FRotator(OriginalPitch, OriginalYaw, CRoll), Value, true);
+
+		PC->SetControlRotation(NewRotation);
+	}
+}
+
+void AC_BaseGun::OnReturnTimelineFinished()
+{
+	StopReturnTimeline();
+}
+
+void AC_BaseGun::StopReturnTimeline()
+{
+	if (ReturnTimeline->IsPlaying())
+	{
+		ReturnTimeline->Stop();
+	}
+}
+
+void AC_BaseGun::ReturnRecoil()
+{
+	//StopRecoilTimeline();
+	ReturnTimeline->PlayFromStart();
+}
 
 // Replication
 
@@ -270,4 +481,12 @@ void AC_BaseGun::Server_StopFire_Implementation()
 void AC_BaseGun::Multi_StopFire_Implementation()
 {
 	StopAutoFire();
+}
+
+
+// Virtual Functions
+
+void AC_BaseGun::UpdateAmmoCounter()
+{
+
 }

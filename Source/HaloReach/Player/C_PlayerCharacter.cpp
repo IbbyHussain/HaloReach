@@ -573,6 +573,8 @@ void AC_PlayerCharacter::Reload()
 	{
 		AC_BaseGun* Gun = Cast<AC_BaseGun>(EquippedWeaponArray[0]);
 
+		
+
 		if(Gun)
 		{
 			if(Gun->WeaponStats.CurrentAmmo != Gun->WeaponStats.MaxMagazineAmmo && Gun->WeaponStats.MaxReservesAmmo != 0 && bCanReload)

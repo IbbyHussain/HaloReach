@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "HaloReach/Interactables/Weapons/C_BaseWeapon.h"
+#include "Components/TimelineComponent.h"
 #include "C_BaseGun.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFireWeapon);
@@ -78,6 +79,8 @@ protected:
 
 	virtual void BeginPlay() override;
 
+	virtual void Tick(float Delta) override;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "hit")
 	TSubclassOf<UDamageType> DamageType;
 
@@ -132,6 +135,77 @@ protected:
 
 	void ResetCanFire();
 
+// WEAPON RECOIL 
+
+
+
+	void StopRecoil();
+
+	// The rotation of camera before rotation
+	FRotator OriginalRotation;
+
+	// Weapon recoil timeline
+
+	UTimelineComponent* RecoilTimeline;
+
+	// The weapon recoil pattern will be in the shape of this curve
+	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Weapon Recoil")
+	UCurveFloat* FRecoilPitchCurve;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Weapon Recoil")
+	UCurveFloat* FRecoilYawCurve;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Weapon Recoil")
+	UCurveFloat* FDefaultCurve;
+
+	FOnTimelineFloat RecoilInterpFunction{};
+	FOnTimelineEvent RecoilTimelineFinished{};
+
+	UFUNCTION()
+	void RecoilTimelineFloatReturn(float Alpha);
+
+	UFUNCTION()
+	void OnRecoilTimelineFinished();
+
+	void StopRecoilTimeline();
+
+	bool bIsRecoilTimelineFinished;
+
+	void ChangeOriginalRotation();
+
+	bool bSetOriginalRotation;
+
+	// Timeline update func
+
+	UPROPERTY(BlueprintReadWrite, Category = "Spline Racer")
+	FOnTimelineEvent RecoilTimelineUpdate;
+
+	UFUNCTION()
+	void OnEventEvent();
+
+	void UpdateRecoil(float Pitch, float Yaw);
+
+	// Weapon return timeline -- This is the timeline used to reset the rotation, make the weapon return to start position (before recoil)
+
+	UTimelineComponent* ReturnTimeline;
+
+	// The curve used to return the weapon to its original rotation before recoil
+	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Weapon Recoil")
+	UCurveFloat* FReturnCurve;
+
+	FOnTimelineFloat ReturnInterpFunction{};
+	FOnTimelineEvent ReturnTimelineFinished{};
+
+	UFUNCTION()
+	void ReturnTimelineFloatReturn(float Value);
+
+	UFUNCTION()
+	void OnReturnTimelineFinished();
+
+	void StopReturnTimeline();
+
+	void ReturnRecoil();
+
 // Replication
 
 	UFUNCTION(Server, Reliable)
@@ -151,6 +225,7 @@ protected:
 	void Multi_StopFire_Implementation();
 
 
+
 private:
 
 public:
@@ -167,6 +242,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Delegates")
 	FOnStopFireWeapon OnStopFireWeapon;
+
+	UFUNCTION(BlueprintCallable)
+		void StartRecoil();
 
 	
 };
