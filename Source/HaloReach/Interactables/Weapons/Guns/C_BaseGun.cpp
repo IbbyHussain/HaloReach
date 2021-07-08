@@ -39,16 +39,13 @@ AC_BaseGun::AC_BaseGun()
 	ReturnInterpFunction.BindUFunction(this, FName("ReturnTimelineFloatReturn"));
 	ReturnTimelineFinished.BindUFunction(this, FName("OnReturnTimelineFinished"));
 
-
-
-
 }
 
 void AC_BaseGun::Tick(float Delta)
 {
 	Super::Tick(Delta);
 
-	UE_LOG(LogTemp, Error, TEXT("Status: %s "), (RecoilTimeline->IsPlaying() ? TEXT("TIMER IS PLAYING") : TEXT("TIMER IS NOT PLAYING")));
+	//UE_LOG(LogTemp, Error, TEXT("Status: %s "), (RecoilTimeline->IsPlaying() ? TEXT("TIMER IS PLAYING") : TEXT("TIMER IS NOT PLAYING")));
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("changed start rotation value"), (bHasTimerPaused ? TEXT("TIMER IS PAUSED") : TEXT("TIMER IS NOT PAUSED")));
 
 }
@@ -340,6 +337,8 @@ void AC_BaseGun::RecoilTimelineFloatReturn(float Alpha)
 void AC_BaseGun::OnRecoilTimelineFinished()
 {
 	ReturnRecoil();
+	PreviousPitchValue = 0.0f;
+	PreviousYawValue = 0.0f;
 }
 
 void AC_BaseGun::StopRecoilTimeline()
@@ -369,8 +368,8 @@ void AC_BaseGun::ChangeOriginalRotation()
 			float CameraPitch = Cam->GetComponentRotation().Pitch;
 
 			// Pitch setup
-			float MaxPitch = OriginalRotation.Pitch + 15.0f;
-			float MinPitch = OriginalRotation.Pitch - 15.0f;
+			float MaxPitch = OriginalRotation.Pitch + 20.0f;
+			float MinPitch = OriginalRotation.Pitch - 20.0f;
 
 			bool bPitch = CameraPitch >= MaxPitch || CameraPitch <= MinPitch;
 
@@ -401,8 +400,8 @@ void AC_BaseGun::UpdateRecoil(float Pitch, float Yaw)
 
 	if (PC)
 	{
-		PC->AddPitchInput(Pitch);
-		PC->AddYawInput(Yaw);
+		PC->AddPitchInput(Pitch * GetWorld()->GetDeltaSeconds() * 120.0f);
+		PC->AddYawInput(Yaw * GetWorld()->GetDeltaSeconds() * 120.0f);
 	}
 }
 
@@ -417,8 +416,6 @@ void AC_BaseGun::ReturnTimelineFloatReturn(float Value)
 
 	bool bMouseX = MouseX >= 0.5 || MouseX <= -0.5;
 	bool bMouseY = MouseY >= 0.5 || MouseY <= -0.5;
-
-	//UE_LOG(LogTemp, Log, TEXT("Mouse x: %f"), MouseX);
 
 	if(MouseX || MouseY)
 	{

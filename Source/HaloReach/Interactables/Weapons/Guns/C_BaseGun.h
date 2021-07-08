@@ -175,6 +175,8 @@ protected:
 
 	bool bSetOriginalRotation;
 
+	float PreviousPitchValue, PreviousYawValue;
+
 	// Timeline update func
 
 	UPROPERTY(BlueprintReadWrite, Category = "Spline Racer")
