@@ -318,7 +318,7 @@ void AC_BaseGun::StartRecoil()
 void AC_BaseGun::StopRecoil()
 {
 	StopRecoilTimeline();
-	bSetOriginalRotation = true;
+	//bSetOriginalRotation = true;
 	ReturnRecoil();
 }
 

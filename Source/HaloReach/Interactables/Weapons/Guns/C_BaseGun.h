@@ -125,7 +125,14 @@ protected:
 
 	void StartSemiFire();
 
+	void StopSemiFire();
+
 	FTimerHandle SemiFireHandle;
+
+	// Semi weapon recoil
+
+	// Used for weapons who have a semi fire
+	bool bUseSemiRecoil;
 
 // RELOAD
 
@@ -137,24 +144,35 @@ protected:
 
 // WEAPON RECOIL 
 
-
+	void StartRecoil();
 
 	void StopRecoil();
 
-	// The rotation of camera before rotation
+	// Will set Original Rotation is the player's camera rotation moves outside a given range
+	void ChangeOriginalRotation();
+
+	// The rotation of the camera before recoil starts
 	FRotator OriginalRotation;
 
-	// Weapon recoil timeline
+	// Used as a do once bool, to set the original rotation
+	bool bSetOriginalRotation;
+
+	// Used to reset the recoil timeline, to decied if the timeline should continue or play from start
+	bool bIsRecoilTimelineFinished;
+
+	// RECOIL TIMELINE
 
 	UTimelineComponent* RecoilTimeline;
 
-	// The weapon recoil pattern will be in the shape of this curve
+	// The curve that drives the pitch of the recoil pattern
 	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Weapon Recoil")
 	UCurveFloat* FRecoilPitchCurve;
 
+	// The curve that drives the yaw of the recoil pattern
 	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Weapon Recoil")
 	UCurveFloat* FRecoilYawCurve;
 
+	// The curve that is used to set the timelines length, not used in recoil pattern
 	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Weapon Recoil")
 	UCurveFloat* FDefaultCurve;
 
@@ -169,25 +187,21 @@ protected:
 
 	void StopRecoilTimeline();
 
-	bool bIsRecoilTimelineFinished;
 
-	void ChangeOriginalRotation();
+	// TIMELINE UPDATE 
 
-	bool bSetOriginalRotation;
-
-	float PreviousPitchValue, PreviousYawValue;
-
-	// Timeline update func
-
-	UPROPERTY(BlueprintReadWrite, Category = "Spline Racer")
+	// Used instead of AddInterpFloat func as that function does not support multiple curves
 	FOnTimelineEvent RecoilTimelineUpdate;
 
+	// A tick function while the timeline plays
 	UFUNCTION()
-	void OnEventEvent();
+	void OnTimelineUpdate();
 
+	// Adds pitch and yaw input to the camera rotation moving the camera
 	void UpdateRecoil(float Pitch, float Yaw);
 
-	// Weapon return timeline -- This is the timeline used to reset the rotation, make the weapon return to start position (before recoil)
+
+	// WEAPON RETURN TIMELINE -- This is the timeline used to reset the rotation, make the weapon return to start position after firing
 
 	UTimelineComponent* ReturnTimeline;
 
@@ -206,7 +220,11 @@ protected:
 
 	void StopReturnTimeline();
 
+	// This will retunr the players camera rotation back to the original rotation
 	void ReturnRecoil();
+
+// WEAPON BULLET SPREAD
+
 
 // Replication
 
@@ -244,9 +262,6 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Delegates")
 	FOnStopFireWeapon OnStopFireWeapon;
-
-	UFUNCTION(BlueprintCallable)
-		void StartRecoil();
 
 	
 };
