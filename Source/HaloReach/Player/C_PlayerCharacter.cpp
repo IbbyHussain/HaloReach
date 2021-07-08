@@ -453,10 +453,15 @@ void AC_PlayerCharacter::SwitchWeapons()
 		EquippedWeaponArray.Swap(0, 1);
 		WeaponArrayChecks();
 		WeaponArray3PChecks();
+
 		AC_BaseGun* Gun = Cast<AC_BaseGun>(EquippedWeaponArray[0]);
+		AC_BaseGun* Gun2 = Cast<AC_BaseGun>(EquippedWeaponArray[1]);
+
 
 		if(Gun)
 		{
+			Gun2->StopReturnTimeline();
+
 			DefaultMesh->GetAnimInstance()->Montage_Play(Gun->GetWeaponEquipMontage(), 1.0f);
 
 			bIsSwitching = !bIsSwitching;

@@ -5,7 +5,7 @@
 
 AC_AssaultRifle::AC_AssaultRifle()
 {
-
+	bAutoWeapon = true;
 }
 
 void AC_AssaultRifle::BeginPlay()

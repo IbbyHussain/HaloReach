@@ -299,17 +299,26 @@ void AC_BaseGun::StartRecoil()
 				bSetOriginalRotation = false;
 			}
 
-			// If the timeline is finished play from begining, so that a new recoil pattern starts
-			if(bIsRecoilTimelineFinished)
+			if(bAutoWeapon)
 			{
-				bIsRecoilTimelineFinished = false;
-				RecoilTimeline->PlayFromStart();
+				// If the timeline is finished play from begining, so that a new recoil pattern starts
+				if (bIsRecoilTimelineFinished)
+				{
+					bIsRecoilTimelineFinished = false;
+					RecoilTimeline->PlayFromStart();
+				}
+
+				// Continue form when timeline stopped so that the recoil pattern completes
+				else
+				{
+					RecoilTimeline->Play();
+				}
 			}
 
-			// Continue form when timeline stopped so that the recoil pattern completes
+			// Semi weapons should start from beging as timeline finishes for each shot
 			else
 			{
-				RecoilTimeline->Play();
+				RecoilTimeline->PlayFromStart();
 			}
 		}
 	}
@@ -317,9 +326,13 @@ void AC_BaseGun::StartRecoil()
 
 void AC_BaseGun::StopRecoil()
 {
-	StopRecoilTimeline();
-	bSetOriginalRotation = true;
-	ReturnRecoil();
+	// Only reset for auto weapon
+	if(bAutoWeapon)
+	{
+		StopRecoilTimeline();
+		bSetOriginalRotation = true;
+		ReturnRecoil();
+	}
 }
 
 void AC_BaseGun::RecoilTimelineFloatReturn(float Alpha)

@@ -121,18 +121,14 @@ protected:
 
 	FTimerHandle AutomaticFireHandle;
 
+	// Decides whether to use semi recoil or auto 
+	bool bAutoWeapon;
+
 // SEMI
 
 	void StartSemiFire();
 
-	void StopSemiFire();
-
 	FTimerHandle SemiFireHandle;
-
-	// Semi weapon recoil
-
-	// Used for weapons who have a semi fire
-	bool bUseSemiRecoil;
 
 // RELOAD
 
@@ -218,7 +214,7 @@ protected:
 	UFUNCTION()
 	void OnReturnTimelineFinished();
 
-	void StopReturnTimeline();
+	
 
 	// This will retunr the players camera rotation back to the original rotation
 	void ReturnRecoil();
@@ -263,5 +259,5 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Delegates")
 	FOnStopFireWeapon OnStopFireWeapon;
 
-	
+	void StopReturnTimeline();
 };

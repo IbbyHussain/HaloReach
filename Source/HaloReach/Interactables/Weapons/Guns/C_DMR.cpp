@@ -5,7 +5,7 @@
 
 AC_DMR::AC_DMR()
 {
-
+	bAutoWeapon = false;
 }
 
 void AC_DMR::BeginPlay()

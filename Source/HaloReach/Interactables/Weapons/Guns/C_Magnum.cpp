@@ -5,7 +5,7 @@
 
 AC_Magnum::AC_Magnum()
 {
-
+	bAutoWeapon = false;
 }
 
 void AC_Magnum::BeginPlay()
