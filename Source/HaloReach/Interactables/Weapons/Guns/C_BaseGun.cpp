@@ -366,8 +366,8 @@ void AC_BaseGun::ChangeOriginalRotation()
 			// Pitch setup
 			float CameraPitch = Cam->GetComponentRotation().Pitch;
 			
-			float MaxPitch = OriginalRotation.Pitch + 20.0f;
-			float MinPitch = OriginalRotation.Pitch - 20.0f;
+			float MaxPitch = OriginalRotation.Pitch + WeaponStats.MaxPitchValue;
+			float MinPitch = OriginalRotation.Pitch - WeaponStats.MinPitchValue;
 
 			// If the players camera pitch goes out of range
 			bool bPitch = CameraPitch >= MaxPitch || CameraPitch <= MinPitch;
@@ -375,8 +375,8 @@ void AC_BaseGun::ChangeOriginalRotation()
 			// Yaw setup
 			float CameraYaw = Cam->GetComponentRotation().Yaw;
 
-			float MaxYaw = OriginalRotation.Yaw + 10.0f;
-			float MinYaw = OriginalRotation.Yaw - 10.0f;
+			float MaxYaw = OriginalRotation.Yaw + WeaponStats.MaxYawValue;
+			float MinYaw = OriginalRotation.Yaw - WeaponStats.MinYawValue;
 
 			//If the players camera Yaw goes out of range
 			bool bYaw = CameraYaw >= MaxYaw || CameraYaw <= MinYaw;

@@ -18,19 +18,22 @@ public:
 
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | General")
 	USkeletalMeshComponent* WeaponMesh;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | General")
 	TSubclassOf<AC_BaseWeapon> BPRef;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	// The socket which the weapon will be attached to in first person
+	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Sockets")
 	FName Socket1P;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	// The socket which the weapon will be attached to in third person
+	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Sockets")
 	FName Socket3P;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	// The socket which the weapon will be attached to in third person when holstered
+	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Sockets")
 	FName Socket3PHolstered;
 
 	// Getters for 1P anim montages
@@ -52,30 +55,29 @@ public:
 
 	EWeaponType Type;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,  Category = "Weapon")
+	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | General")
 	UTexture2D* WeaponIcon;
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon | Animations | 1P")
+	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Animations | 1P")
 	UAnimMontage* WeaponEquipAnimation;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon | Animations | 1P")
+	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Animations | 1P")
 	UAnimMontage* ReloadAnimation;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon | Animations | 1P")
+	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Animations | 1P")
 	UAnimMontage* FireAnimation;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon | Animations | 3P")
+	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Animations | 3P")
 	UAnimMontage* Equip3PMontage;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon | Animations | 3P")
+	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Animations | 3P")
 	UAnimMontage* Reload3PMontage;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon | Animations | 3P")
+	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Animations | 3P")
 	UAnimMontage* Fire3PMontage;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	class AC_PlayerCharacter* Player;
 
 // ATTACKING
