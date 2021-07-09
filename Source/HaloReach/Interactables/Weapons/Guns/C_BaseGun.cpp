@@ -36,6 +36,7 @@ AC_BaseGun::AC_BaseGun()
 	ReturnInterpFunction.BindUFunction(this, FName("ReturnTimelineFloatReturn"));
 	ReturnTimelineFinished.BindUFunction(this, FName("OnReturnTimelineFinished"));
 
+	ReturnTimeline->SetPlayRate(WeaponStats.ReturntimelinePlayRate);
 }
 
 void AC_BaseGun::Tick(float Delta)
@@ -290,8 +291,6 @@ void AC_BaseGun::StartRecoil()
 		{
 			StopReturnTimeline();
 
-			RecoilTimeline->SetPlayRate(1.0f);
-
 			// Should only be set once, when player first fires
 			if(bSetOriginalRotation)
 			{
@@ -438,7 +437,8 @@ void AC_BaseGun::ReturnTimelineFloatReturn(float Value)
 		float OriginalYaw = OriginalRotation.Yaw;
 
 		// Lerps from current rotation to the original rotation, but does not include roll
-		FRotator NewRotation = UKismetMathLibrary::RLerp(FRotator(CPitch, CYaw, CRoll), FRotator(OriginalPitch, OriginalYaw, CRoll), Value, true);
+		FRotator NewRotation = UKismetMathLibrary::RLerp(FRotator(CPitch, CYaw, CRoll), FRotator(OriginalPitch, OriginalYaw, CRoll), 
+			Value * WeaponStats.ReturntimelinePlayRate, true);
 
 		PC->SetControlRotation(NewRotation);
 	}

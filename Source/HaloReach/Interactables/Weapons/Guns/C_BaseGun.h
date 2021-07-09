@@ -56,11 +56,11 @@ public:
 	float MinYawValue;
 
 	// The speed of the recoil pattern timeline
-	UPROPERTY(EditDefaultsOnly)
-	float RecoiltimelinePlayRate;
+	//UPROPERTY(EditDefaultsOnly)
+	//float RecoiltimelinePlayRate;
 
 	// The speed of the return timeline
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, meta = (ClampMin = "1.0", ClampMax = "2.0"))
 	float ReturntimelinePlayRate;
 
 	float LastFireTime;
@@ -91,6 +91,10 @@ public:
 		MinPitchValue = 20.0f;
 		MaxYawValue = 10.0f;
 		MinYawValue = 10.0f;
+
+		ReturntimelinePlayRate = 1.0f;
+
+
 
 	}
 };

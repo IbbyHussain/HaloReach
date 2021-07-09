@@ -6,6 +6,10 @@
 AC_Magnum::AC_Magnum()
 {
 	bAutoWeapon = false;
+
+	WeaponStats.CurrentAmmo = 8;
+	WeaponStats.MaxMagazineAmmo = 8;
+	WeaponStats.MaxReservesAmmo = 64;
 }
 
 void AC_Magnum::BeginPlay()
