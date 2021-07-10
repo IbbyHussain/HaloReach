@@ -83,8 +83,6 @@ public:
 
 	int32 CurrentAmmo;
 
-	int32 CurrentReservesAmmo;
-
 	// Time of reload animation 
 	float ReloadLength;
 
@@ -101,7 +99,6 @@ public:
 		MaxReservesAmmo = 224;
 
 		CurrentAmmo = MaxMagazineAmmo;
-		CurrentReservesAmmo = MaxReservesAmmo;
 
 		// These values act as the range for the recoil pattern. If the camera rotation leaves this range a new return position is set (for ReturnRecoil func)
 		MaxPitchValue = 20.0f;

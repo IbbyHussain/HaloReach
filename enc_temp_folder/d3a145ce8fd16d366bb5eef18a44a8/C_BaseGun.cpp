@@ -401,7 +401,7 @@ void AC_BaseGun::UpdateRecoil(float Pitch, float Yaw)
 			PC->AddYawInput(Yaw * GetWorld()->GetDeltaSeconds() * 120.0f);
 		}
 		
-		else if(WeaponStats.MaxReservesAmmo)
+		else
 		{
 			//StopRecoil();
 		}
