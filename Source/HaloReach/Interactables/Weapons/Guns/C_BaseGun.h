@@ -149,11 +149,19 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Gun | Weapon Effects")
 	TSubclassOf<UDamageType> DamageType;
 
-	// A basic fire function which uses a line trace and applies damage
+	// A basic fire function which uses a line trace and applies damage, Will always be called on server
 	void Fire();
+
+	// A Fire() function that is only called locally
+	void LocalFire();
 
 	// Plays particle effects for weapon
 	void PlayFireEffects();
+
+	FTimerHandle AutomaticLocalFireHandle;
+
+	FTimerHandle SemiLocalFireHandle;
+
 
 // AMMO COUNTER
 
@@ -189,8 +197,6 @@ protected:
 	void ResetCanFire();
 
 // WEAPON RECOIL 
-
-	
 
 	void StopRecoil();
 
@@ -264,8 +270,6 @@ protected:
 	UFUNCTION()
 	void OnReturnTimelineFinished();
 
-	
-
 	// This will retunr the players camera rotation back to the original rotation
 	void ReturnRecoil();
 
@@ -291,19 +295,12 @@ protected:
 	void Multi_StopFire();
 	void Multi_StopFire_Implementation();
 
-
-
 private:
 
 public:
 
 	UFUNCTION(BlueprintCallable)
-		void StartRecoil();
-
-	UFUNCTION(Client, Reliable)
-	void Client_StartRecoil();
-	void Client_StartRecoil_Implementation();
-
+	void StartRecoil();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gun | Weapon Stats")
 	FWeaponStats WeaponStats;

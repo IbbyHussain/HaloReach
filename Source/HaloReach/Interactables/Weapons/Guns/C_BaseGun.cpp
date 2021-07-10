@@ -20,7 +20,7 @@ AC_BaseGun::AC_BaseGun()
 
 	bReplicates = true;
 
-	NetUpdateFrequency = 30.0f;
+	NetUpdateFrequency = 60.0f;
 	MinNetUpdateFrequency = 10.0f;
 
 	bCanFire = true;
@@ -101,15 +101,12 @@ void AC_BaseGun::Fire()
 			WeaponStats.CurrentAmmo -= 1;
 			UpdateAmmoCounter();
 
-			Client_StartRecoil();
-
 			AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(MyOwner);
 			if(PlayerCharacter)
 			{
 				PlayerCharacter->OnWeaponFire();
 				PlayerCharacter->PlayMontage(GetWeaponFireMontage());
 			}
-
 
 			FVector EyeLocation;
 			FRotator EyeRotation;
@@ -176,10 +173,18 @@ void AC_BaseGun::Fire()
 			if(PlayerCharacter)
 			{
 				PlayerCharacter->Reload(); // Calls player reload, so montages can be played
-				PlayerCharacter->OnWeaponStopFire();
-				PlayerCharacter->StopMontage(GetWeaponFireMontage());
+				PlayerCharacter->OnWeaponStopFire(); // Stops 3p fire anim
+				PlayerCharacter->StopMontage(GetWeaponFireMontage()); // stops 1p fire anim
 			}
 		}
+	}
+}
+
+void AC_BaseGun::LocalFire()
+{
+	if (WeaponStats.CurrentAmmo > 0 && bCanFire)
+	{
+		StartRecoil();
 	}
 }
 
@@ -247,6 +252,9 @@ void AC_BaseGun::StartAutoFire()
 	
 	float FirstDelay = FMath::Max(WeaponStats.LastFireTime + WeaponStats.TimeBetweenShots - GetWorld()->TimeSeconds, 0.0f);
 	GetWorldTimerManager().SetTimer(AutomaticFireHandle, this, &AC_BaseGun::Fire, WeaponStats.TimeBetweenShots, true, FirstDelay);
+	GetWorldTimerManager().SetTimer(AutomaticLocalFireHandle, this, &AC_BaseGun::LocalFire, WeaponStats.TimeBetweenShots, true, FirstDelay);
+
+	//StartRecoil();
 
 	UpdateAmmoCounter();
 }
@@ -267,12 +275,14 @@ void AC_BaseGun::StopAutoFire()
 	
 	UpdateAmmoCounter();
 	GetWorldTimerManager().ClearTimer(AutomaticFireHandle);
+	GetWorldTimerManager().ClearTimer(AutomaticLocalFireHandle);
 }
 
 void AC_BaseGun::StartSemiFire()
 {
 	float FirstDelay = FMath::Max(WeaponStats.LastFireTime + WeaponStats.TimeBetweenShots - GetWorld()->TimeSeconds, 0.0f);
 	GetWorldTimerManager().SetTimer(SemiFireHandle, this, &AC_BaseGun::Fire, WeaponStats.TimeBetweenShots, false, FirstDelay);
+	GetWorldTimerManager().SetTimer(SemiLocalFireHandle, this, &AC_BaseGun::LocalFire, WeaponStats.TimeBetweenShots, false, FirstDelay);
 
 	UpdateAmmoCounter();
 }
@@ -297,7 +307,7 @@ void AC_BaseGun::StartRecoil()
 			// Should only be set once, when player first fires
 			if(bSetOriginalRotation)
 			{
-				OriginalRotation = PlayerCharacter->CameraComp->GetComponentRotation();
+				OriginalRotation = PlayerCharacter->CameraComp->GetComponentRotation(); // CameraComp
 				bSetOriginalRotation = false;
 			}
 
@@ -528,13 +538,6 @@ void AC_BaseGun::Multi_StopFire_Implementation()
 {
 	StopAutoFire();
 }
-
-// Recoil shoudl only play locally
-void AC_BaseGun::Client_StartRecoil_Implementation()
-{
-	StartRecoil();
-}
-
 
 // Virtual Functions
 
