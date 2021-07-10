@@ -254,6 +254,8 @@ void AC_BaseGun::StartAutoFire()
 	GetWorldTimerManager().SetTimer(AutomaticFireHandle, this, &AC_BaseGun::Fire, WeaponStats.TimeBetweenShots, true, FirstDelay);
 	GetWorldTimerManager().SetTimer(AutomaticLocalFireHandle, this, &AC_BaseGun::LocalFire, WeaponStats.TimeBetweenShots, true, FirstDelay);
 
+	//StartRecoil();
+
 	UpdateAmmoCounter();
 }
 
