@@ -113,7 +113,7 @@ void AC_BaseGun::Fire()
 			MyOwner->GetActorEyesViewPoint(EyeLocation, EyeRotation);
 
 			FVector ShotDirection = EyeRotation.Vector();
-			FVector TraceEnd = EyeLocation + (ShotDirection * 5000);
+			FVector TraceEnd = EyeLocation + (SpreadTrace(ShotDirection) * 5000);
 
 			FCollisionQueryParams QueryParams;
 
@@ -125,6 +125,7 @@ void AC_BaseGun::Fire()
 			FHitResult Hit;
 
 			bool bHit = GetWorld()->LineTraceSingleByChannel(Hit, EyeLocation, TraceEnd, COLLISION_WEAPON, QueryParams);
+			DrawDebugLine(GetWorld(), EyeLocation, TraceEnd, FColor::Red, false, 1.0f, 0, 1.0f);
 
 			if (bHit)
 			{
@@ -142,9 +143,7 @@ void AC_BaseGun::Fire()
 				}
 
 				UGameplayStatics::ApplyPointDamage(HitActor, ActualDamage, ShotDirection, Hit, MyOwner->GetInstigatorController(), this, DamageType);
-
-				DrawDebugLine(GetWorld(), EyeLocation, TraceEnd, FColor::Red, false, 1.0f, 0, 1.0f);
-
+				
 				// Plays particle effect (Impact Effect) depending on physical material hit
 				UParticleSystem* SelectedEffect = nullptr;
 				switch (SurfaceType)
@@ -463,6 +462,19 @@ void AC_BaseGun::ReturnRecoil()
 }
 
 // WEAPON BULLET SPREAD
+
+FVector AC_BaseGun::SpreadTrace(FVector Trace)
+{
+	float X = Trace.X;
+	float Y = Trace.Y;
+	float Z = Trace.Z;
+
+	X += UKismetMathLibrary::RandomFloatInRange(WeaponStats.BulletSpreadRoll * -1.0f, WeaponStats.BulletSpreadRoll);
+	Y += UKismetMathLibrary::RandomFloatInRange(WeaponStats.BulletSpreadPitch * -1.0f, WeaponStats.BulletSpreadPitch);
+	Z += UKismetMathLibrary::RandomFloatInRange(WeaponStats.BulletSpreadYaw * -1.0f, WeaponStats.BulletSpreadYaw);
+
+	return FVector(X, Y , Z);
+}
 
 // Replication
 

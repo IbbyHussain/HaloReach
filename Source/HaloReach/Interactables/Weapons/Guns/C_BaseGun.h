@@ -55,6 +55,20 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	float MinYawValue;
 
+	// The Amount of bullet spread that occurs in the yaw direction
+	UPROPERTY(EditDefaultsOnly)
+	float BulletSpreadYaw;
+
+	// The Amount of bullet spread that occurs in the pitch direction
+	UPROPERTY(EditDefaultsOnly)
+	float BulletSpreadPitch;
+
+
+	// The Amount of bullet spread that occurs in the roll direction
+	UPROPERTY(EditDefaultsOnly)
+	float BulletSpreadRoll;
+
+
 	// The speed of the recoil pattern timeline
 	//UPROPERTY(EditDefaultsOnly)
 	//float RecoiltimelinePlayRate;
@@ -94,7 +108,9 @@ public:
 
 		ReturntimelinePlayRate = 1.0f;
 
-
+		BulletSpreadPitch = 0.1;
+		BulletSpreadRoll = 0.1f;
+		BulletSpreadYaw = 0.1f;
 
 	}
 };
@@ -252,6 +268,7 @@ protected:
 
 // WEAPON BULLET SPREAD
 
+	FVector SpreadTrace(FVector Trace);
 
 // Replication
 
