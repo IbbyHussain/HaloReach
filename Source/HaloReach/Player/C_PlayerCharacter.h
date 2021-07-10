@@ -170,7 +170,14 @@ public:
 	void StopMontage(UAnimMontage* Montage);
 
 
+// WEAPON AIM OFFSET
 
+	// Used to replicate player rotation, used in ABP for aim offset
+	UPROPERTY(BlueprintReadWrite, Replicated)
+	FRotator ControlRotation;
+
+	UFUNCTION(BlueprintCallable)
+	void SetControlRotation();
 	
 
 // WEAPON FIRE

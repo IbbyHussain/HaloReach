@@ -164,6 +164,8 @@ void AC_PlayerCharacter::Tick(float DeltaTime)
 	float NewFOV = FMath::FInterpTo(CameraComp->FieldOfView, TargetFOV, DeltaTime, ZoomInterpSpeed);
 	CameraComp->SetFieldOfView(NewFOV);
 
+	SetControlRotation();
+
 	//float Pitch = UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetControlRotation().Quaternion().X;
 
 	//UE_LOG(LogTemp, Log, TEXT("Pitch: %f"), Pitch);
@@ -661,6 +663,9 @@ void AC_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	DOREPLIFETIME(AC_PlayerCharacter, bIsFiring);
 	DOREPLIFETIME(AC_PlayerCharacter, bStopFiring);
 	DOREPLIFETIME(AC_PlayerCharacter, bIsSwitching);
+	DOREPLIFETIME_CONDITION(AC_PlayerCharacter, ControlRotation, COND_SkipOwner);
+
+	
 
 
 
@@ -745,7 +750,6 @@ void AC_PlayerCharacter::OnWeaponStopFire()
 	}
 }
 
-
 void AC_PlayerCharacter::BeginZoom()
 {
 	if (EquippedWeaponArray[0])
@@ -776,6 +780,14 @@ void AC_PlayerCharacter::PlayMontage(UAnimMontage* Montage)
 void AC_PlayerCharacter::StopMontage(UAnimMontage* Montage)
 {
 	DefaultMesh->GetAnimInstance()->Montage_Stop(1.0f, Montage);
+}
+
+void AC_PlayerCharacter::SetControlRotation()
+{
+	if(HasAuthority() || IsLocallyControlled())
+	{
+		ControlRotation = GetController()->GetControlRotation();
+	}
 }
 
 // INPUT
