@@ -77,7 +77,11 @@ void AC_BaseGun::BeginPlay()
 		ReturnTimeline->SetTimelineFinishedFunc(ReturnTimelineFinished);
 		ReturnTimeline->SetLooping(false);
 	}
+
+	// BP set values for MaxReservesAmmo is not set without this
+	WeaponStats.CurrentReservesAmmo = WeaponStats.MaxReservesAmmo;
 }
+
 
 void AC_BaseGun::Fire()
 {
@@ -94,11 +98,10 @@ void AC_BaseGun::Fire()
 		{
 			//UE_LOG(LogTemp, Log, TEXT("SERVER FIRED"));
 
-			StartRecoil();
-
 			WeaponStats.CurrentAmmo -= 1;
 			UpdateAmmoCounter();
 
+			Client_StartRecoil();
 
 			AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(MyOwner);
 			if(PlayerCharacter)
@@ -202,21 +205,24 @@ void AC_BaseGun::Reload()
 	if(WeaponStats.CurrentAmmo != WeaponStats.MaxMagazineAmmo )
 	{
 		// push unused ammo back into reserves
-		WeaponStats.MaxReservesAmmo += WeaponStats.CurrentAmmo;
+		WeaponStats.CurrentReservesAmmo += WeaponStats.CurrentAmmo;
 
 		// if there is enough ammo in reserves to fully restock current magazine, then do so
-		if(WeaponStats.MaxReservesAmmo >= WeaponStats.MaxMagazineAmmo)
+		if(WeaponStats.CurrentReservesAmmo >= WeaponStats.MaxMagazineAmmo)
 		{
-			WeaponStats.MaxReservesAmmo -= WeaponStats.MaxMagazineAmmo;
+			WeaponStats.CurrentReservesAmmo -= WeaponStats.MaxMagazineAmmo;
 			WeaponStats.CurrentAmmo = WeaponStats.MaxMagazineAmmo;
 		}
 
 		// if there is not enough ammo in reserves to give a full mag, set current mag to whatever ammo is left in reserves
-		else if(WeaponStats.MaxReservesAmmo > 0 && WeaponStats.MaxReservesAmmo < WeaponStats.MaxMagazineAmmo)
+		else if(WeaponStats.CurrentReservesAmmo > 0 && WeaponStats.CurrentReservesAmmo < WeaponStats.MaxMagazineAmmo)
 		{
-			WeaponStats.CurrentAmmo = WeaponStats.MaxReservesAmmo;
-			WeaponStats.MaxReservesAmmo = 0;
+			WeaponStats.CurrentAmmo = WeaponStats.CurrentReservesAmmo;
+			WeaponStats.CurrentReservesAmmo = 0;
 		}
+
+		StopRecoilTimeline();
+		ReturnRecoil(); // temp tests
 
 		bIsRecoilTimelineFinished = true;
 
@@ -338,6 +344,14 @@ void AC_BaseGun::RecoilTimelineFloatReturn(float Alpha)
 
 void AC_BaseGun::OnRecoilTimelineFinished()
 {
+	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if(PC)
+	{
+		// Have to set Roll to 0.0f as during timeloine it changes slighlty due to gimbal lock
+		float P = PC->GetControlRotation().Pitch;
+		float Y = PC->GetControlRotation().Yaw;
+		PC->SetControlRotation(FRotator(P, Y, 0.0f));
+	}
 	ReturnRecoil();
 }
 
@@ -401,9 +415,9 @@ void AC_BaseGun::UpdateRecoil(float Pitch, float Yaw)
 			PC->AddYawInput(Yaw * GetWorld()->GetDeltaSeconds() * 120.0f);
 		}
 		
-		else if(WeaponStats.MaxReservesAmmo)
+		else if(WeaponStats.CurrentReservesAmmo == 0)
 		{
-			//StopRecoil();
+			StopRecoil();
 		}
 	}
 }
@@ -447,6 +461,14 @@ void AC_BaseGun::ReturnTimelineFloatReturn(float Value)
 
 		PC->SetControlRotation(NewRotation);
 	}
+
+	if (PC)
+	{
+		// Have to set Roll to 0.0f as during timeloine it changes slighlty due to gimbal lock
+		float P = PC->GetControlRotation().Pitch;
+		float Y = PC->GetControlRotation().Yaw;
+		PC->SetControlRotation(FRotator(P, Y, 0.0f));
+	}
 }
 
 void AC_BaseGun::OnReturnTimelineFinished()
@@ -464,7 +486,10 @@ void AC_BaseGun::StopReturnTimeline()
 
 void AC_BaseGun::ReturnRecoil()
 {
-	ReturnTimeline->PlayFromStart();
+	if(!ReturnTimeline->IsPlaying())
+	{
+		ReturnTimeline->PlayFromStart();
+	}
 }
 
 // WEAPON BULLET SPREAD
@@ -502,6 +527,12 @@ void AC_BaseGun::Server_StopFire_Implementation()
 void AC_BaseGun::Multi_StopFire_Implementation()
 {
 	StopAutoFire();
+}
+
+// Recoil shoudl only play locally
+void AC_BaseGun::Client_StartRecoil_Implementation()
+{
+	StartRecoil();
 }
 
 

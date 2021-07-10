@@ -582,7 +582,7 @@ void AC_PlayerCharacter::Reload()
 
 		if(Gun)
 		{
-			if(Gun->WeaponStats.CurrentAmmo != Gun->WeaponStats.MaxMagazineAmmo && Gun->WeaponStats.MaxReservesAmmo != 0 && bCanReload)
+			if(Gun->WeaponStats.CurrentAmmo != Gun->WeaponStats.MaxMagazineAmmo && Gun->WeaponStats.CurrentReservesAmmo != 0 && bCanReload)
 			{
 				// The OnRep only works on server 
 				bIsReloading = !bIsReloading;

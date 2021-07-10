@@ -190,7 +190,7 @@ protected:
 
 // WEAPON RECOIL 
 
-	void StartRecoil();
+	
 
 	void StopRecoil();
 
@@ -296,6 +296,14 @@ protected:
 private:
 
 public:
+
+	UFUNCTION(BlueprintCallable)
+		void StartRecoil();
+
+	UFUNCTION(Client, Reliable)
+	void Client_StartRecoil();
+	void Client_StartRecoil_Implementation();
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gun | Weapon Stats")
 	FWeaponStats WeaponStats;

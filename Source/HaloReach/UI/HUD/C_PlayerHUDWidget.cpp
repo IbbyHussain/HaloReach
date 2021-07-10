@@ -193,12 +193,12 @@ void UC_PlayerHUDWidget::UpdateAmmoText()
 
 		if(PrimaryWeapon)
 		{
-			PrimaryMaxAmmoText->SetText(FText::FromString(FString::FromInt(PrimaryWeapon->WeaponStats.MaxReservesAmmo)));
+			PrimaryMaxAmmoText->SetText(FText::FromString(FString::FromInt(PrimaryWeapon->WeaponStats.CurrentReservesAmmo)));
 		}
 
 		if(SecondaryWeapon)
 		{
-			SecondaryMaxAmmoText->SetText(FText::FromString(FString::FromInt(SecondaryWeapon->WeaponStats.MaxReservesAmmo)));
+			SecondaryMaxAmmoText->SetText(FText::FromString(FString::FromInt(SecondaryWeapon->WeaponStats.CurrentReservesAmmo)));
 		}
 	}
 }
