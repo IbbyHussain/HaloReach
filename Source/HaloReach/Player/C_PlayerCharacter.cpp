@@ -588,7 +588,6 @@ void AC_PlayerCharacter::Reload()
 				if (!HasAuthority())
 				{
 					Server_Reload(Gun->GetWeapon3PReloadMontage());
-					return;
 				}
 
 				Gun->Reload();
