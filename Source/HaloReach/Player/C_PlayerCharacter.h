@@ -101,6 +101,8 @@ private:
 	UPROPERTY(Replicated)
 	ECombatState CombatState;
 
+private:
+
 // OVERRIDE METHODS
 
 	virtual void BeginPlay() override;
@@ -420,4 +422,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player | PlayerComponents")
 	class UC_HealthComponent* HealthComp;
 
+
+	void UpdateReserveAmmo();
 };

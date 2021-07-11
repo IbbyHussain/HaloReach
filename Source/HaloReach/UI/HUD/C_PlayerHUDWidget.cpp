@@ -164,7 +164,6 @@ void UC_PlayerHUDWidget::UpdateShieldBars(float Shields)
 	}
 }
 
-
 void UC_PlayerHUDWidget::UpdateWeaponImages()
 {
 	APlayerController* const PC = Cast<APlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
@@ -183,6 +182,7 @@ void UC_PlayerHUDWidget::UpdateWeaponImages()
 	}
 }
 
+// Updates ammo in reserves text
 void UC_PlayerHUDWidget::UpdateAmmoText()
 {
 	AC_PlayerCharacter* Player = Cast<AC_PlayerCharacter>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn());
@@ -203,6 +203,7 @@ void UC_PlayerHUDWidget::UpdateAmmoText()
 	}
 }
 
+// Updates the ammo images in the HUD
 void UC_PlayerHUDWidget::UpdateAmmoImage()
 {
 	AC_PlayerCharacter* Player = Cast<AC_PlayerCharacter>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn());

@@ -170,9 +170,6 @@ protected:
 
 	void SetCurrentAmmoImage(UTexture2D* NewTexture);
 
-	//Used to set the Ammo counter used in the HUD as well as the ammo counter on the weapon mesh if weapon has one
-	virtual void UpdateAmmoCounter();
-
 	// Material Ammo Counter used on weapon mesh
 
 	// Base material
@@ -340,4 +337,8 @@ public:
 	FOnStopFireWeapon OnStopFireWeapon;
 
 	void StopReturnTimeline();
+
+	//Used to set the Ammo counter used in the HUD as well as the ammo counter on the weapon mesh if weapon has one
+	UFUNCTION()
+	virtual void UpdateAmmoCounter();
 };

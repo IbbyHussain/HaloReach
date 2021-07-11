@@ -17,8 +17,6 @@ void AC_Magnum::BeginPlay()
 	Super::BeginPlay();
 
 	Type = EWeaponType::PISTOL;
-
-
 }
 
 void AC_Magnum::Attack()
@@ -33,15 +31,12 @@ void AC_Magnum::UpdateAmmoCounter()
 	switch (WeaponStats.CurrentAmmo)
 	{
 	case 8:
-		UE_LOG(LogTemp, Log, TEXT("8 in chamber"));
 		SetCurrentAmmoImage(AmmoCounterImageArray[8]);
 		break;
 	case 7:
-		UE_LOG(LogTemp, Log, TEXT("7 in chamber"));
 		SetCurrentAmmoImage(AmmoCounterImageArray[7]);
 		break;
 	case 6:
-		UE_LOG(LogTemp, Log, TEXT("6 in chamber"));
 		SetCurrentAmmoImage(AmmoCounterImageArray[6]);
 		break;
 	case 5:

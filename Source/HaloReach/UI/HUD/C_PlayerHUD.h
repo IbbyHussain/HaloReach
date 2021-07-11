@@ -34,4 +34,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void HUDUpdateShieldBars(float Shields);
+
+	// Ammo counter
+
+	UFUNCTION()
+	void UpdateWeaponReserves();
 };

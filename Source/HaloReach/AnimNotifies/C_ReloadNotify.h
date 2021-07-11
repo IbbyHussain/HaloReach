@@ -6,9 +6,6 @@
 #include "Animation/AnimNotifies/AnimNotify.h"
 #include "C_ReloadNotify.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class HALOREACH_API UC_ReloadNotify : public UAnimNotify
 {
@@ -16,5 +13,7 @@ class HALOREACH_API UC_ReloadNotify : public UAnimNotify
 
 public:
 	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
+
+
 	
 };

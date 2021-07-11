@@ -165,10 +165,6 @@ void AC_PlayerCharacter::Tick(float DeltaTime)
 	CameraComp->SetFieldOfView(NewFOV);
 
 	SetControlRotation();
-
-	//float Pitch = UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetControlRotation().Quaternion().X;
-
-	//UE_LOG(LogTemp, Log, TEXT("Pitch: %f"), Pitch);
 }
 
 // HEALTH SYSTEM
@@ -641,6 +637,11 @@ void AC_PlayerCharacter::OnWeaponTypeUpdate()
 		break;
 
 	}
+}
+
+void AC_PlayerCharacter::UpdateReserveAmmo()
+{
+	HUD->UpdateWeaponReserves();
 }
 
 // REPLICATION TESTING

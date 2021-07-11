@@ -4,6 +4,7 @@
 #include "HaloReach/UI/HUD/C_PlayerHUD.h"
 #include "HaloReach/UI/HUD/C_PlayerHUDWidget.h"
 #include "Engine/World.h"
+#include "HaloReach/Player/C_PlayerCharacter.h"
 
 AC_PlayerHUD::AC_PlayerHUD()
 {
@@ -42,7 +43,6 @@ void AC_PlayerHUD::BeginPlay()
 			HUDWidget->AddToViewport();
 		}
 	}
-
 }
 
 void AC_PlayerHUD::HUDUpdateHealthImage(float Health)
@@ -62,3 +62,10 @@ void AC_PlayerHUD::HUDUpdateShieldBars(float Shields)
 	}
 }
 
+void AC_PlayerHUD::UpdateWeaponReserves()
+{
+	if(HUDWidget)
+	{
+		HUDWidget->UpdateAmmoText();
+	}
+}

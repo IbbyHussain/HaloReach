@@ -236,8 +236,6 @@ void AC_BaseGun::Reload()
 			WeaponStats.CurrentReservesAmmo = 0;
 		}
 
-		UpdateAmmoCounter();
-
 		StopRecoilTimeline();
 		ReturnRecoil(); // temp tests
 
@@ -246,8 +244,6 @@ void AC_BaseGun::Reload()
 		// Time before can fire again 
 		bCanFire = false;
 		GetWorldTimerManager().SetTimer(ReloadHandle, this, &AC_BaseGun::ResetCanFire, WeaponStats.ReloadLength, false);
-
-		UpdateAmmoCounter();
 	}
 }
 
@@ -283,7 +279,7 @@ void AC_BaseGun::StopAutoFire()
 		}
 	}
 	
-	UpdateAmmoCounter();
+	//UpdateAmmoCounter();
 	GetWorldTimerManager().ClearTimer(AutomaticFireHandle);
 	GetWorldTimerManager().ClearTimer(AutomaticLocalFireHandle);
 }
