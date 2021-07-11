@@ -455,6 +455,7 @@ void AC_PlayerCharacter::SwitchWeapons()
 		AC_BaseGun* Gun = Cast<AC_BaseGun>(EquippedWeaponArray[0]);
 		AC_BaseGun* Gun2 = Cast<AC_BaseGun>(EquippedWeaponArray[1]);
 
+		HUD->UpdateWeaponReserves();
 
 		if(Gun)
 		{
