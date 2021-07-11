@@ -292,57 +292,59 @@ void AC_BaseGun::SetCurrentAmmoImage(UTexture2D* NewTexture)
 
 // WEAPON RECOIL 
 
+//commented out
 void AC_BaseGun::StartRecoil()
 {
-	AActor* MyOwner = GetOwner();
-	if (MyOwner)
-	{
-		AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(MyOwner);
-		if (PlayerCharacter)
-		{
-			StopReturnTimeline();
+	//AActor* MyOwner = GetOwner();
+	//if (MyOwner)
+	//{
+	//	AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(MyOwner);
+	//	if (PlayerCharacter)
+	//	{
+	//		StopReturnTimeline();
 
-			// Should only be set once, when player first fires
-			if(bSetOriginalRotation)
-			{
-				OriginalRotation = PlayerCharacter->CameraComp->GetComponentRotation(); // CameraComp
-				bSetOriginalRotation = false;
-			}
+	//		// Should only be set once, when player first fires
+	//		if(bSetOriginalRotation)
+	//		{
+	//			OriginalRotation = PlayerCharacter->CameraComp->GetComponentRotation(); // CameraComp
+	//			bSetOriginalRotation = false;
+	//		}
 
-			if(bAutoWeapon)
-			{
-				// If the timeline is finished play from begining, so that a new recoil pattern starts
-				if (bIsRecoilTimelineFinished)
-				{
-					bIsRecoilTimelineFinished = false;
-					RecoilTimeline->PlayFromStart();
-				}
+	//		if(bAutoWeapon)
+	//		{
+	//			// If the timeline is finished play from begining, so that a new recoil pattern starts
+	//			if (bIsRecoilTimelineFinished)
+	//			{
+	//				bIsRecoilTimelineFinished = false;
+	//				RecoilTimeline->PlayFromStart();
+	//			}
 
-				// Continue form when timeline stopped so that the recoil pattern completes
-				else
-				{
-					RecoilTimeline->Play();
-				}
-			}
+	//			// Continue form when timeline stopped so that the recoil pattern completes
+	//			else
+	//			{
+	//				RecoilTimeline->Play();
+	//			}
+	//		}
 
-			// Semi weapons should start from beging as timeline finishes for each shot
-			else
-			{
-				RecoilTimeline->PlayFromStart();
-			}
-		}
-	}
+	//		// Semi weapons should start from beging as timeline finishes for each shot
+	//		else
+	//		{
+	//			RecoilTimeline->PlayFromStart();
+	//		}
+	//	}
+	//}
 }
 
+//commented out
 void AC_BaseGun::StopRecoil()
 {
 	// Only reset for auto weapon
-	if(bAutoWeapon)
+	/*if(bAutoWeapon)
 	{
 		StopRecoilTimeline();
 		bSetOriginalRotation = true;
 		ReturnRecoil();
-	}
+	}*/
 }
 
 void AC_BaseGun::RecoilTimelineFloatReturn(float Alpha)
@@ -492,11 +494,12 @@ void AC_BaseGun::StopReturnTimeline()
 	}
 }
 
+//commented out
 void AC_BaseGun::ReturnRecoil()
 {
 	if(!ReturnTimeline->IsPlaying())
 	{
-		ReturnTimeline->PlayFromStart();
+		//ReturnTimeline->PlayFromStart();
 	}
 }
 
