@@ -170,7 +170,31 @@ protected:
 
 	void SetCurrentAmmoImage(UTexture2D* NewTexture);
 
+	//Used to set the Ammo counter used in the HUD as well as the ammo counter on the weapon mesh if weapon has one
 	virtual void UpdateAmmoCounter();
+
+	// Material Ammo Counter used on weapon mesh
+
+	// Base material
+	UPROPERTY(EditDefaultsOnly, Category = "Gun | Ammo Counter")
+	UMaterialInterface* Material;
+
+	// The name of the texture parameter
+	UPROPERTY(EditDefaultsOnly, Category = "Gun | Ammo Counter")
+	FName ParameterName;
+
+	// The array of all the ammo counter images that will be used on the weapon mesh's display
+	UPROPERTY(EditDefaultsOnly, Category = "Gun | Ammo Counter")
+	TArray<UTexture2D* > MeshAmmoCounterArray;
+
+	// The dynamic material to be used at runtime
+	UMaterialInstanceDynamic* DynMaterial;
+
+	// The index where the display ammo counter material is used, Set to -1 if no display counter is used
+	UPROPERTY(EditDefaultsOnly, Category = "Gun | Ammo Counter")
+	int DisplayMaterialIndex;
+
+	void SetMeshAmmoCounter(UTexture2D* Texture);
 
 // AUTOMATIC
 

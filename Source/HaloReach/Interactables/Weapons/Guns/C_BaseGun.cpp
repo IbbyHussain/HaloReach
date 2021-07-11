@@ -37,6 +37,9 @@ AC_BaseGun::AC_BaseGun()
 	ReturnTimelineFinished.BindUFunction(this, FName("OnReturnTimelineFinished"));
 
 	ReturnTimeline->SetPlayRate(WeaponStats.ReturntimelinePlayRate);
+
+	ParameterName = FName("CurrentAmmoImg");
+	DisplayMaterialIndex = -1;
 }
 
 void AC_BaseGun::Tick(float Delta)
@@ -80,8 +83,15 @@ void AC_BaseGun::BeginPlay()
 
 	// BP set values for MaxReservesAmmo is not set without this
 	WeaponStats.CurrentReservesAmmo = WeaponStats.MaxReservesAmmo;
-}
 
+	// Create dynamic material
+
+	if(DisplayMaterialIndex != -1)
+	{
+		DynMaterial = UMaterialInstanceDynamic::Create(Material, this);
+		WeaponMesh->SetMaterial(DisplayMaterialIndex, DynMaterial);
+	}
+}
 
 void AC_BaseGun::Fire()
 {
@@ -225,6 +235,8 @@ void AC_BaseGun::Reload()
 			WeaponStats.CurrentAmmo = WeaponStats.CurrentReservesAmmo;
 			WeaponStats.CurrentReservesAmmo = 0;
 		}
+
+		UpdateAmmoCounter();
 
 		StopRecoilTimeline();
 		ReturnRecoil(); // temp tests
@@ -516,6 +528,17 @@ FVector AC_BaseGun::SpreadTrace(FVector Trace)
 	Z += UKismetMathLibrary::RandomFloatInRange(WeaponStats.BulletSpreadYaw * -1.0f, WeaponStats.BulletSpreadYaw);
 
 	return FVector(X, Y , Z);
+}
+
+// AMMO COUNTER
+
+void AC_BaseGun::SetMeshAmmoCounter(UTexture2D* Texture)
+{
+	// Updates the texture
+	if (DisplayMaterialIndex != -1 && DynMaterial)
+	{
+		DynMaterial->SetTextureParameterValue(ParameterName, Texture);
+	}
 }
 
 // Replication
