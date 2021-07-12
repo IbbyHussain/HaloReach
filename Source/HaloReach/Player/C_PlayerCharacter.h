@@ -171,6 +171,9 @@ public:
 
 	void StopMontage(UAnimMontage* Montage);
 
+	// Tests
+	bool bFire;
+
 
 // WEAPON AIM OFFSET
 

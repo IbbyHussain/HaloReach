@@ -82,6 +82,8 @@ AC_PlayerCharacter::AC_PlayerCharacter()
 	bIsReloading = false;
 	bIsFiring = false;
 
+	bFire = true;
+
 
 }
 
@@ -592,6 +594,8 @@ void AC_PlayerCharacter::Reload()
 				Gun->Reload();
 				DefaultMesh->GetAnimInstance()->Montage_Play(Gun->GetWeaponReloadMontage(), 1.0f);
 				
+				//Gun->Reload();
+
 				bCanReload = false;
 				bCanSwitch = false;
 				bCanZoom = false;

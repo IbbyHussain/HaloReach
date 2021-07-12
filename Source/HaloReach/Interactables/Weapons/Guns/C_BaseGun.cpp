@@ -23,7 +23,7 @@ AC_BaseGun::AC_BaseGun()
 	NetUpdateFrequency = 60.0f;
 	MinNetUpdateFrequency = 10.0f;
 
-	bCanFire = true;
+	//bCanFire = true;
 
 	// Recoil Timeline
 
@@ -49,7 +49,8 @@ void AC_BaseGun::Tick(float Delta)
 	Super::Tick(Delta);
 
 	//UE_LOG(LogTemp, Error, TEXT("Status: %s "), (RecoilTimeline->IsPlaying() ? TEXT("TIMER IS PLAYING") : TEXT("TIMER IS NOT PLAYING")));
-	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("changed start rotation value"), (bHasTimerPaused ? TEXT("TIMER IS PAUSED") : TEXT("TIMER IS NOT PAUSED")));
+
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("bCanFire is: "), (bCanFire ? TEXT("TRUE") : TEXT("FALSE"))));
 
 }
 
@@ -98,6 +99,7 @@ void AC_BaseGun::BeginPlay()
 void AC_BaseGun::Fire()
 {
 	AActor* MyOwner = GetOwner();
+	AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(MyOwner);
 
 	if(!(MyOwner->HasAuthority()))
 	{
@@ -106,14 +108,14 @@ void AC_BaseGun::Fire()
 
 	if(MyOwner)
 	{
-		if(WeaponStats.CurrentAmmo > 0 && bCanFire)
+		if(WeaponStats.CurrentAmmo > 0 && PlayerCharacter->bFire) //WeaponStats.CurrentAmmo > 0 && bCanFire
 		{
-			//UE_LOG(LogTemp, Log, TEXT("SERVER FIRED"));
+			UE_LOG(LogTemp, Log, TEXT("DefaultFire func"));
 
 			WeaponStats.CurrentAmmo -= 1;
 			UpdateAmmoCounter();
 
-			AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(MyOwner);
+			//AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(MyOwner);
 			if(PlayerCharacter)
 			{
 				PlayerCharacter->OnWeaponFire();
@@ -181,7 +183,7 @@ void AC_BaseGun::Fire()
 		else 
 		{
 			// Auto reload if no ammo left
-			AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(MyOwner);
+			//AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(MyOwner);
 			if(PlayerCharacter)
 			{
 				PlayerCharacter->Reload(); // Calls player reload, so montages can be played
@@ -194,7 +196,7 @@ void AC_BaseGun::Fire()
 
 void AC_BaseGun::LocalFire()
 {
-	if (WeaponStats.CurrentAmmo > 0 && bCanFire)
+	if (WeaponStats.CurrentAmmo > 0 ) //&& bCanFire
 	{
 		StartRecoil();
 	}
@@ -243,15 +245,22 @@ void AC_BaseGun::Reload()
 
 		bIsRecoilTimelineFinished = true;
 
+		AActor* MyOwner = GetOwner();
+		AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(MyOwner);
+
 		// Time before can fire again 
-		bCanFire = false;
+		//bCanFire = false;
+		PlayerCharacter->bFire = false;
 		GetWorldTimerManager().SetTimer(ReloadHandle, this, &AC_BaseGun::ResetCanFire, WeaponStats.ReloadLength, false);
 	}
 }
 
 void AC_BaseGun::ResetCanFire()
 {
-	bCanFire = true;
+	AActor* MyOwner = GetOwner();
+	AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(MyOwner);
+	PlayerCharacter->bFire = true;
+	//bCanFire = true;
 	GetWorldTimerManager().ClearTimer(ReloadHandle);
 }
 
@@ -538,6 +547,8 @@ void AC_BaseGun::SetMeshAmmoCounter(UTexture2D* Texture)
 
 void AC_BaseGun::Server_Fire_Implementation()
 {
+	UE_LOG(LogTemp, Log, TEXT("Server called Fire func"));
+
 	Fire();
 }
 
@@ -561,4 +572,11 @@ void AC_BaseGun::Multi_StopFire_Implementation()
 void AC_BaseGun::UpdateAmmoCounter()
 {
 
+}
+
+void AC_BaseGun::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	//DOREPLIFETIME(AC_BaseGun, bCanFire);
 }
