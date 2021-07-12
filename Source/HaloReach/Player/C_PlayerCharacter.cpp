@@ -575,7 +575,7 @@ void AC_PlayerCharacter::Reload()
 	if(EquippedWeaponArray[0])
 	{
 		AC_BaseGun* Gun = Cast<AC_BaseGun>(EquippedWeaponArray[0]);
-
+		GEngine->AddOnScreenDebugMessage(-1, 4.5f, FColor::Purple, __FUNCTION__);
 		if(Gun)
 		{
 			if(Gun->WeaponStats.CurrentAmmo != Gun->WeaponStats.MaxMagazineAmmo && Gun->WeaponStats.CurrentReservesAmmo != 0 && bCanReload)
@@ -666,13 +666,6 @@ void AC_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	DOREPLIFETIME(AC_PlayerCharacter, bStopFiring);
 	DOREPLIFETIME(AC_PlayerCharacter, bIsSwitching);
 	DOREPLIFETIME_CONDITION(AC_PlayerCharacter, ControlRotation, COND_SkipOwner);
-
-	
-
-
-
-	//DOREPLIFETIME(AC_PlayerCharacter, Combat);
-
 }
 
 ///////////////////////////////////////
@@ -719,7 +712,6 @@ void AC_PlayerCharacter::OnRep_StopFire()
 void AC_PlayerCharacter::Server_StopFire_Implementation(UAnimMontage* Montage)
 {
 	Mesh3P->GetAnimInstance()->Montage_Stop(0.1f, Montage);
-	Reload();
 }
 
 void AC_PlayerCharacter::OnWeaponFire()

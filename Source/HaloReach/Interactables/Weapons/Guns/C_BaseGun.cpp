@@ -42,8 +42,6 @@ AC_BaseGun::AC_BaseGun()
 	DisplayMaterialIndex = -1;
 }
 
-
-
 void AC_BaseGun::Tick(float Delta)
 {
 	Super::Tick(Delta);
