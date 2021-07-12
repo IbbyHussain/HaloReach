@@ -25,6 +25,9 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	float RateOfFire;
 
+	//UPROPERTY(EditDefaultsOnly)
+	//float ReloadSpeed;
+
 	// Max ammo in a magazine
 	UPROPERTY(EditDefaultsOnly)
 	int32 MaxMagazineAmmo;
@@ -60,9 +63,15 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	float BulletSpreadPitch;
 
+
 	// The Amount of bullet spread that occurs in the roll direction
 	UPROPERTY(EditDefaultsOnly)
 	float BulletSpreadRoll;
+
+
+	// The speed of the recoil pattern timeline
+	//UPROPERTY(EditDefaultsOnly)
+	//float RecoiltimelinePlayRate;
 
 	// The speed of the return timeline
 	UPROPERTY(EditDefaultsOnly, meta = (ClampMin = "1.0", ClampMax = "2.0"))
@@ -72,7 +81,6 @@ public:
 
 	float TimeBetweenShots;
 
-	// Used as starting ammo as well
 	int32 CurrentAmmo;
 
 	int32 CurrentReservesAmmo;
@@ -108,14 +116,6 @@ public:
 		BulletSpreadYaw = 0.1f;
 
 	}
-
-	//// Constructor for general weapon stats
-	//FWeaponStats(float DMG, float FireRate, int MaxAmmo, int MaxAmmoReserves, bool bZoom, int StartingAmmo) 
-	//	: BaseDamage(DMG), RateOfFire(FireRate), MaxMagazineAmmo(MaxAmmo), MaxReservesAmmo(MaxAmmoReserves), bCanZoom(bZoom), CurrentAmmo(StartingAmmo){} 
-
-	//// Constructor for weapon recoil and bullet spread
-	//FWeaponStats(float MaxPitch, float MinPitch, float MaxYaw, float MinYaw, float BulletYaw, float BulletPitch, float BulletRoll) 
-	//	: MaxPitchValue(MaxPitch), MinPitchValue(MinPitch), MaxYawValue(MaxYaw), MinYawValue(MinYaw), BulletSpreadYaw(BulletYaw), BulletSpreadPitch(BulletPitch), BulletSpreadRoll(BulletRoll){}
 };
 
 UCLASS()

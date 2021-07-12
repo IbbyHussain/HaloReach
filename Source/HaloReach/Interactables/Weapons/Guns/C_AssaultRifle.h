@@ -16,8 +16,6 @@ class HALOREACH_API AC_AssaultRifle : public AC_BaseGun
 
 private:
 
-	bool bX;
-
 	AC_AssaultRifle();
 
 	virtual void BeginPlay() override;
