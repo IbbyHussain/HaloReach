@@ -18,12 +18,12 @@ AC_BaseGun::AC_BaseGun()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+
 	bReplicates = true;
+
 
 	NetUpdateFrequency = 60.0f;
 	MinNetUpdateFrequency = 10.0f;
-
-	bCanFire = true;
 
 	// Recoil Timeline
 
@@ -93,10 +93,13 @@ void AC_BaseGun::BeginPlay()
 		DynMaterial = UMaterialInstanceDynamic::Create(Material, this);
 		WeaponMesh->SetMaterial(DisplayMaterialIndex, DynMaterial);
 	}
+
+	bCanFire = true;
 }
 
 void AC_BaseGun::Fire()
 {
+	//FireHandling();
 	AActor* MyOwner = GetOwner();
 
 	if(!(MyOwner->HasAuthority()))
@@ -106,7 +109,7 @@ void AC_BaseGun::Fire()
 
 	if(MyOwner)
 	{
-		if(WeaponStats.CurrentAmmo > 0 && bCanFire)
+		if(WeaponStats.CurrentAmmo > 0 && bCanFire) //WeaponStats.CurrentAmmo > 0 &&
 		{
 			//UE_LOG(LogTemp, Log, TEXT("SERVER FIRED"));
 
@@ -192,12 +195,32 @@ void AC_BaseGun::Fire()
 	}
 }
 
+void AC_BaseGun::FireHandling()
+{
+	// Code for executiong event on client and server
+
+	AActor* MyOwner = GetOwner();
+	if(MyOwner->HasAuthority())
+	{
+		//Server
+		Multi_Fire();
+	}
+
+	else
+	{
+		//Client
+		Server_Fire();
+	}
+}
+
+
+
 void AC_BaseGun::LocalFire()
 {
-	if (WeaponStats.CurrentAmmo > 0 && bCanFire)
+	/*if (WeaponStats.CurrentAmmo > 0 && bCanFire)
 	{
 		StartRecoil();
-	}
+	}*/
 }
 
 void AC_BaseGun::PlayFireEffects()
@@ -244,6 +267,7 @@ void AC_BaseGun::Reload()
 		bIsRecoilTimelineFinished = true;
 
 		// Time before can fire again 
+		//SetCanFire(false);
 		bCanFire = false;
 		GetWorldTimerManager().SetTimer(ReloadHandle, this, &AC_BaseGun::ResetCanFire, WeaponStats.ReloadLength, false);
 	}
@@ -252,7 +276,29 @@ void AC_BaseGun::Reload()
 void AC_BaseGun::ResetCanFire()
 {
 	bCanFire = true;
+	//SetCanFire(true);
 	GetWorldTimerManager().ClearTimer(ReloadHandle);
+}
+
+void AC_BaseGun::SetCanFire(bool x)
+{
+	AActor* MyOwner = GetOwner();
+	if (MyOwner->HasAuthority())
+	{
+		//Server
+		bCanFire = x;
+	}
+
+	else
+	{
+		//Client
+		Server_SetCanFire(x);
+	}
+}
+
+void AC_BaseGun::Server_SetCanFire_Implementation(bool x)
+{
+	SetCanFire(x);
 }
 
 void AC_BaseGun::StartAutoFire()
@@ -539,11 +585,13 @@ void AC_BaseGun::SetMeshAmmoCounter(UTexture2D* Texture)
 void AC_BaseGun::Server_Fire_Implementation()
 {
 	Fire();
+	//Multi_Fire();
 }
 
 void AC_BaseGun::Multi_Fire_Implementation()
 {
-	Fire();
+	//Fire();
+	UGameplayStatics::SpawnEmitterAttached(MuzzleEffect, WeaponMesh, MuzzleSocketName);
 }
 
 void AC_BaseGun::Server_StopFire_Implementation()
@@ -560,5 +608,14 @@ void AC_BaseGun::Multi_StopFire_Implementation()
 
 void AC_BaseGun::UpdateAmmoCounter()
 {
+
+}
+
+void AC_BaseGun::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	//DOREPLIFETIME(AC_BaseGun, bCanFire);
+
 
 }
