@@ -3,16 +3,18 @@
 
 #include "HaloReach/Interactables/Weapons/Guns/C_AssaultRifle.h"
 
-AC_AssaultRifle::AC_AssaultRifle()
+AC_AssaultRifle::AC_AssaultRifle() : bX(true)
 {
 	bAutoWeapon = true;
+
+	Type = EWeaponType::RIFLE;
 }
 
 void AC_AssaultRifle::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Type = EWeaponType::RIFLE;
+	
 
 	//Set the weapon mesh to use this as the ammo dispaly material
 	if(DisplayMaterialIndex != -1)

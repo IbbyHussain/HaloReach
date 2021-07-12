@@ -8,15 +8,13 @@ AC_Magnum::AC_Magnum()
 	bAutoWeapon = false;
 
 	WeaponStats.CurrentAmmo = 8;
-	WeaponStats.MaxMagazineAmmo = 8;
-	WeaponStats.MaxReservesAmmo = 64;
+	
+	Type = EWeaponType::PISTOL;
 }
 
 void AC_Magnum::BeginPlay()
 {
 	Super::BeginPlay();
-
-	Type = EWeaponType::PISTOL;
 }
 
 void AC_Magnum::Attack()
