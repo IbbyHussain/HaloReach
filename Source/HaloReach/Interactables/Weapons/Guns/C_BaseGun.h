@@ -131,8 +131,6 @@ protected:
 
 	virtual void Tick(float Delta) override;
 
-	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Gun | Weapon Effects")
 	UParticleSystem* MuzzleEffect;
 
@@ -215,8 +213,7 @@ protected:
 
 	FTimerHandle ReloadHandle;
 
-	//UPROPERTY(BlueprintReadOnly)
-	//bool bCanFire;
+	bool bCanFire;
 
 	void ResetCanFire();
 
