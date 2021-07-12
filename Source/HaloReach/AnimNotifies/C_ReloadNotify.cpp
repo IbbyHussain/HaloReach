@@ -20,7 +20,6 @@ void UC_ReloadNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase
 		AC_BaseGun* Gun = Cast<AC_BaseGun>(Player->EquippedWeaponArray[0]);
 		if(Gun)
 		{
-			//Gun->bCanFire = false;
 			Gun->UpdateAmmoCounter();
 		}
 	}

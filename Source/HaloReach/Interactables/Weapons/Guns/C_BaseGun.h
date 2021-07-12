@@ -152,8 +152,6 @@ protected:
 	// A basic fire function which uses a line trace and applies damage, Will always be called on server
 	void Fire();
 
-	void FireHandling();
-
 	// A Fire() function that is only called locally
 	void LocalFire();
 
@@ -215,18 +213,7 @@ protected:
 
 	FTimerHandle ReloadHandle;
 
-public:
-	//UPROPERTY(Replicated)
 	bool bCanFire;
-
-	UFUNCTION(BlueprintCallable)
-	void SetCanFire(bool x);
-
-	UFUNCTION(Server, Reliable)
-	void Server_SetCanFire(bool x);
-	void Server_SetCanFire_Implementation(bool x);
-
-	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	void ResetCanFire();
 
