@@ -22,8 +22,6 @@ void AC_Magnum::BeginPlay()
 void AC_Magnum::Attack()
 {
 	StartSemiFire();
-
-	UpdateAmmoCounter();
 }
 
 void AC_Magnum::UpdateAmmoCounter()

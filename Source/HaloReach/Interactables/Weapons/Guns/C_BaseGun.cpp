@@ -42,6 +42,8 @@ AC_BaseGun::AC_BaseGun()
 	DisplayMaterialIndex = -1;
 }
 
+
+
 void AC_BaseGun::Tick(float Delta)
 {
 	Super::Tick(Delta);
@@ -261,8 +263,6 @@ void AC_BaseGun::StartAutoFire()
 	float FirstDelay = FMath::Max(WeaponStats.LastFireTime + WeaponStats.TimeBetweenShots - GetWorld()->TimeSeconds, 0.0f);
 	GetWorldTimerManager().SetTimer(AutomaticFireHandle, this, &AC_BaseGun::Fire, WeaponStats.TimeBetweenShots, true, FirstDelay);
 	GetWorldTimerManager().SetTimer(AutomaticLocalFireHandle, this, &AC_BaseGun::LocalFire, WeaponStats.TimeBetweenShots, true, FirstDelay);
-
-	UpdateAmmoCounter();
 }
 
 void AC_BaseGun::StopAutoFire()
@@ -279,7 +279,6 @@ void AC_BaseGun::StopAutoFire()
 		}
 	}
 	
-	//UpdateAmmoCounter();
 	GetWorldTimerManager().ClearTimer(AutomaticFireHandle);
 	GetWorldTimerManager().ClearTimer(AutomaticLocalFireHandle);
 }
@@ -289,8 +288,6 @@ void AC_BaseGun::StartSemiFire()
 	float FirstDelay = FMath::Max(WeaponStats.LastFireTime + WeaponStats.TimeBetweenShots - GetWorld()->TimeSeconds, 0.0f);
 	GetWorldTimerManager().SetTimer(SemiFireHandle, this, &AC_BaseGun::Fire, WeaponStats.TimeBetweenShots, false, FirstDelay);
 	GetWorldTimerManager().SetTimer(SemiLocalFireHandle, this, &AC_BaseGun::LocalFire, WeaponStats.TimeBetweenShots, false, FirstDelay);
-
-	UpdateAmmoCounter();
 }
 
 void AC_BaseGun::SetCurrentAmmoImage(UTexture2D* NewTexture)
