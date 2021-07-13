@@ -589,7 +589,7 @@ void AC_PlayerCharacter::Reload()
 					Server_Reload(Gun->GetWeapon3PReloadMontage());
 				}
 
-				Gun->Reload();
+				//Gun->Reload();
 				DefaultMesh->GetAnimInstance()->Montage_Play(Gun->GetWeaponReloadMontage(), 1.0f);
 				
 				bCanReload = false;

@@ -183,6 +183,7 @@ void AC_BaseGun::Fire()
 			if(PlayerCharacter)
 			{
 				PlayerCharacter->Reload(); // Calls player reload, so montages can be played
+				Reload();
 				PlayerCharacter->OnWeaponStopFire(); // Stops 3p fire anim
 				PlayerCharacter->StopMontage(GetWeaponFireMontage()); // stops 1p fire anim
 			}
