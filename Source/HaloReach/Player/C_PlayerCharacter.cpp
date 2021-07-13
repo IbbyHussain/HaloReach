@@ -586,10 +586,16 @@ void AC_PlayerCharacter::Reload()
 				// Call Server RPC for clients 
 				if (!HasAuthority())
 				{
-					Server_Reload(Gun->GetWeapon3PReloadMontage());
+					Server_Reload(Gun->GetWeapon3PReloadMontage(), Gun);
 				}
 
-				//Gun->Reload();
+				if(!HasAuthority())
+				{
+					Server_foo(Gun);
+				}
+
+				foo(Gun);
+
 				DefaultMesh->GetAnimInstance()->Montage_Play(Gun->GetWeaponReloadMontage(), 1.0f);
 				
 				bCanReload = false;
@@ -613,7 +619,7 @@ void AC_PlayerCharacter::OnRep_Reload()
 	Mesh3P->GetAnimInstance()->Montage_Play(Gun->GetWeapon3PReloadMontage(), 1.0f);
 }
 
-void AC_PlayerCharacter::Server_Reload_Implementation(UAnimMontage* Montage)
+void AC_PlayerCharacter::Server_Reload_Implementation(UAnimMontage* Montage, AC_BaseGun* BaseGun)
 {
 	Mesh3P->GetAnimInstance()->Montage_Play(Montage, 1.0f);
 }
@@ -643,6 +649,16 @@ void AC_PlayerCharacter::OnWeaponTypeUpdate()
 void AC_PlayerCharacter::UpdateReserveAmmo()
 {
 	HUD->UpdateWeaponReserves();
+}
+
+void AC_PlayerCharacter::foo(AC_BaseGun* G)
+{
+	G->Reload();
+}
+
+void AC_PlayerCharacter::Server_foo_Implementation(AC_BaseGun* G)
+{
+	foo(G);
 }
 
 // REPLICATION TESTING

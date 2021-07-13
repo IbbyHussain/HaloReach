@@ -81,6 +81,7 @@ public:
 
 	float TimeBetweenShots;
 
+	//UPROPERTY(Replicated)
 	int32 CurrentAmmo;
 
 	int32 CurrentReservesAmmo;
@@ -213,7 +214,7 @@ protected:
 
 	FTimerHandle ReloadHandle;
 
-	bool bCanFire;
+	//bool bCanFire;
 
 	void ResetCanFire();
 
@@ -323,12 +324,19 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StartRecoil();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gun | Weapon Stats")
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Gun | Weapon Stats")
 	FWeaponStats WeaponStats;
 
 	UTexture2D* CurrentAmmoImage;
 
+	UFUNCTION()
 	void Reload();
+
+	bool bCanFire;
+
+	UFUNCTION(Server, Reliable)
+	void Server_Reload();
+	void Server_Reload_Implementation();
 
 	UPROPERTY(BlueprintAssignable, Category = "Delegates")
 	FOnFireWeapon OnFireWeapon;
@@ -341,4 +349,6 @@ public:
 	//Used to set the Ammo counter used in the HUD as well as the ammo counter on the weapon mesh if weapon has one
 	UFUNCTION()
 	virtual void UpdateAmmoCounter();
+
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };

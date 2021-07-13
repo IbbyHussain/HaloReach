@@ -9,6 +9,8 @@
 #include "HaloReach/GlobalEnums.h"
 #include "C_PlayerCharacter.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeaponReload);
+
 class AC_BaseWeapon;
 class AC_Weapon3P;
 
@@ -239,8 +241,8 @@ public:
 	void OnRep_Reload();
 
 	UFUNCTION(Server, Reliable)
-	void Server_Reload(UAnimMontage* Montage);
-	void Server_Reload_Implementation(UAnimMontage* Montage);
+	void Server_Reload(UAnimMontage* Montage, AC_BaseGun* BaseGun);
+	void Server_Reload_Implementation(UAnimMontage* Montage, AC_BaseGun* BaseGun);
 
 	bool bCanReload;
 
@@ -424,4 +426,13 @@ public:
 
 
 	void UpdateReserveAmmo();
+
+	UPROPERTY(BlueprintAssignable, Category = "aaa")
+	FOnWeaponReload OnWeaponReload;
+
+	void foo(AC_BaseGun* G);
+
+	UFUNCTION(Server, Reliable)
+	void Server_foo(AC_BaseGun* G);
+	void Server_foo_Implementation(AC_BaseGun* G);
 };
