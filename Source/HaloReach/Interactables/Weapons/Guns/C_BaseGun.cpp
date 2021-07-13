@@ -104,10 +104,10 @@ void AC_BaseGun::Fire()
 
 	if(MyOwner)
 	{
-		if(WeaponStats.CurrentAmmo > 0 && bCanFire)
+		if(WeaponStats.CurrentAmmo > 0 && bCanFire) //&& bCanFire
 		{
 			//UE_LOG(LogTemp, Log, TEXT("SERVER FIRED"));
-
+			GEngine->AddOnScreenDebugMessage(-1, 4.5f, FColor::Purple, __FUNCTION__);
 			WeaponStats.CurrentAmmo -= 1;
 			UpdateAmmoCounter();
 
@@ -182,6 +182,8 @@ void AC_BaseGun::Fire()
 			AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(MyOwner);
 			if(PlayerCharacter)
 			{
+				Reload();
+				
 				PlayerCharacter->Reload(); // Calls player reload, so montages can be played
 				PlayerCharacter->OnWeaponStopFire(); // Stops 3p fire anim
 				PlayerCharacter->StopMontage(GetWeaponFireMontage()); // stops 1p fire anim
@@ -240,7 +242,7 @@ void AC_BaseGun::Reload()
 		ReturnRecoil(); // temp tests
 
 		bIsRecoilTimelineFinished = true;
-
+		
 		// Time before can fire again 
 		bCanFire = false;
 		GetWorldTimerManager().SetTimer(ReloadHandle, this, &AC_BaseGun::ResetCanFire, WeaponStats.ReloadLength, false);
