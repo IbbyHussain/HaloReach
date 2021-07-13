@@ -430,9 +430,22 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "aaa")
 	FOnWeaponReload OnWeaponReload;
 
-	void foo(AC_BaseGun* G);
+	// Calls the reload function from the gun class
+	void GunReload(AC_BaseGun* Gun);
 
+	// Need a server RPC as all gun code is server side
 	UFUNCTION(Server, Reliable)
-	void Server_foo(AC_BaseGun* G);
-	void Server_foo_Implementation(AC_BaseGun* G);
+	void Server_GunReload(AC_BaseGun* Gun);
+	void Server_GunReload_Implementation(AC_BaseGun* Gun);
+
+	// Weapon Mag
+
+	AActor* WeaponMag;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Mag")
+	FName MagSocket;
+
+	void BasicSpawnActor(TSubclassOf<AActor> WeaponMagClass);
+
+	void BasicDestroyActor();
 };

@@ -587,14 +587,10 @@ void AC_PlayerCharacter::Reload()
 				if (!HasAuthority())
 				{
 					Server_Reload(Gun->GetWeapon3PReloadMontage(), Gun);
+					Server_GunReload(Gun);
 				}
 
-				if(!HasAuthority())
-				{
-					Server_foo(Gun);
-				}
-
-				foo(Gun);
+				GunReload(Gun);
 
 				DefaultMesh->GetAnimInstance()->Montage_Play(Gun->GetWeaponReloadMontage(), 1.0f);
 				
@@ -651,14 +647,14 @@ void AC_PlayerCharacter::UpdateReserveAmmo()
 	HUD->UpdateWeaponReserves();
 }
 
-void AC_PlayerCharacter::foo(AC_BaseGun* G)
+void AC_PlayerCharacter::GunReload(AC_BaseGun* Gun)
 {
-	G->Reload();
+	Gun->Reload();
 }
 
-void AC_PlayerCharacter::Server_foo_Implementation(AC_BaseGun* G)
+void AC_PlayerCharacter::Server_GunReload_Implementation(AC_BaseGun* Gun)
 {
-	foo(G);
+	GunReload(Gun);
 }
 
 // REPLICATION TESTING
@@ -799,6 +795,31 @@ void AC_PlayerCharacter::SetControlRotation()
 		ControlRotation = GetController()->GetControlRotation();
 	}
 }
+
+// Spawn
+
+void AC_PlayerCharacter::BasicSpawnActor(TSubclassOf<AActor> WeaponMagClass)
+{
+	//Simple spawn actor attached to a socket
+	FActorSpawnParameters SpawnParams;
+
+	FTransform Transform = DefaultMesh->GetSocketTransform(MagSocket, ERelativeTransformSpace::RTS_World);
+	FVector SpawnLocation = Transform.GetLocation();
+	FRotator SpawnRotation = Transform.GetRotation().Rotator();
+
+	WeaponMag = GetWorld()->SpawnActor<AActor>(WeaponMagClass, SpawnLocation, SpawnRotation, SpawnParams);
+	WeaponMag->AttachToComponent(DefaultMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, MagSocket);
+	//WeaponMag->SetOwner(this);
+}
+
+void AC_PlayerCharacter::BasicDestroyActor()
+{
+	if (WeaponMag)
+	{
+		WeaponMag->Destroy();
+	}
+}
+
 
 // INPUT
 

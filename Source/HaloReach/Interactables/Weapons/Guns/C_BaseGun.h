@@ -299,6 +299,13 @@ protected:
 
 	FVector SpreadTrace(FVector Trace);
 
+// WEAPON MAGAZINE
+
+public:
+
+
+private:
+
 // Replication
 
 	UFUNCTION(Server, Reliable)
@@ -316,8 +323,6 @@ protected:
 	UFUNCTION(NetMultiCast, Reliable)
 	void Multi_StopFire();
 	void Multi_StopFire_Implementation();
-
-private:
 
 public:
 

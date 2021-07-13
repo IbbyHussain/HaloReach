@@ -104,10 +104,8 @@ void AC_BaseGun::Fire()
 
 	if(MyOwner)
 	{
-		if(WeaponStats.CurrentAmmo > 0 && bCanFire) //&& bCanFire
+		if(WeaponStats.CurrentAmmo > 0 && bCanFire)
 		{
-			//UE_LOG(LogTemp, Log, TEXT("SERVER FIRED"));
-
 			WeaponStats.CurrentAmmo -= 1;
 			UpdateAmmoCounter();
 
