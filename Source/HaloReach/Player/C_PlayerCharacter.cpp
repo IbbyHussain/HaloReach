@@ -433,12 +433,6 @@ void AC_PlayerCharacter::SpawnWeapon(TSubclassOf<AC_BaseWeapon> WeaponClass, AC_
 
 	AC_BaseGun* Gun = Cast<AC_BaseGun>(Weapon);
 
-	/*if(Gun)
-	{
-		Gun->OnReloadWeapon.AddDynamic(this, &AC_PlayerCharacter::Reload);
-		GEngine->AddOnScreenDebugMessage(-1, 4.5f, FColor::Purple, TEXT("BINDED "));
-	}*/
-
 	EquippedWeaponArray.Emplace(Weapon);
 }
 
@@ -581,7 +575,7 @@ void AC_PlayerCharacter::Reload()
 	if(EquippedWeaponArray[0])
 	{
 		AC_BaseGun* Gun = Cast<AC_BaseGun>(EquippedWeaponArray[0]);
-		
+		GEngine->AddOnScreenDebugMessage(-1, 4.5f, FColor::Purple, __FUNCTION__);
 		if(Gun)
 		{
 			if(Gun->WeaponStats.CurrentAmmo != Gun->WeaponStats.MaxMagazineAmmo && Gun->WeaponStats.CurrentReservesAmmo != 0 && bCanReload)
@@ -595,13 +589,12 @@ void AC_PlayerCharacter::Reload()
 					Server_Reload(Gun->GetWeapon3PReloadMontage());
 				}
 
-				//Gun->Reload();
+				Gun->Reload();
 				DefaultMesh->GetAnimInstance()->Montage_Play(Gun->GetWeaponReloadMontage(), 1.0f);
 				
 				bCanReload = false;
 				bCanSwitch = false;
 				bCanZoom = false;
-
 
 				// If we are zoomed in when reload starts
 				EndZoom();

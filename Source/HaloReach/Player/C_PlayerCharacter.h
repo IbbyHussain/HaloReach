@@ -248,7 +248,6 @@ public:
 
 	void ResetCanReload();
 
-	UFUNCTION()
 	void Reload();
 
 // REPLICATION TESTINGS

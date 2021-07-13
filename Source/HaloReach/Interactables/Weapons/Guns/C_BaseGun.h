@@ -10,8 +10,6 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFireWeapon);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStopFireWeapon);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnReloadWeapon);
-
 
 USTRUCT(BlueprintType)
 struct FWeaponStats
@@ -337,9 +335,6 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Delegates")
 	FOnStopFireWeapon OnStopFireWeapon;
-
-	UPROPERTY(BlueprintAssignable, Category = "Delegates")
-	FOnReloadWeapon OnReloadWeapon;
 
 	void StopReturnTimeline();
 
