@@ -124,9 +124,12 @@ class HALOREACH_API AC_BaseGun : public AC_BaseWeapon
 {
 	GENERATED_BODY()
 
+
+public:
+	AC_BaseGun();
 protected:
 
-	AC_BaseGun();
+	
 
 	virtual void BeginPlay() override;
 

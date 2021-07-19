@@ -448,4 +448,24 @@ public:
 	void BasicSpawnActor(TSubclassOf<AActor> WeaponMagClass);
 
 	void BasicDestroyActor();
+
+	// STATIC LIBRARY TESTS
+
+	UFUNCTION(BlueprintCallable)
+	void foo();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Static Tests")
+	TSubclassOf<AC_BaseGun> StaticTestGunClass;
+
+	AC_BaseGun* StaticTestGunPTR;
+
+	// SMART POINTER TESTS
+
+	AC_BaseGun* GunPTR;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Static Tests")
+	TSubclassOf<AC_BaseGun> GunClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Static Tests")
+	FName GunSocket;
 };

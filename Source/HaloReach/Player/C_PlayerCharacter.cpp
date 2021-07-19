@@ -19,6 +19,8 @@
 #include "Net/UnrealNetwork.h"
 #include "Kismet/KismetArrayLibrary.h"
 
+#include "HaloReach/Libraries/C_SpawnLibrary.h"
+
 AC_PlayerCharacter::AC_PlayerCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -146,9 +148,6 @@ void AC_PlayerCharacter::BeginPlay()
 			UE_LOG(LogTemp, Error, TEXT("ELEMENTs befrore switch -- 1P -- : %s"), *i->GetName());
 		}
 	}
-	
-
-	
 }
 
 void AC_PlayerCharacter::Tick(float DeltaTime)
@@ -819,6 +818,22 @@ void AC_PlayerCharacter::BasicDestroyActor()
 		WeaponMag->Destroy();
 	}
 }
+
+
+void AC_PlayerCharacter::foo()
+{
+	//UC_SpawnLibrary::SpawnActorAtSocket<AC_BaseGun>(GetWorld(), StaticTestGunClass, StaticTestGunPTR, DefaultMesh, StaticTestGunSocket);
+
+	//Test<AC_BaseGun>(GetWorld(), StaticTestGunClass);
+	//UC_SpawnLibrary::Test<AC_BaseGun>(GetWorld(), StaticTestGunClass);
+
+	//UC_SpawnLibrary::STATICFUNC<AActor>();
+
+	//AC_BaseGun* TempPTR;
+
+	GunPTR = UC_SpawnLibrary::SpawnActorAtSocket<AC_BaseGun>(GetWorld(), GunClass, GunPTR, DefaultMesh, GunSocket);
+}
+
 
 
 // INPUT
