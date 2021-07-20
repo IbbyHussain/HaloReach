@@ -125,8 +125,6 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Player | PlayerComponents")
 	USkeletalMeshComponent* Mesh3P;
 
-	
-
 // MOVEMENT METHODS
 
 	void UpdateMovementSettings(EMovementState NewState);
@@ -449,23 +447,8 @@ public:
 
 	void BasicDestroyActor();
 
-	// STATIC LIBRARY TESTS
-
-	UFUNCTION(BlueprintCallable)
-	void foo();
-
-	UPROPERTY(EditDefaultsOnly, Category = "Static Tests")
-	TSubclassOf<AC_BaseGun> StaticTestGunClass;
-
-	AC_BaseGun* StaticTestGunPTR;
-
-	// SMART POINTER TESTS
-
-	AC_BaseGun* GunPTR;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Static Tests")
-	TSubclassOf<AC_BaseGun> GunClass;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Static Tests")
-	FName GunSocket;
+	USkeletalMeshComponent* GetDefaultMesh() const
+	{
+		return DefaultMesh;
+	}
 };

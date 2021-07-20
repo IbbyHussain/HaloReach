@@ -6,9 +6,13 @@
 #include "Animation/AnimNotifies/AnimNotify.h"
 #include "C_DestroyActorNotify.generated.h"
 
-/**
- * 
- */
+UENUM(BlueprintType)
+enum class EDestroyType : uint8
+{
+	DEFAULT,
+	MAGAZINE
+};
+
 UCLASS()
 class HALOREACH_API UC_DestroyActorNotify : public UAnimNotify
 {
@@ -17,4 +21,6 @@ class HALOREACH_API UC_DestroyActorNotify : public UAnimNotify
 public:
 	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
 	
+	UPROPERTY(EditAnywhere, Category = "Notify Params")
+	EDestroyType DestroyType;
 };

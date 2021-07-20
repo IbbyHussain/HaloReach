@@ -777,16 +777,17 @@ void AC_PlayerCharacter::SetControlRotation()
 
 void AC_PlayerCharacter::BasicSpawnActor(TSubclassOf<AActor> WeaponMagClass)
 {
-	//Simple spawn actor attached to a socket
-	FActorSpawnParameters SpawnParams;
+	////Simple spawn actor attached to a socket
+	//FActorSpawnParameters SpawnParams;
 
-	FTransform Transform = DefaultMesh->GetSocketTransform(MagSocket, ERelativeTransformSpace::RTS_World);
-	FVector SpawnLocation = Transform.GetLocation();
-	FRotator SpawnRotation = Transform.GetRotation().Rotator();
+	//FTransform Transform = DefaultMesh->GetSocketTransform(MagSocket, ERelativeTransformSpace::RTS_World);
+	//FVector SpawnLocation = Transform.GetLocation();
+	//FRotator SpawnRotation = Transform.GetRotation().Rotator();
 
-	WeaponMag = GetWorld()->SpawnActor<AActor>(WeaponMagClass, SpawnLocation, SpawnRotation, SpawnParams);
-	WeaponMag->AttachToComponent(DefaultMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, MagSocket);
-	//WeaponMag->SetOwner(this);
+	//WeaponMag = GetWorld()->SpawnActor<AActor>(WeaponMagClass, SpawnLocation, SpawnRotation, SpawnParams);
+	//WeaponMag->AttachToComponent(DefaultMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, MagSocket);
+
+	UC_SpawnLibrary::SpawnActorAtSocket<AActor>(GetWorld(), WeaponMagClass, WeaponMag, DefaultMesh, MagSocket);
 }
 
 void AC_PlayerCharacter::BasicDestroyActor()
@@ -795,12 +796,6 @@ void AC_PlayerCharacter::BasicDestroyActor()
 	{
 		WeaponMag->Destroy();
 	}
-}
-
-
-void AC_PlayerCharacter::foo()
-{
-	
 }
 
 

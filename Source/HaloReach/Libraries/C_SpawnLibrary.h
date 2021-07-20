@@ -21,6 +21,8 @@ public:
 	// World ptr as static methods cannot call non static methods so need to static cast world to get spawnactor function
 	template<typename ClassName>
 	static ClassName* SpawnActorAtSocket(UWorld* World, TSubclassOf<ClassName> ObjectClass, ClassName* ObjectPointer, USkeletalMeshComponent* MeshComp, FName SpawnSocket);
+
+	static void DestroyActor(AActor* ActorToDestroy);
 };
 
 template<typename ClassName>

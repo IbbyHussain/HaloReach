@@ -7,3 +7,11 @@ UC_SpawnLibrary::UC_SpawnLibrary(const FObjectInitializer& ObjectInitializer) : 
 {
 	
 }
+
+void UC_SpawnLibrary::DestroyActor(AActor* ActorToDestroy)
+{
+	if(ActorToDestroy)
+	{
+		ActorToDestroy->Destroy();
+	}
+}

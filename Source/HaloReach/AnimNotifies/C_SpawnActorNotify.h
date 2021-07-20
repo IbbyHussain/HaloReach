@@ -6,9 +6,14 @@
 #include "Animation/AnimNotifies/AnimNotify.h"
 #include "C_SpawnActorNotify.generated.h"
 
-/**
- * 
- */
+UENUM(BlueprintType)
+enum class ESpawnType : uint8
+{
+	DEFAULT,
+	MAGAZINE
+};
+
+
 UCLASS()
 class HALOREACH_API UC_SpawnActorNotify : public UAnimNotify
 {
@@ -18,11 +23,8 @@ public:
 	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
 
 	UPROPERTY(EditAnywhere, Category = "Notify Params")
-	TSubclassOf<AActor> MagClass;
+	ESpawnType SpawnType;
 
 	UPROPERTY(EditAnywhere, Category = "Notify Params")
-	FName SocketName;
-
-
-	
+	TSubclassOf<AActor> ActorClass;
 };
