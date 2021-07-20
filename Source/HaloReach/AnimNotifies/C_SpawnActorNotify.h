@@ -10,7 +10,8 @@ UENUM(BlueprintType)
 enum class ESpawnType : uint8
 {
 	DEFAULT,
-	MAGAZINE
+	MAGAZINE,
+	MAGAZINE3P
 };
 
 
@@ -27,4 +28,7 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Notify Params")
 	TSubclassOf<AActor> ActorClass;
+
+	UPROPERTY(EditAnywhere, Category = "Notify Params")
+	FName Socket;
 };

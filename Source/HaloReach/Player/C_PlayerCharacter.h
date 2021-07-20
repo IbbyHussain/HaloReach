@@ -252,9 +252,6 @@ public:
 
 // REPLICATION TESTINGS
 
-	// Will spawn a weapon of any type, in 1P
-	void SpawnWeapon(TSubclassOf<AC_BaseWeapon> WeaponClass, AC_BaseWeapon*& Weapon, FName WeaponSocket);
-
 	// Arraty which keeps track of equipped weapons
 	UPROPERTY(Transient, BlueprintReadOnly, Replicated)
 	TArray<AC_BaseWeapon*>EquippedWeaponArray;
@@ -262,8 +259,6 @@ public:
 	void WeaponArrayChecks();
 
 	void SwitchWeapons();
-
-	void SpawnWeapon3P(TSubclassOf<AC_Weapon3P> WeaponClass, AC_Weapon3P*& Weapon, FName WeaponSocket);
 
 	// Arraty which keeps track of equipped weapons in 3P
 	UPROPERTY(Transient, Replicated)
@@ -438,17 +433,17 @@ public:
 
 	// Weapon Mag
 
-	AActor* WeaponMag;
+	AActor* Weapon1PMag;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Mag")
-	FName MagSocket;
-
-	void BasicSpawnActor(TSubclassOf<AActor> WeaponMagClass);
-
-	void BasicDestroyActor();
+	AActor* Weapon3PMag;
 
 	USkeletalMeshComponent* GetDefaultMesh() const
 	{
 		return DefaultMesh;
+	}
+
+	USkeletalMeshComponent* GetMesh3P() const
+	{
+		return Mesh3P;
 	}
 };

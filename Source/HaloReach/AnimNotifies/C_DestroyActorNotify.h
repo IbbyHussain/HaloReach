@@ -10,7 +10,9 @@ UENUM(BlueprintType)
 enum class EDestroyType : uint8
 {
 	DEFAULT,
-	MAGAZINE
+	MAGAZINE,
+	MAGAZINE3P
+
 };
 
 UCLASS()

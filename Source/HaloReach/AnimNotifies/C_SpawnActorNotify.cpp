@@ -16,16 +16,29 @@ void UC_SpawnActorNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequence
 	switch(SpawnType)
 	{
 	case ESpawnType::DEFAULT:
-		GEngine->AddOnScreenDebugMessage(-1, 4.5f, FColor::Purple, TEXT("Spawned object using DEFAULT"));
 
 	case ESpawnType::MAGAZINE:
-		GEngine->AddOnScreenDebugMessage(-1, 4.5f, FColor::Purple, TEXT("Spawned object using ATTACHED"));
 
 		if(Player)
 		{
 			//Player->BasicSpawnActor(MagClass);
-			Player->WeaponMag = UC_SpawnLibrary::SpawnActorAtSocket<AActor>(Player->GetWorld(), ActorClass,
-			Player->WeaponMag, Player->GetDefaultMesh(), Player->MagSocket);
+			Player->Weapon1PMag = UC_SpawnLibrary::SpawnActorAtSocket<AActor>(Player->GetWorld(), ActorClass,
+				Player->Weapon1PMag, Player->GetDefaultMesh(), Socket);
+
+			Player->Weapon1PMag->SetOwner(Player);
 		}
+		break;
+
+	case ESpawnType::MAGAZINE3P:
+
+		if (Player)
+		{
+			//Player->BasicSpawnActor(MagClass);
+			Player->Weapon3PMag = UC_SpawnLibrary::SpawnActorAtSocket<AActor>(Player->GetWorld(), ActorClass,
+				Player->Weapon3PMag, Player->GetMesh3P(), Socket);
+
+			Player->Weapon3PMag->SetOwner(Player);
+		}
+		break;
 	}
 }

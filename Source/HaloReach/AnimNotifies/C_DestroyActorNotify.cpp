@@ -17,14 +17,21 @@ void UC_DestroyActorNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequen
 	switch (DestroyType)
 	{
 	case EDestroyType::DEFAULT:
-		GEngine->AddOnScreenDebugMessage(-1, 4.5f, FColor::Purple, TEXT("Destroyed object using DEFAULT"));
 
 	case EDestroyType::MAGAZINE:
-		GEngine->AddOnScreenDebugMessage(-1, 4.5f, FColor::Purple, TEXT("Destroyed object using ATTACHED"));
 
-		if (Player && Player->WeaponMag)
+		if (Player && Player->Weapon1PMag)
 		{
-			UC_SpawnLibrary::DestroyActor(Player->WeaponMag);
+			UC_SpawnLibrary::DestroyActor(Player->Weapon1PMag);
 		}
+		break;
+
+	case EDestroyType::MAGAZINE3P:
+
+		if (Player && Player->Weapon3PMag)
+		{
+			UC_SpawnLibrary::DestroyActor(Player->Weapon3PMag);
+		}
+		break;
 	}
 }
