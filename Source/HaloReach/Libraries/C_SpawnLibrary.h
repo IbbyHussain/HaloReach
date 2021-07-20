@@ -33,6 +33,7 @@ ClassName* UC_SpawnLibrary::SpawnActorAtSocket(UWorld* World, TSubclassOf<ClassN
 	FVector SpawnLocation = Transform.GetLocation();
 	FRotator SpawnRotation = Transform.GetRotation().Rotator();
 
+	// Static cast to get world and call non-static functions
 	auto NewWorld = static_cast<UWorld*>(World);
 
 	ObjectPointer = World->SpawnActor<ClassName>(ObjectClass, SpawnLocation, SpawnRotation, SpawnParams);

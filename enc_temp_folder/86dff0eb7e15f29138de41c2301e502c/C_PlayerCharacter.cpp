@@ -98,7 +98,6 @@ void AC_PlayerCharacter::BeginPlay()
 
 	if(HasAuthority())
 	{
-		// Spawn weapons for 1P
 
 		PrimaryWeapon = UC_SpawnLibrary::SpawnActorAtSocket<AC_BaseWeapon>(GetWorld(), Combat.DefaultPrimaryWeaponClass, PrimaryWeapon, DefaultMesh, ("AR_1P_Socket"));
 		PrimaryWeapon->SetOwner(this);
@@ -108,9 +107,11 @@ void AC_PlayerCharacter::BeginPlay()
 		SecondaryWeapon->SetOwner(this);
 		EquippedWeaponArray.Emplace(SecondaryWeapon);
 
-		WeaponArrayChecks();
 
-		// Spawn weapons for 3P
+
+		//SpawnWeapon(Combat.DefaultPrimaryWeaponClass, PrimaryWeapon, ("AR_1P_Socket"));
+		//SpawnWeapon(Combat.DefaultSecondaryWeaponClass, SecondaryWeapon, ("MG_1P_Socket"));
+		WeaponArrayChecks();
 
 		Primary3PWeapon = UC_SpawnLibrary::SpawnActorAtSocket<AC_Weapon3P>(GetWorld(), Combat.PrimaryWeapon3PClass, Primary3PWeapon, Mesh3P, ("AR_3P_Socket"));
 		Primary3PWeapon->SetOwner(this);
@@ -119,6 +120,10 @@ void AC_PlayerCharacter::BeginPlay()
 		Secondary3PWeapon = UC_SpawnLibrary::SpawnActorAtSocket<AC_Weapon3P>(GetWorld(), Combat.SecondaryWeapon3PClass, Secondary3PWeapon, Mesh3P, ("Pistol_3P_Holstered_Socket"));
 		Secondary3PWeapon->SetOwner(this);
 		EquippedWeapon3PArray.Emplace(Secondary3PWeapon);
+
+		//SpawnWeapon3P(Combat.PrimaryWeapon3PClass, Primary3PWeapon, ("AR_3P_Socket"));
+		//SpawnWeapon3P(Combat.SecondaryWeapon3PClass, Secondary3PWeapon, ("Pistol_3P_Holstered_Socket"));
+
 	}
 
 
