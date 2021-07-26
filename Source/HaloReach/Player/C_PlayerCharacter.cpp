@@ -822,13 +822,13 @@ void AC_PlayerCharacter::MeleeTracking()
 		if (ShortestDistance > 150.0f) // 150 is melee range for nomral melee to hit
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("TRACKING MELEE ATTACK, SHORTEST Distance: %f"), ShortestDistance));
-			//MeleeTrackTimeline->PlayFromStart();
+			MeleeTrackTimeline->PlayFromStart();
 		}
 
 		else
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("NORMAL MELEE ATTACK, SHORTEST Distance: %f"), ShortestDistance));
-			//StartMelee();
+			StartMelee();
 		}
 	}
 }
@@ -841,14 +841,31 @@ void AC_PlayerCharacter::MeleeTrackTimelineFloatReturn(float Value)
 
 	AC_PlayerCharacter* ClosestEnemy;
 	ClosestEnemy = *(EnemyMap.Find(ShortestDistance));
-	FVector EnemyLocation = ClosestEnemy->GetActorLocation();
+	FVector EnemyLocation = FVector(ClosestEnemy->GetActorLocation().X, ClosestEnemy->GetActorLocation().Y, ClosestEnemy->GetActorLocation().Z);
 
-	SetActorLocation(FMath::Lerp(GetActorLocation(), EnemyLocation, Value));
+	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if(PC)
+	{
+		FVector Direction = ClosestEnemy->GetActorRotation().Vector().ForwardVector;
+		FRotator Rot = FRotationMatrix::MakeFromX(Direction).Rotator();
+
+		SetActorRotation(Rot);
+	}
+
+	SetActorLocation(FMath::Lerp(GetActorLocation(), EnemyLocation, Value)); //FMath::Lerp(GetActorLocation(), EnemyLocation, Value)
 }
 
 void AC_PlayerCharacter::OnMeleeTrackTimelineFinished()
 {
 	StartMelee();
+}
+
+void AC_PlayerCharacter::StopMeleeTrackTimeline()
+{
+	if(MeleeTrackTimeline->IsPlaying())
+	{
+		MeleeTrackTimeline->Stop();
+	}
 }
 
 // REPLICATION TESTING

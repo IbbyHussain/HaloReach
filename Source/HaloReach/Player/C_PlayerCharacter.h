@@ -305,6 +305,10 @@ public:
 	UFUNCTION()
 	void OnMeleeTrackTimelineFinished();
 
+public: // temp
+	UFUNCTION(BlueprintCallable)
+	void StopMeleeTrackTimeline();
+
 	TMap<float, AC_PlayerCharacter*> EnemyMap;
 
 	float LocX;
