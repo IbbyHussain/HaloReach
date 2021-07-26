@@ -7,6 +7,7 @@
 #include "Runtime/Engine/Classes/Components/TimelineComponent.h" 
 #include "HaloReach/Interfaces/C_InteractInterface.h"
 #include "HaloReach/GlobalEnums.h"
+#include "Components/TimelineComponent.h"
 #include "C_PlayerCharacter.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeaponReload);
@@ -287,8 +288,31 @@ public:
 	TArray<AActor*> IgnoredActorsTracking;
 
 	// Where the melee track BOX should start
-	UPROPERTY(EditDefaultsOnly, Category = "Player")
+	UPROPERTY(EditDefaultsOnly, Category = "Player | Melee Tracking")
 	FName MeleeStartSocket;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player | Melee Tracking")
+	UCurveFloat* FMeleeTrackCurve;
+
+	UTimelineComponent* MeleeTrackTimeline;
+
+	FOnTimelineFloat MeleeTrackInterpFunction{};
+	FOnTimelineEvent MeleeTrackTimelineFinished{};
+
+	UFUNCTION()
+	void MeleeTrackTimelineFloatReturn(float Value);
+
+	UFUNCTION()
+	void OnMeleeTrackTimelineFinished();
+
+	TMap<float, AC_PlayerCharacter*> EnemyMap;
+
+	float LocX;
+	float LocY;
+	float LocZ;
+
+	float ShortestDistance;
+
 
 // REPLICATION TESTINGS
 

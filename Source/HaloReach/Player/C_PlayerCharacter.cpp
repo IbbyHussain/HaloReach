@@ -89,6 +89,12 @@ AC_PlayerCharacter::AC_PlayerCharacter()
 
 	ActorsIgnored = { this };
 	IgnoredActorsTracking = { this };
+
+	MeleeTrackTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("Melee Track Timeline"));
+
+	MeleeTrackInterpFunction.BindUFunction(this, FName("MeleeTrackTimelineFloatReturn"));
+	MeleeTrackTimelineFinished.BindUFunction(this, FName("OnMeleeTrackTimelineFinished"));
+
 }
 
 void AC_PlayerCharacter::BeginPlay()
@@ -165,6 +171,15 @@ void AC_PlayerCharacter::BeginPlay()
 			UE_LOG(LogTemp, Error, TEXT("ELEMENTs befrore switch -- 1P -- : %s"), *i->GetName());
 		}
 	}
+
+	if (FMeleeTrackCurve)
+	{
+		// Now we set the functions and some values.
+		MeleeTrackTimeline->AddInterpFloat(FMeleeTrackCurve, MeleeTrackInterpFunction, FName("Bravo"));
+		MeleeTrackTimeline->SetTimelineFinishedFunc(MeleeTrackTimelineFinished);
+		MeleeTrackTimeline->SetLooping(false);
+	}
+
 }
 
 void AC_PlayerCharacter::Tick(float DeltaTime)
@@ -666,8 +681,6 @@ void AC_PlayerCharacter::StartMelee()
 				Server_Melee(Weapon->GetWeapon3PMeleeMontage());
 			}
 
-			MeleeTracking();
-
 			bCanMelee = false;
 			bCanZoom = false;
 			bCanSwitch = false;
@@ -751,8 +764,11 @@ void AC_PlayerCharacter::Server_MeleeAttack_Implementation(AActor* HitActor, flo
 	UGameplayStatics::ApplyDamage(HitActor, Damage, UGameplayStatics::GetPlayerController(this, 0), this, NULL);
 }
 
+// called on input 
 void AC_PlayerCharacter::MeleeTracking()
 {
+	EnemyMap.Empty();
+
 	FVector StartLocation = DefaultMesh->GetSocketLocation(MeleeStartSocket);
 	FVector EndLocation = (GetActorRotation().Vector().ForwardVector * 0.0f) + StartLocation;
 	FVector HalfSize = FVector(250.0f, 250.0f, 200.0f);
@@ -765,7 +781,7 @@ void AC_PlayerCharacter::MeleeTracking()
 
 	bool bHit = UKismetSystemLibrary::BoxTraceMulti(GetWorld(), StartLocation, EndLocation, HalfSize, Orientation, BoxTrace, false, IgnoredActorsTracking, EDrawDebugTrace::ForDuration, Hits, true, FLinearColor::Blue, FLinearColor::Black);
 
-	TArray<float>DistancesToPlayer;
+	//TArray<float>DistancesToPlayer;
 
 	for (auto x : Hits)
 	{
@@ -778,21 +794,27 @@ void AC_PlayerCharacter::MeleeTracking()
 
 			float Distance = (EnemyLocation - PlayerLocation).Size();
 
-			DistancesToPlayer.Emplace(Distance);
+			//DistancesToPlayer.Emplace(Distance);
+
+			EnemyMap.Emplace(Distance, Enemy);
 		}
 	}
 
-	if (DistancesToPlayer.Num() > 0)
+	if (EnemyMap.Num() > 0) //DistancesToPlayer.Num() > 0
 	{
-		// Finds the smallest value in the array, in this case the shortest distance
-		float ShortestDistance = DistancesToPlayer[0];
-		for (int i = 0; i < DistancesToPlayer.Num(); i++)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("Value: %f"), DistancesToPlayer[i]));
+		TArray<float> DistancePlayer;
+		EnemyMap.GenerateKeyArray(DistancePlayer);
 
-			if (DistancesToPlayer[i] < ShortestDistance)
+
+		// Finds the smallest value in the array, in this case the shortest distance
+		ShortestDistance = DistancePlayer[0]; //DistancesToPlayer[0]
+		for (int i = 0; i < DistancePlayer.Num(); i++) //DistancesToPlayer.Num()
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("Value: %f"), DistancePlayer[i])); //DistancesToPlayer[i]
+
+			if (DistancePlayer[i] < ShortestDistance) //DistancesToPlayer[i]
 			{
-				ShortestDistance = DistancesToPlayer[i];
+				ShortestDistance = DistancePlayer[i]; //DistancesToPlayer[i]
 			}
 
 		}
@@ -800,15 +822,33 @@ void AC_PlayerCharacter::MeleeTracking()
 		if (ShortestDistance > 150.0f) // 150 is melee range for nomral melee to hit
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("TRACKING MELEE ATTACK, SHORTEST Distance: %f"), ShortestDistance));
+			//MeleeTrackTimeline->PlayFromStart();
 		}
 
 		else
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("NORMAL MELEE ATTACK, SHORTEST Distance: %f"), ShortestDistance));
+			//StartMelee();
 		}
-
-		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("shortest Value: %f"), ShortestDistance));
 	}
+}
+
+void AC_PlayerCharacter::MeleeTrackTimelineFloatReturn(float Value)
+{
+	LocX = GetActorLocation().X;
+	LocY = GetActorLocation().Y;
+	LocZ = GetActorLocation().Z;
+
+	AC_PlayerCharacter* ClosestEnemy;
+	ClosestEnemy = *(EnemyMap.Find(ShortestDistance));
+	FVector EnemyLocation = ClosestEnemy->GetActorLocation();
+
+	SetActorLocation(FMath::Lerp(GetActorLocation(), EnemyLocation, Value));
+}
+
+void AC_PlayerCharacter::OnMeleeTrackTimelineFinished()
+{
+	StartMelee();
 }
 
 // REPLICATION TESTING
@@ -987,5 +1027,5 @@ void AC_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 	PlayerInputComponent->BindAction("Reload", IE_Pressed,  this, &AC_PlayerCharacter::Reload);
 
-	PlayerInputComponent->BindAction("Melee", IE_Pressed, this, &AC_PlayerCharacter::StartMelee);
+	PlayerInputComponent->BindAction("Melee", IE_Pressed, this, &AC_PlayerCharacter::MeleeTracking);
 }
