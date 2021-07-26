@@ -86,6 +86,8 @@ AC_PlayerCharacter::AC_PlayerCharacter()
 	bIsMeleeAttacking = false;
 
 	bCanMelee = true;
+
+	ActorsIgnored = { this };
 }
 
 void AC_PlayerCharacter::BeginPlay()
@@ -641,6 +643,9 @@ void AC_PlayerCharacter::StartMelee()
 {
 	if(bCanMelee)
 	{
+
+		ClearActorsIgnoredArray();
+
 		bCanMelee = false;
 
 		bIsMeleeAttacking = !bIsMeleeAttacking;
@@ -690,6 +695,20 @@ void AC_PlayerCharacter::Server_Melee_Implementation(UAnimMontage* Montage)
 	Mesh3P->GetAnimInstance()->Montage_Play(Montage, 1.0f);
 }
 
+void AC_PlayerCharacter::ClearActorsIgnoredArray()
+{
+	/*for(int i = ActorsIgnored.Num() - 1; i >= 0; i--)
+	{
+		AC_PlayerCharacter* Player = Cast<AC_PlayerCharacter>(ActorsIgnored[i]);
+		if (Player)
+		{
+			ActorsIgnored.RemoveAt(i); // can be used to remove eleents from array in loop[
+		}
+	}*/
+	ActorsIgnored.Empty();
+	ActorsIgnored.Emplace(this);
+}
+
 void AC_PlayerCharacter::MeleeAttack(USkeletalMeshComponent* MeshComp, float Damage)
 {
 	// Get the start and end location of the sphere trace (two sockets that are the length of the sword)
@@ -697,9 +716,6 @@ void AC_PlayerCharacter::MeleeAttack(USkeletalMeshComponent* MeshComp, float Dam
 	FVector EndLocation = EquippedWeaponArray[0]->WeaponMesh->GetSocketLocation(EquippedWeaponArray[0]->MeleeEndSocket);
 	
 	FHitResult HitResult;
-
-	TArray<AActor*> ActorsIgnored;
-	ActorsIgnored = { this };
 
 	// Convert the collision type to standard collision channel
 	ETraceTypeQuery Trace6 = UEngineTypes::ConvertToTraceType(ECollisionChannel::COLLISION_MELEEDAMAGE);
@@ -709,15 +725,16 @@ void AC_PlayerCharacter::MeleeAttack(USkeletalMeshComponent* MeshComp, float Dam
 	// Check if hit player
 	AC_PlayerCharacter* HitPlayer = Cast<AC_PlayerCharacter>(HitResult.GetActor());
 
-	if(GEngine && HitResult.GetActor())
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 4.5f, FColor::Blue, FString::Printf(TEXT("HIT: %s"), *HitResult.GetActor()->GetName()));
-	}
-
 	if (bHit && HitPlayer)
 	{
 		UGameplayStatics::ApplyDamage(HitPlayer, Damage, UGameplayStatics::GetPlayerController(this, 0), this, NULL);
-		GEngine->AddOnScreenDebugMessage(-1, 4.5f, FColor::Red, TEXT("HIT ANOTHER PLAYER"));
+
+		ActorsIgnored.Emplace(HitPlayer);
+
+		for (auto i : ActorsIgnored)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 4.5f, FColor::Emerald, FString::Printf(TEXT("Ignored: %s"), *i->GetName()));
+		}
 	}
 }
 

@@ -270,6 +270,12 @@ public:
 	void Server_Melee(UAnimMontage* Montage);
 	void Server_Melee_Implementation(UAnimMontage* Montage);
 
+	TArray<AActor*> ActorsIgnored;
+
+	TArray<AC_PlayerCharacter*> HitPlayers;
+
+	void ClearActorsIgnoredArray();
+
 // REPLICATION TESTINGS
 
 	// Arraty which keeps track of equipped weapons
