@@ -88,6 +88,7 @@ AC_PlayerCharacter::AC_PlayerCharacter()
 	bCanMelee = true;
 
 	ActorsIgnored = { this };
+	IgnoredActorsTracking = { this };
 }
 
 void AC_PlayerCharacter::BeginPlay()
@@ -665,6 +666,8 @@ void AC_PlayerCharacter::StartMelee()
 				Server_Melee(Weapon->GetWeapon3PMeleeMontage());
 			}
 
+			MeleeTracking();
+
 			bCanMelee = false;
 			bCanZoom = false;
 			bCanSwitch = false;
@@ -724,7 +727,7 @@ void AC_PlayerCharacter::MeleeAttack(USkeletalMeshComponent* MeshComp, float Dam
 	// Convert the collision type to standard collision channel
 	ETraceTypeQuery Trace6 = UEngineTypes::ConvertToTraceType(ECollisionChannel::COLLISION_MELEEDAMAGE);
 
-	bool bHit = UKismetSystemLibrary::SphereTraceSingle(DefaultMesh, StartLocation, EndLocation, 20.0f, Trace6, false, ActorsIgnored, EDrawDebugTrace::ForDuration, HitResult, true, FLinearColor::Red, FLinearColor::Green);
+	bool bHit = UKismetSystemLibrary::SphereTraceSingle(DefaultMesh, StartLocation, EndLocation, 20.0f, Trace6, false, ActorsIgnored, EDrawDebugTrace::None, HitResult, true, FLinearColor::Red, FLinearColor::Green);
 
 	// Check if hit player
 	AC_PlayerCharacter* HitPlayer = Cast<AC_PlayerCharacter>(HitResult.GetActor());
@@ -740,17 +743,72 @@ void AC_PlayerCharacter::MeleeAttack(USkeletalMeshComponent* MeshComp, float Dam
 
 		// Stops player from being damaged multiple times
 		ActorsIgnored.Emplace(HitPlayer);
-
-		for (auto i : ActorsIgnored)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 4.5f, FColor::Emerald, FString::Printf(TEXT("Ignored: %s"), *i->GetName()));
-		}
 	}
 }
 
 void AC_PlayerCharacter::Server_MeleeAttack_Implementation(AActor* HitActor, float Damage)
 {
 	UGameplayStatics::ApplyDamage(HitActor, Damage, UGameplayStatics::GetPlayerController(this, 0), this, NULL);
+}
+
+void AC_PlayerCharacter::MeleeTracking()
+{
+	FVector StartLocation = DefaultMesh->GetSocketLocation(MeleeStartSocket);
+	FVector EndLocation = (GetActorRotation().Vector().ForwardVector * 0.0f) + StartLocation;
+	FVector HalfSize = FVector(250.0f, 250.0f, 200.0f);
+	FRotator Orientation = FRotator::ZeroRotator;
+
+	ETraceTypeQuery BoxTrace = UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_Visibility);
+
+
+	TArray<FHitResult> Hits;
+
+	bool bHit = UKismetSystemLibrary::BoxTraceMulti(GetWorld(), StartLocation, EndLocation, HalfSize, Orientation, BoxTrace, false, IgnoredActorsTracking, EDrawDebugTrace::ForDuration, Hits, true, FLinearColor::Blue, FLinearColor::Black);
+
+	TArray<float>DistancesToPlayer;
+
+	for (auto x : Hits)
+	{
+		AC_PlayerCharacter* Enemy = Cast<AC_PlayerCharacter>(x.GetActor());
+
+		if(Enemy)
+		{
+			FVector PlayerLocation = GetActorLocation();
+			FVector EnemyLocation = Enemy->GetActorLocation();
+
+			float Distance = (EnemyLocation - PlayerLocation).Size();
+
+			DistancesToPlayer.Emplace(Distance);
+		}
+	}
+
+	if (DistancesToPlayer.Num() > 0)
+	{
+		// Finds the smallest value in the array, in this case the shortest distance
+		float ShortestDistance = DistancesToPlayer[0];
+		for (int i = 0; i < DistancesToPlayer.Num(); i++)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("Value: %f"), DistancesToPlayer[i]));
+
+			if (DistancesToPlayer[i] < ShortestDistance)
+			{
+				ShortestDistance = DistancesToPlayer[i];
+			}
+
+		}
+
+		if (ShortestDistance > 150.0f) // 150 is melee range for nomral melee to hit
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("TRACKING MELEE ATTACK, SHORTEST Distance: %f"), ShortestDistance));
+		}
+
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("NORMAL MELEE ATTACK, SHORTEST Distance: %f"), ShortestDistance));
+		}
+
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("shortest Value: %f"), ShortestDistance));
+	}
 }
 
 // REPLICATION TESTING
