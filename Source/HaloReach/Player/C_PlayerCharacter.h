@@ -76,7 +76,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
 	TSubclassOf<AC_Weapon3P> SecondaryWeapon3PClass;
 
-
 	FCombat()
 	{
 		//CurrentWeapon = nullptr;
@@ -102,8 +101,6 @@ private:
 
 	UPROPERTY(Replicated)
 	ECombatState CombatState;
-
-private:
 
 // OVERRIDE METHODS
 
@@ -144,7 +141,6 @@ private:
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_Interact(FHitResult Hit);
 	void Multi_Interact_Implementation(FHitResult Hit);
-
 
 public:
 
@@ -249,6 +245,30 @@ public:
 	void ResetCanReload();
 
 	void Reload();
+
+// WEAPON MELEE ATTACK
+
+	// Plays montage for melee attacj - input binding
+	void StartMelee();
+
+	void ResetMelee();
+
+	FTimerHandle MeleeHandle;
+
+	bool bCanMelee;
+
+	// Method will use sphere traces to deal damage, will be used in an anim notify state
+	void MeleeAttack(USkeletalMeshComponent* MeshComp, float Damage);
+
+	UPROPERTY(ReplicatedUsing = OnRep_Melee)
+	bool bIsMeleeAttacking;
+	
+	UFUNCTION()
+	void OnRep_Melee();
+
+	UFUNCTION(Server, Reliable)
+	void Server_Melee(UAnimMontage* Montage);
+	void Server_Melee_Implementation(UAnimMontage* Montage);
 
 // REPLICATION TESTINGS
 

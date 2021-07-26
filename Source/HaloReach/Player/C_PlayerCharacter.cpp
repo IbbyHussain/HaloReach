@@ -83,8 +83,9 @@ AC_PlayerCharacter::AC_PlayerCharacter()
 
 	bIsReloading = false;
 	bIsFiring = false;
+	bIsMeleeAttacking = false;
 
-
+	bCanMelee = true;
 }
 
 void AC_PlayerCharacter::BeginPlay()
@@ -634,6 +635,92 @@ void AC_PlayerCharacter::Server_GunReload_Implementation(AC_BaseGun* Gun)
 	GunReload(Gun);
 }
 
+// Melee attack
+
+void AC_PlayerCharacter::StartMelee()
+{
+	if(bCanMelee)
+	{
+		bCanMelee = false;
+
+		bIsMeleeAttacking = !bIsMeleeAttacking;
+
+		EndFire();
+
+		AC_BaseWeapon* Weapon = EquippedWeaponArray[0];
+
+		if(Weapon)
+		{
+			PlayMontage(Weapon->GetWeapon1PMeleeMontage()); // 1p
+
+			if(!HasAuthority())
+			{
+				Server_Melee(Weapon->GetWeapon3PMeleeMontage());
+			}
+
+			bCanZoom = false;
+			bCanSwitch = false;
+			bCanFire = false;
+			bCanReload = false;
+
+			GetWorldTimerManager().SetTimer(MeleeHandle, this, &AC_PlayerCharacter::ResetMelee, Weapon->MeleeTime, false);
+		}
+
+		EndZoom();
+	}
+}
+
+void AC_PlayerCharacter::ResetMelee()
+{
+	bCanMelee = true;
+	bCanZoom = true;
+	bCanSwitch = true;
+	bCanFire = true;
+	bCanReload = true;
+}
+
+void AC_PlayerCharacter::OnRep_Melee()
+{
+	AC_BaseWeapon* Weapon = EquippedWeaponArray[0];
+	Mesh3P->GetAnimInstance()->Montage_Play(Weapon->GetWeapon3PMeleeMontage(), 1.0f);
+}
+
+void AC_PlayerCharacter::Server_Melee_Implementation(UAnimMontage* Montage)
+{
+	Mesh3P->GetAnimInstance()->Montage_Play(Montage, 1.0f);
+}
+
+void AC_PlayerCharacter::MeleeAttack(USkeletalMeshComponent* MeshComp, float Damage)
+{
+	// Get the start and end location of the sphere trace (two sockets that are the length of the sword)
+	FVector StartLocation = EquippedWeaponArray[0]->WeaponMesh->GetSocketLocation(EquippedWeaponArray[0]->MeleeStartSocket);
+	FVector EndLocation = EquippedWeaponArray[0]->WeaponMesh->GetSocketLocation(EquippedWeaponArray[0]->MeleeEndSocket);
+	
+	FHitResult HitResult;
+
+	TArray<AActor*> ActorsIgnored;
+	ActorsIgnored = { this };
+
+	// Convert the collision type to standard collision channel
+	ETraceTypeQuery Trace6 = UEngineTypes::ConvertToTraceType(ECollisionChannel::COLLISION_MELEEDAMAGE);
+
+	bool bHit = UKismetSystemLibrary::SphereTraceSingle(DefaultMesh, StartLocation, EndLocation, 20.0f, Trace6, false, ActorsIgnored, EDrawDebugTrace::ForDuration, HitResult, true, FLinearColor::Red, FLinearColor::Green);
+
+	// Check if hit player
+	AC_PlayerCharacter* HitPlayer = Cast<AC_PlayerCharacter>(HitResult.GetActor());
+
+	if(GEngine && HitResult.GetActor())
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 4.5f, FColor::Blue, FString::Printf(TEXT("HIT: %s"), *HitResult.GetActor()->GetName()));
+	}
+
+	if (bHit && HitPlayer)
+	{
+		UGameplayStatics::ApplyDamage(HitPlayer, Damage, UGameplayStatics::GetPlayerController(this, 0), this, NULL);
+		GEngine->AddOnScreenDebugMessage(-1, 4.5f, FColor::Red, TEXT("HIT ANOTHER PLAYER"));
+	}
+}
+
 // REPLICATION TESTING
 
 void AC_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -654,6 +741,7 @@ void AC_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	DOREPLIFETIME(AC_PlayerCharacter, bIsFiring);
 	DOREPLIFETIME(AC_PlayerCharacter, bStopFiring);
 	DOREPLIFETIME(AC_PlayerCharacter, bIsSwitching);
+	DOREPLIFETIME(AC_PlayerCharacter, bIsMeleeAttacking);
 	DOREPLIFETIME_CONDITION(AC_PlayerCharacter, ControlRotation, COND_SkipOwner);
 }
 
@@ -808,4 +896,6 @@ void AC_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAction("Zoom", IE_Released, this, &AC_PlayerCharacter::EndZoom);
 
 	PlayerInputComponent->BindAction("Reload", IE_Pressed,  this, &AC_PlayerCharacter::Reload);
+
+	PlayerInputComponent->BindAction("Melee", IE_Pressed, this, &AC_PlayerCharacter::StartMelee);
 }

@@ -44,6 +44,8 @@ public:
 
 	UAnimMontage* GetWeaponFireMontage();
 
+	UAnimMontage* GetWeapon1PMeleeMontage();
+
 	// Getters for 3P anim montages
 
 	UAnimMontage* GetWeapon3PEquipMontage();
@@ -51,6 +53,8 @@ public:
 	UAnimMontage* GetWeapon3PReloadMontage();
 
 	UAnimMontage* GetWeapon3PFireMontage();
+
+	UAnimMontage* GetWeapon3PMeleeMontage();
 
 
 	EWeaponType Type;
@@ -78,13 +82,30 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Animations | 3P")
 	UAnimMontage* Fire3PMontage;
 
-	class AC_PlayerCharacter* Player;
+	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Animations | 1P")
+	UAnimMontage* Melee1PMontage;
 
-// ATTACKING
+	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Animations | 3P")
+	UAnimMontage* Melee3PMontage;
+
+	class AC_PlayerCharacter* Player;
 
 public:
 
 	virtual void Attack();
 
 	virtual void StopAttack();
+
+	// Melee Attacks
+
+	// Where the melee trace will start 
+	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Sockets")
+	FName MeleeStartSocket;
+
+	// Where the melee trace will end
+	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Sockets")
+	FName MeleeEndSocket;
+
+	float MeleeTime;
+
 };

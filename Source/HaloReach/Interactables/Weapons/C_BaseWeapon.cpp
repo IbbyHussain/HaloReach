@@ -22,6 +22,10 @@ AC_BaseWeapon::AC_BaseWeapon()
 void AC_BaseWeapon::BeginPlay()
 {
 	Super::BeginPlay();
+
+	Melee3PMontage->GetPlayLength();
+
+	MeleeTime = Melee1PMontage->GetPlayLength() / Melee3PMontage->RateScale;
 }
 
 UAnimMontage* AC_BaseWeapon::GetWeaponEquipMontage()
@@ -39,6 +43,11 @@ UAnimMontage* AC_BaseWeapon::GetWeaponFireMontage()
 	return FireAnimation;
 }
 
+UAnimMontage* AC_BaseWeapon::GetWeapon1PMeleeMontage()
+{
+	return Melee1PMontage;
+}
+
 UAnimMontage* AC_BaseWeapon::GetWeapon3PEquipMontage()
 {
 	return Equip3PMontage;
@@ -52,6 +61,11 @@ UAnimMontage* AC_BaseWeapon::GetWeapon3PReloadMontage()
 UAnimMontage* AC_BaseWeapon::GetWeapon3PFireMontage()
 {
 	return Fire3PMontage;
+}
+
+UAnimMontage* AC_BaseWeapon::GetWeapon3PMeleeMontage()
+{
+	return Melee3PMontage;
 }
 
 void AC_BaseWeapon::Attack()
