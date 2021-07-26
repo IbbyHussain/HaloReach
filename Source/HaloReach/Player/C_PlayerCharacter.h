@@ -276,6 +276,10 @@ public:
 
 	void ClearActorsIgnoredArray();
 
+	UFUNCTION(Server, Reliable)
+	void Server_MeleeAttack(AActor* HitActor, float Damage);
+	void Server_MeleeAttack_Implementation(AActor* HitActor, float Damage);
+
 // REPLICATION TESTINGS
 
 	// Arraty which keeps track of equipped weapons

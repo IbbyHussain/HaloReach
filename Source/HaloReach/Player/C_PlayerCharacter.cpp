@@ -472,6 +472,7 @@ void AC_PlayerCharacter::SwitchWeapons()
 			bCanSwitch = false;
 			bCanFire = false;
 			bCanReload = false;
+			bCanMelee = false;
 
 			UE_LOG(LogTemp, Log, TEXT("Weapon switch length is: %f"), Gun->WeaponStats.SwitchLength);
 
@@ -489,6 +490,7 @@ void AC_PlayerCharacter::ResetCanSwitch()
 	bCanZoom = true;
 	bCanReload = true;
 	bCanFire = true;
+	bCanMelee = true;
 }
 
 void AC_PlayerCharacter::OnRep_Switch()
@@ -577,6 +579,7 @@ void AC_PlayerCharacter::Reload()
 				bCanReload = false;
 				bCanSwitch = false;
 				bCanZoom = false;
+				bCanMelee = false;
 
 				// If we are zoomed in when reload starts
 				EndZoom();
@@ -605,6 +608,7 @@ void AC_PlayerCharacter::ResetCanReload()
 	bCanReload = true;
 	bCanSwitch = true;
 	bCanZoom = true;
+	bCanMelee = true;
 }
 
 void AC_PlayerCharacter::OnWeaponTypeUpdate()
@@ -646,8 +650,6 @@ void AC_PlayerCharacter::StartMelee()
 
 		ClearActorsIgnoredArray();
 
-		bCanMelee = false;
-
 		bIsMeleeAttacking = !bIsMeleeAttacking;
 
 		EndFire();
@@ -663,6 +665,7 @@ void AC_PlayerCharacter::StartMelee()
 				Server_Melee(Weapon->GetWeapon3PMeleeMontage());
 			}
 
+			bCanMelee = false;
 			bCanZoom = false;
 			bCanSwitch = false;
 			bCanFire = false;
@@ -705,6 +708,7 @@ void AC_PlayerCharacter::ClearActorsIgnoredArray()
 			ActorsIgnored.RemoveAt(i); // can be used to remove eleents from array in loop[
 		}
 	}*/
+
 	ActorsIgnored.Empty();
 	ActorsIgnored.Emplace(this);
 }
@@ -727,8 +731,14 @@ void AC_PlayerCharacter::MeleeAttack(USkeletalMeshComponent* MeshComp, float Dam
 
 	if (bHit && HitPlayer)
 	{
+		if (!HasAuthority())
+		{
+			Server_MeleeAttack(HitPlayer, Damage);
+		}
+
 		UGameplayStatics::ApplyDamage(HitPlayer, Damage, UGameplayStatics::GetPlayerController(this, 0), this, NULL);
 
+		// Stops player from being damaged multiple times
 		ActorsIgnored.Emplace(HitPlayer);
 
 		for (auto i : ActorsIgnored)
@@ -736,6 +746,11 @@ void AC_PlayerCharacter::MeleeAttack(USkeletalMeshComponent* MeshComp, float Dam
 			GEngine->AddOnScreenDebugMessage(-1, 4.5f, FColor::Emerald, FString::Printf(TEXT("Ignored: %s"), *i->GetName()));
 		}
 	}
+}
+
+void AC_PlayerCharacter::Server_MeleeAttack_Implementation(AActor* HitActor, float Damage)
+{
+	UGameplayStatics::ApplyDamage(HitActor, Damage, UGameplayStatics::GetPlayerController(this, 0), this, NULL);
 }
 
 // REPLICATION TESTING
