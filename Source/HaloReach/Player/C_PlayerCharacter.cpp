@@ -18,6 +18,7 @@
 #include "HaloReach/Interactables/Weapons/Guns/C_BaseGun.h"
 #include "Net/UnrealNetwork.h"
 #include "Kismet/KismetArrayLibrary.h"
+#include "Kismet/KismetMathLibrary.h"
 
 #include "HaloReach/Libraries/C_SpawnLibrary.h"
 
@@ -773,8 +774,8 @@ void AC_PlayerCharacter::MeleeTracking()
 
 	FVector StartLocation = DefaultMesh->GetSocketLocation(MeleeStartSocket);
 	FVector EndLocation = (GetActorRotation().Vector().ForwardVector * 0.0f) + StartLocation;
-	FVector HalfSize = FVector(250.0f, 250.0f, 200.0f);
-	FRotator Orientation = FRotator::ZeroRotator;
+	FVector HalfSize = FVector(75.0f, 25.0f, 200.0f);
+	FRotator Orientation = GetActorRotation();
 
 	ETraceTypeQuery BoxTrace = UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_Visibility);
 
@@ -837,30 +838,35 @@ void AC_PlayerCharacter::MeleeTracking()
 
 void AC_PlayerCharacter::MeleeTrackTimelineFloatReturn(float Value)
 {
-	LocX = GetActorLocation().X;
-	LocY = GetActorLocation().Y;
-	LocZ = GetActorLocation().Z;
+	FVector PlayerLocation = GetActorLocation();
+
+	LocX = PlayerLocation.X;
+	LocY = PlayerLocation.Y;
+	LocZ = PlayerLocation.Z;
 
 	AC_PlayerCharacter* ClosestEnemy;
 	ClosestEnemy = *(EnemyMap.Find(ShortestDistance));
-	FVector EnemyLocation = FVector(ClosestEnemy->GetActorLocation().X, ClosestEnemy->GetActorLocation().Y, ClosestEnemy->GetActorLocation().Z);
 
-	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	if(PC)
-	{
-		FVector Direction = ClosestEnemy->GetActorRotation().Vector().ForwardVector;
-		FRotator Rot = FRotationMatrix::MakeFromX(Direction).Rotator();
+	FVector EnemyLocation = ClosestEnemy->GetActorLocation();
 
-		SetActorRotation(Rot);
-	}
+	SetActorLocation(FMath::Lerp(GetActorLocation(), EnemyLocation, Value));
 
-	SetActorLocation(FMath::Lerp(GetActorLocation(), EnemyLocation, Value)); //FMath::Lerp(GetActorLocation(), EnemyLocation, Value)
+	UKismetMathLibrary::FindLookAtRotation(PlayerLocation, EnemyLocation);
+	
 
 	if(bIsOverlappingEnemy(ClosestEnemy))
 	{
 		StopMeleeTrackTimeline();
 		StartMelee();
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, FString::Printf(TEXT("COLLIDED")));
+	}
+
+	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if (PC)
+	{
+		//UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), EnemyLocation)
+		//PC->SetControlRotation(FMath::Lerp(GetActorRotation(), UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), EnemyLocation), Value));
+		PC->SetControlRotation(UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), EnemyLocation));
 	}
 }
 
