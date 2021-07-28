@@ -305,6 +305,8 @@ public:
 	UFUNCTION()
 	void OnMeleeTrackTimelineFinished();
 
+	bool bIsOverlappingEnemy(AC_PlayerCharacter* Enemy);
+
 public: // temp
 	UFUNCTION(BlueprintCallable)
 	void StopMeleeTrackTimeline();
@@ -317,6 +319,9 @@ public: // temp
 
 	float ShortestDistance;
 
+	UFUNCTION()
+	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, 
+		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 // REPLICATION TESTINGS
 

@@ -180,6 +180,8 @@ void AC_PlayerCharacter::BeginPlay()
 		MeleeTrackTimeline->SetLooping(false);
 	}
 
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AC_PlayerCharacter::OnOverlapBegin);
+
 }
 
 void AC_PlayerCharacter::Tick(float DeltaTime)
@@ -810,7 +812,7 @@ void AC_PlayerCharacter::MeleeTracking()
 		ShortestDistance = DistancePlayer[0]; //DistancesToPlayer[0]
 		for (int i = 0; i < DistancePlayer.Num(); i++) //DistancesToPlayer.Num()
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("Value: %f"), DistancePlayer[i])); //DistancesToPlayer[i]
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("Value: %f"), DistancePlayer[i])); //DistancesToPlayer[i]
 
 			if (DistancePlayer[i] < ShortestDistance) //DistancesToPlayer[i]
 			{
@@ -821,13 +823,13 @@ void AC_PlayerCharacter::MeleeTracking()
 
 		if (ShortestDistance > 150.0f) // 150 is melee range for nomral melee to hit
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("TRACKING MELEE ATTACK, SHORTEST Distance: %f"), ShortestDistance));
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("TRACKING MELEE ATTACK, SHORTEST Distance: %f"), ShortestDistance));
 			MeleeTrackTimeline->PlayFromStart();
 		}
 
 		else
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("NORMAL MELEE ATTACK, SHORTEST Distance: %f"), ShortestDistance));
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("NORMAL MELEE ATTACK, SHORTEST Distance: %f"), ShortestDistance));
 			StartMelee();
 		}
 	}
@@ -853,11 +855,36 @@ void AC_PlayerCharacter::MeleeTrackTimelineFloatReturn(float Value)
 	}
 
 	SetActorLocation(FMath::Lerp(GetActorLocation(), EnemyLocation, Value)); //FMath::Lerp(GetActorLocation(), EnemyLocation, Value)
+
+	if(bIsOverlappingEnemy(ClosestEnemy))
+	{
+		StopMeleeTrackTimeline();
+		StartMelee();
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, FString::Printf(TEXT("COLLIDED")));
+	}
 }
 
 void AC_PlayerCharacter::OnMeleeTrackTimelineFinished()
 {
 	StartMelee();
+}
+
+bool AC_PlayerCharacter::bIsOverlappingEnemy(AC_PlayerCharacter* Enemy)
+{
+	if(GetCapsuleComponent()->IsOverlappingActor(Enemy))
+	{
+		return true;
+	}
+
+	else
+	{
+		return false;
+	}
+}
+
+void AC_PlayerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+
 }
 
 void AC_PlayerCharacter::StopMeleeTrackTimeline()
