@@ -307,6 +307,13 @@ public:
 
 	bool bIsOverlappingEnemy(AC_PlayerCharacter* Enemy);
 
+	FVector EnemyLocation;
+	FVector PlayerLoc;
+
+	UFUNCTION(Server, Reliable)
+	void Server_StartMelee(FVector StartLocation, FVector EndLocation, float Alpha);
+	void Server_StartMelee_Implementation(FVector StartLocation, FVector EndLocation, float Alpha);
+
 public: // temp
 	UFUNCTION(BlueprintCallable)
 	void StopMeleeTrackTimeline();
@@ -318,10 +325,6 @@ public: // temp
 	float LocZ;
 
 	float ShortestDistance;
-
-	UFUNCTION()
-	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, 
-		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 // REPLICATION TESTINGS
 

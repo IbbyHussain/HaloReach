@@ -181,7 +181,6 @@ void AC_PlayerCharacter::BeginPlay()
 		MeleeTrackTimeline->SetLooping(false);
 	}
 
-	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AC_PlayerCharacter::OnOverlapBegin);
 
 }
 
@@ -664,37 +663,25 @@ void AC_PlayerCharacter::Server_GunReload_Implementation(AC_BaseGun* Gun)
 
 void AC_PlayerCharacter::StartMelee()
 {
-	if(bCanMelee)
+	ClearActorsIgnoredArray();
+
+	// Used for melee montage rep
+	bIsMeleeAttacking = !bIsMeleeAttacking;
+
+	AC_BaseWeapon* Weapon = EquippedWeaponArray[0];
+
+	if (Weapon)
 	{
+		PlayMontage(Weapon->GetWeapon1PMeleeMontage()); // 1p
 
-		ClearActorsIgnoredArray();
-
-		bIsMeleeAttacking = !bIsMeleeAttacking;
-
-		EndFire();
-
-		AC_BaseWeapon* Weapon = EquippedWeaponArray[0];
-
-		if(Weapon)
+		if (!HasAuthority())
 		{
-			PlayMontage(Weapon->GetWeapon1PMeleeMontage()); // 1p
-
-			if(!HasAuthority())
-			{
-				Server_Melee(Weapon->GetWeapon3PMeleeMontage());
-			}
-
-			bCanMelee = false;
-			bCanZoom = false;
-			bCanSwitch = false;
-			bCanFire = false;
-			bCanReload = false;
-
-			GetWorldTimerManager().SetTimer(MeleeHandle, this, &AC_PlayerCharacter::ResetMelee, Weapon->MeleeTime, false);
+			Server_Melee(Weapon->GetWeapon3PMeleeMontage());
 		}
 
-		EndZoom();
+		GetWorldTimerManager().SetTimer(MeleeHandle, this, &AC_PlayerCharacter::ResetMelee, Weapon->MeleeTime, false);
 	}
+	
 }
 
 void AC_PlayerCharacter::ResetMelee()
@@ -770,88 +757,102 @@ void AC_PlayerCharacter::Server_MeleeAttack_Implementation(AActor* HitActor, flo
 // called on input 
 void AC_PlayerCharacter::MeleeTracking()
 {
-	EnemyMap.Empty();
-
-	FVector StartLocation = DefaultMesh->GetSocketLocation(MeleeStartSocket);
-	FVector EndLocation = (GetActorRotation().Vector().ForwardVector * 0.0f) + StartLocation;
-	FVector HalfSize = FVector(75.0f, 25.0f, 200.0f);
-	FRotator Orientation = GetActorRotation();
-
-	ETraceTypeQuery BoxTrace = UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_Visibility);
-
-
-	TArray<FHitResult> Hits;
-
-	bool bHit = UKismetSystemLibrary::BoxTraceMulti(GetWorld(), StartLocation, EndLocation, HalfSize, Orientation, BoxTrace, false, IgnoredActorsTracking, EDrawDebugTrace::ForDuration, Hits, true, FLinearColor::Blue, FLinearColor::Black);
-
-	//TArray<float>DistancesToPlayer;
-
-	for (auto x : Hits)
+	if (bCanMelee)
 	{
-		AC_PlayerCharacter* Enemy = Cast<AC_PlayerCharacter>(x.GetActor());
+		// Restrictions 
+		EndFire();
+		EndZoom();
 
-		if(Enemy)
+		EnemyMap.Empty();
+
+		FVector StartLocation = DefaultMesh->GetSocketLocation(MeleeStartSocket);
+		FVector EndLocation = (GetActorRotation().Vector().ForwardVector * 0.0f) + StartLocation;
+		FVector HalfSize = FVector(75.0f, 25.0f, 200.0f);
+		FRotator Orientation = GetActorRotation();
+
+		ETraceTypeQuery BoxTrace = UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_Visibility);
+
+
+		TArray<FHitResult> Hits;
+
+		bool bHit = UKismetSystemLibrary::BoxTraceMulti(GetWorld(), StartLocation, EndLocation, HalfSize, Orientation, BoxTrace, false, IgnoredActorsTracking, EDrawDebugTrace::ForDuration, Hits, true, FLinearColor::Blue, FLinearColor::Black);
+
+		for (auto x : Hits)
 		{
-			FVector PlayerLocation = GetActorLocation();
-			FVector EnemyLocation = Enemy->GetActorLocation();
+			AC_PlayerCharacter* Enemy = Cast<AC_PlayerCharacter>(x.GetActor());
 
-			float Distance = (EnemyLocation - PlayerLocation).Size();
-
-			//DistancesToPlayer.Emplace(Distance);
-
-			EnemyMap.Emplace(Distance, Enemy);
-		}
-	}
-
-	if (EnemyMap.Num() > 0) //DistancesToPlayer.Num() > 0
-	{
-		TArray<float> DistancePlayer;
-		EnemyMap.GenerateKeyArray(DistancePlayer);
-
-
-		// Finds the smallest value in the array, in this case the shortest distance
-		ShortestDistance = DistancePlayer[0]; //DistancesToPlayer[0]
-		for (int i = 0; i < DistancePlayer.Num(); i++) //DistancesToPlayer.Num()
-		{
-			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("Value: %f"), DistancePlayer[i])); //DistancesToPlayer[i]
-
-			if (DistancePlayer[i] < ShortestDistance) //DistancesToPlayer[i]
+			if (Enemy)
 			{
-				ShortestDistance = DistancePlayer[i]; //DistancesToPlayer[i]
+				FVector PlayerLocation = GetActorLocation();
+				FVector EnemyLoc = Enemy->GetActorLocation();
+
+				float Distance = (EnemyLoc - PlayerLocation).Size();
+
+				EnemyMap.Emplace(Distance, Enemy);
+			}
+		}
+
+		if (EnemyMap.Num() > 0)
+		{
+			bCanMelee = false;
+			bCanZoom = false;
+			bCanSwitch = false;
+			bCanFire = false;
+			bCanReload = false;
+
+			TArray<float> DistancePlayer;
+			EnemyMap.GenerateKeyArray(DistancePlayer);
+
+
+			// Finds the smallest value in the array, in this case the shortest distance
+			ShortestDistance = DistancePlayer[0]; 
+			for (int i = 0; i < DistancePlayer.Num(); i++) 
+			{
+				//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("Value: %f"), DistancePlayer[i])); //DistancesToPlayer[i]
+
+				if (DistancePlayer[i] < ShortestDistance) 
+				{
+					ShortestDistance = DistancePlayer[i];
+				}
 			}
 
-		}
+			// 150 is melee range for nomral melee to hit
+			if (ShortestDistance > 150.0f)
+			{
+				//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("TRACKING MELEE ATTACK, SHORTEST Distance: %f"), ShortestDistance));
+				MeleeTrackTimeline->PlayFromStart();
+			}
 
-		if (ShortestDistance > 150.0f) // 150 is melee range for nomral melee to hit
-		{
-			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("TRACKING MELEE ATTACK, SHORTEST Distance: %f"), ShortestDistance));
-			MeleeTrackTimeline->PlayFromStart();
-		}
-
-		else
-		{
-			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("NORMAL MELEE ATTACK, SHORTEST Distance: %f"), ShortestDistance));
-			StartMelee();
+			else
+			{
+				//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("NORMAL MELEE ATTACK, SHORTEST Distance: %f"), ShortestDistance));
+				StartMelee();
+			}
 		}
 	}
 }
 
 void AC_PlayerCharacter::MeleeTrackTimelineFloatReturn(float Value)
 {
-	FVector PlayerLocation = GetActorLocation();
+	PlayerLoc = GetActorLocation();
 
-	LocX = PlayerLocation.X;
-	LocY = PlayerLocation.Y;
-	LocZ = PlayerLocation.Z;
+	LocX = PlayerLoc.X;
+	LocY = PlayerLoc.Y;
+	LocZ = PlayerLoc.Z;
 
 	AC_PlayerCharacter* ClosestEnemy;
 	ClosestEnemy = *(EnemyMap.Find(ShortestDistance));
 
-	FVector EnemyLocation = ClosestEnemy->GetActorLocation();
+	EnemyLocation = ClosestEnemy->GetActorLocation();
 
-	SetActorLocation(FMath::Lerp(GetActorLocation(), EnemyLocation, Value));
+	if(!HasAuthority())
+	{
+		Server_StartMelee(PlayerLoc, EnemyLocation, Value);
+	}
 
-	UKismetMathLibrary::FindLookAtRotation(PlayerLocation, EnemyLocation);
+	SetActorLocation(FMath::Lerp(PlayerLoc, EnemyLocation, Value));
+
+	UKismetMathLibrary::FindLookAtRotation(PlayerLoc, EnemyLocation);
 	
 
 	if(bIsOverlappingEnemy(ClosestEnemy))
@@ -864,10 +865,15 @@ void AC_PlayerCharacter::MeleeTrackTimelineFloatReturn(float Value)
 	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	if (PC)
 	{
-		//UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), EnemyLocation)
-		//PC->SetControlRotation(FMath::Lerp(GetActorRotation(), UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), EnemyLocation), Value));
-		PC->SetControlRotation(UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), EnemyLocation));
+		PC->SetControlRotation(FMath::Lerp(GetActorRotation(), UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), EnemyLocation), Value));
+		//PC->SetControlRotation(UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), EnemyLocation));
 	}
+}
+
+// Set Actor location is server only
+void AC_PlayerCharacter::Server_StartMelee_Implementation(FVector StartLocation, FVector EndLocation, float Alpha)
+{
+	SetActorLocation(FMath::Lerp(StartLocation, EndLocation, Alpha));
 }
 
 void AC_PlayerCharacter::OnMeleeTrackTimelineFinished()
@@ -886,11 +892,6 @@ bool AC_PlayerCharacter::bIsOverlappingEnemy(AC_PlayerCharacter* Enemy)
 	{
 		return false;
 	}
-}
-
-void AC_PlayerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-
 }
 
 void AC_PlayerCharacter::StopMeleeTrackTimeline()

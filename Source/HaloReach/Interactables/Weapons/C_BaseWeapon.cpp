@@ -18,14 +18,13 @@ AC_BaseWeapon::AC_BaseWeapon()
 	bReplicates = true;
 }
 
-
 void AC_BaseWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 
 	Melee3PMontage->GetPlayLength();
 
-	MeleeTime = Melee1PMontage->GetPlayLength() / Melee3PMontage->RateScale;
+	MeleeTime = Melee1PMontage->GetPlayLength() / Melee1PMontage->RateScale;
 }
 
 UAnimMontage* AC_BaseWeapon::GetWeaponEquipMontage()
