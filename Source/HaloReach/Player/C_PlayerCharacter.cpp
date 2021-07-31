@@ -763,6 +763,12 @@ void AC_PlayerCharacter::MeleeTracking()
 		EndFire();
 		EndZoom();
 
+		bCanMelee = false;
+		bCanZoom = false;
+		bCanSwitch = false;
+		bCanFire = false;
+		bCanReload = false;
+
 		EnemyMap.Empty();
 
 		FVector StartLocation = DefaultMesh->GetSocketLocation(MeleeStartSocket);
@@ -771,7 +777,6 @@ void AC_PlayerCharacter::MeleeTracking()
 		FRotator Orientation = GetActorRotation();
 
 		ETraceTypeQuery BoxTrace = UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_Visibility);
-
 
 		TArray<FHitResult> Hits;
 
@@ -794,15 +799,8 @@ void AC_PlayerCharacter::MeleeTracking()
 
 		if (EnemyMap.Num() > 0)
 		{
-			bCanMelee = false;
-			bCanZoom = false;
-			bCanSwitch = false;
-			bCanFire = false;
-			bCanReload = false;
-
 			TArray<float> DistancePlayer;
 			EnemyMap.GenerateKeyArray(DistancePlayer);
-
 
 			// Finds the smallest value in the array, in this case the shortest distance
 			ShortestDistance = DistancePlayer[0]; 
@@ -828,6 +826,11 @@ void AC_PlayerCharacter::MeleeTracking()
 				//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("NORMAL MELEE ATTACK, SHORTEST Distance: %f"), ShortestDistance));
 				StartMelee();
 			}
+		}
+
+		else
+		{
+			StartMelee();
 		}
 	}
 }
