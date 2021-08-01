@@ -48,6 +48,7 @@ public:
 
 	// Zoom Scope
 
+	UPROPERTY()
 	UUserWidget* ZoomWidget;
 
 	void CreateZoomWidget(TSubclassOf<UUserWidget> WidgetClass);
