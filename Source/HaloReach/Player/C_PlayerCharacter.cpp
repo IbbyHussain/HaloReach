@@ -1036,6 +1036,9 @@ void AC_PlayerCharacter::BeginZoom()
 			if (Gun->WeaponStats.bCanZoom && bCanZoom)
 			{
 				bZoomIn = true;
+
+				HUD->HideHUDWidget();
+				HUD->CreateZoomWidget(Gun->ZoomWidgetClass);
 			}
 		}
 	}
@@ -1045,6 +1048,9 @@ void AC_PlayerCharacter::BeginZoom()
 void AC_PlayerCharacter::EndZoom()
 {
 	bZoomIn = false;
+
+	HUD->ShowHUDWidget();
+	HUD->DestroyZoomWidget();
 }
 
 void AC_PlayerCharacter::PlayMontage(UAnimMontage* Montage)

@@ -18,7 +18,9 @@ public:
 
 	virtual void BeginPlay() override;
 
-	void AddWidgetToViewport(UUserWidget* Widget, TSubclassOf<UUserWidget> WidgetClass);
+	void AddWidgetToViewport(UUserWidget*& Widget, TSubclassOf<UUserWidget> WidgetClass);
+
+	void DestroyWidget(UUserWidget*& Widget);
 
 	// HUD Widget
 
@@ -26,6 +28,10 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 	TSubclassOf<class UC_PlayerHUDWidget> HUDWidgetClass;
+
+	void HideHUDWidget();
+
+	void ShowHUDWidget();
 
 	// Health System
 
@@ -39,4 +45,13 @@ public:
 
 	UFUNCTION()
 	void UpdateWeaponReserves();
+
+	// Zoom Scope
+
+	UUserWidget* ZoomWidget;
+
+	void CreateZoomWidget(TSubclassOf<UUserWidget> WidgetClass);
+
+	void DestroyZoomWidget();
+
 };

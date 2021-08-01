@@ -153,6 +153,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Gun | Weapon Effects")
 	TSubclassOf<UDamageType> DamageType;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Gun | Weapon Effects")
+	USoundBase* DryFireSound;
+
 	// A basic fire function which uses a line trace and applies damage, Will always be called on server
 	void Fire();
 
@@ -165,7 +168,6 @@ protected:
 	FTimerHandle AutomaticLocalFireHandle;
 
 	FTimerHandle SemiLocalFireHandle;
-
 
 // AMMO COUNTER
 
@@ -305,6 +307,11 @@ protected:
 // WEAPON MAGAZINE
 
 public:
+
+	// WEAPON ZOOM
+
+	UPROPERTY(EditDefaultsOnly, Category = "Gun | Zoom")
+	TSubclassOf<UUserWidget> ZoomWidgetClass;
 
 
 private:

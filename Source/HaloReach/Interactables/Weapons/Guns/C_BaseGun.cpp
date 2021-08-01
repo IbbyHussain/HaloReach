@@ -174,7 +174,7 @@ void AC_BaseGun::Fire()
 			WeaponStats.LastFireTime = GetWorld()->TimeSeconds;
 		}
 
-		else 
+		else if(WeaponStats.CurrentReservesAmmo != 0)
 		{
 			// Auto reload if no ammo left
 			AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(MyOwner);
@@ -185,6 +185,11 @@ void AC_BaseGun::Fire()
 				PlayerCharacter->OnWeaponStopFire(); // Stops 3p fire anim
 				PlayerCharacter->StopMontage(GetWeaponFireMontage()); // stops 1p fire anim
 			}
+		}
+
+		else
+		{
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), DryFireSound, GetActorLocation());
 		}
 	}
 }

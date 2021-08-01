@@ -16,7 +16,7 @@ void AC_PlayerHUD::DrawHUD()
 	Super::DrawHUD();
 }
 
-void AC_PlayerHUD::AddWidgetToViewport(UUserWidget* Widget, TSubclassOf<UUserWidget> WidgetClass)
+void AC_PlayerHUD::AddWidgetToViewport(UUserWidget*& Widget, TSubclassOf<UUserWidget> WidgetClass)
 {
 	if (WidgetClass)
 	{
@@ -25,6 +25,14 @@ void AC_PlayerHUD::AddWidgetToViewport(UUserWidget* Widget, TSubclassOf<UUserWid
 		{
 			Widget->AddToViewport();
 		}
+	}
+}
+
+void AC_PlayerHUD::DestroyWidget(UUserWidget*& Widget)
+{
+	if (Widget)
+	{
+		Widget->RemoveFromParent();
 	}
 }
 
@@ -42,6 +50,22 @@ void AC_PlayerHUD::BeginPlay()
 		{
 			HUDWidget->AddToViewport();
 		}
+	}
+}
+
+void AC_PlayerHUD::HideHUDWidget()
+{
+	if(HUDWidget)
+	{
+		HUDWidget->SetVisibility(ESlateVisibility::Hidden);
+	}
+}
+
+void AC_PlayerHUD::ShowHUDWidget()
+{
+	if(HUDWidget)
+	{
+		HUDWidget->SetVisibility(ESlateVisibility::Visible);
 	}
 }
 
@@ -68,4 +92,14 @@ void AC_PlayerHUD::UpdateWeaponReserves()
 	{
 		HUDWidget->UpdateAmmoText();
 	}
+}
+
+void AC_PlayerHUD::CreateZoomWidget(TSubclassOf<UUserWidget> WidgetClass)
+{
+	AddWidgetToViewport(ZoomWidget, WidgetClass);
+}
+
+void AC_PlayerHUD::DestroyZoomWidget()
+{
+	DestroyWidget(ZoomWidget);
 }
