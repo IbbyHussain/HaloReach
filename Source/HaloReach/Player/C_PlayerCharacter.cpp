@@ -719,7 +719,7 @@ void AC_PlayerCharacter::ClearActorsIgnoredArray()
 	ActorsIgnored.Emplace(this);
 }
 
-void AC_PlayerCharacter::MeleeAttack(USkeletalMeshComponent* MeshComp, float Damage)
+void AC_PlayerCharacter::MeleeAttack(USkeletalMeshComponent* MeshComp)
 {
 	// Get the start and end location of the sphere trace (two sockets that are the length of the sword)
 	FVector StartLocation = EquippedWeaponArray[0]->WeaponMesh->GetSocketLocation(EquippedWeaponArray[0]->MeleeStartSocket);
@@ -739,19 +739,39 @@ void AC_PlayerCharacter::MeleeAttack(USkeletalMeshComponent* MeshComp, float Dam
 	{
 		if (!HasAuthority())
 		{
-			Server_MeleeAttack(HitPlayer, Damage);
+			Server_MeleeAttack(HitPlayer);
 		}
 
-		UGameplayStatics::ApplyDamage(HitPlayer, Damage, UGameplayStatics::GetPlayerController(this, 0), this, NULL);
+		if(HitPlayer->HealthComp->GetShields() <= 0.0f)
+		{
+			// Will one hit enemy player if sheields are 0
+			UGameplayStatics::ApplyDamage(HitPlayer, HitPlayer->HealthComp->MaxHealth, UGameplayStatics::GetPlayerController(this, 0), this, NULL);
+		}
+
+		else
+		{
+			// will one hit shields
+			UGameplayStatics::ApplyDamage(HitPlayer, HitPlayer->HealthComp->MaxShields, UGameplayStatics::GetPlayerController(this, 0), this, NULL);
+		}
 
 		// Stops player from being damaged multiple times
 		ActorsIgnored.Emplace(HitPlayer);
 	}
 }
 
-void AC_PlayerCharacter::Server_MeleeAttack_Implementation(AActor* HitActor, float Damage)
+void AC_PlayerCharacter::Server_MeleeAttack_Implementation(AC_PlayerCharacter* HitActor)
 {
-	UGameplayStatics::ApplyDamage(HitActor, Damage, UGameplayStatics::GetPlayerController(this, 0), this, NULL);
+	if (HitActor->HealthComp->GetShields() <= 0.0f)
+	{
+		// Will one hit enemy player if sheields are 0
+		UGameplayStatics::ApplyDamage(HitActor, HitActor->HealthComp->MaxHealth, UGameplayStatics::GetPlayerController(this, 0), this, NULL);
+	}
+
+	else
+	{
+		// will one hit shields
+		UGameplayStatics::ApplyDamage(HitActor, HitActor->HealthComp->MaxShields, UGameplayStatics::GetPlayerController(this, 0), this, NULL);
+	}
 }
 
 // called on input 

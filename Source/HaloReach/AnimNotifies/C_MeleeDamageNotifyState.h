@@ -13,9 +13,6 @@ class HALOREACH_API UC_MeleeDamageNotifyState : public UAnimNotifyState
 
 public:
 
-	UPROPERTY(EditAnywhere, Category = "Damage")
-	float Damage;
-
 	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration) override;
 
 	virtual void NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime) override;

@@ -259,7 +259,7 @@ public:
 	bool bCanMelee;
 
 	// Method will use sphere traces to deal damage, will be used in an anim notify state
-	void MeleeAttack(USkeletalMeshComponent* MeshComp, float Damage);
+	void MeleeAttack(USkeletalMeshComponent* MeshComp);
 
 	UPROPERTY(ReplicatedUsing = OnRep_Melee)
 	bool bIsMeleeAttacking;
@@ -278,8 +278,8 @@ public:
 	void ClearActorsIgnoredArray();
 
 	UFUNCTION(Server, Reliable)
-	void Server_MeleeAttack(AActor* HitActor, float Damage);
-	void Server_MeleeAttack_Implementation(AActor* HitActor, float Damage);
+	void Server_MeleeAttack(AC_PlayerCharacter* HitActor);
+	void Server_MeleeAttack_Implementation(AC_PlayerCharacter* HitActor);
 
 	// Melee Tracking
 

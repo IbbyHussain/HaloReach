@@ -14,7 +14,7 @@ void UC_MeleeDamageNotifyState::NotifyTick(USkeletalMeshComponent* MeshComp, UAn
 	AC_PlayerCharacter* Player = Cast<AC_PlayerCharacter>(MeshComp->GetAnimInstance()->TryGetPawnOwner());
 	if(Player)
 	{
-		Player->MeleeAttack(MeshComp, Damage);
+		Player->MeleeAttack(MeshComp);
 	}
 }
 
