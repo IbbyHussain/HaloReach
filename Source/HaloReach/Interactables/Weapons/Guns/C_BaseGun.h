@@ -129,8 +129,6 @@ public:
 	AC_BaseGun();
 protected:
 
-	
-
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float Delta) override;
@@ -159,15 +157,12 @@ protected:
 	// A basic fire function which uses a line trace and applies damage, Will always be called on server
 	void Fire();
 
-	// A Fire() function that is only called locally
-	void LocalFire();
+	// Plays effects that will only be seen in 1P (Local only)
+	void PlayFireEffects1P();
 
-	// Plays particle effects for weapon
-	void PlayFireEffects();
+	// Plays effects that will only be seen in 3P (By Other clients only)
+	void PlayFireEffects3P();
 
-	FTimerHandle AutomaticLocalFireHandle;
-
-	FTimerHandle SemiLocalFireHandle;
 
 // AMMO COUNTER
 
@@ -319,20 +314,22 @@ private:
 // Replication
 
 	UFUNCTION(Server, Reliable)
-	void Server_Fire();
-	void Server_Fire_Implementation();
+	void Server_Fire(AActor* NewOwner);
+	void Server_Fire_Implementation(AActor* NewOwner);
 
 	UFUNCTION(NetMultiCast, Reliable)
-	void Multi_Fire();
-	void Multi_Fire_Implementation();
+	void Multi_Fire(AActor* NewOwner);
+	void Multi_Fire_Implementation(AActor* NewOwner);
+
+	// Stop Fire
 
 	UFUNCTION(Server, Reliable)
-	void Server_StopFire();
-	void Server_StopFire_Implementation();
+	void Server_StopFire(AActor* NewOwner);
+	void Server_StopFire_Implementation(AActor* NewOwner);
 
 	UFUNCTION(NetMultiCast, Reliable)
-	void Multi_StopFire();
-	void Multi_StopFire_Implementation();
+	void Multi_StopFire(AActor* NewOwner);
+	void Multi_StopFire_Implementation(AActor* NewOwner);
 
 public:
 

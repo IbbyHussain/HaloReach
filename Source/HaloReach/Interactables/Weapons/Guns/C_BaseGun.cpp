@@ -20,8 +20,8 @@ AC_BaseGun::AC_BaseGun()
 
 	bReplicates = true;
 
-	NetUpdateFrequency = 60.0f;
-	MinNetUpdateFrequency = 10.0f;
+	NetUpdateFrequency = 90.0f;
+	MinNetUpdateFrequency = 30.0f;
 
 	bCanFire = true;
 
@@ -47,7 +47,9 @@ void AC_BaseGun::Tick(float Delta)
 	Super::Tick(Delta);
 
 	//UE_LOG(LogTemp, Error, TEXT("Status: %s "), (RecoilTimeline->IsPlaying() ? TEXT("TIMER IS PLAYING") : TEXT("TIMER IS NOT PLAYING")));
-	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("changed start rotation value"), (bHasTimerPaused ? TEXT("TIMER IS PAUSED") : TEXT("TIMER IS NOT PAUSED")));
+
+	AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(GetOwner());
+	bool bHasTimerPaused = PlayerCharacter->GetMesh3P()->GetAnimInstance()->Montage_IsPlaying(GetWeapon3PFireMontage());
 
 }
 
@@ -93,131 +95,66 @@ void AC_BaseGun::BeginPlay()
 	}
 }
 
+// WEAPON FIRING
+
 void AC_BaseGun::Fire()
 {
 	AActor* MyOwner = GetOwner();
 
-	if(!(MyOwner->HasAuthority()))
+	if(MyOwner->HasAuthority())
 	{
-		Server_Fire();
+		Multi_Fire(MyOwner);
+		//Server_Fire(MyOwner);
+
 	}
 
-	if(MyOwner)
+	else
 	{
-		if(WeaponStats.CurrentAmmo > 0 && bCanFire)
-		{
-			WeaponStats.CurrentAmmo -= 1;
-			UpdateAmmoCounter();
-
-			AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(MyOwner);
-			if(PlayerCharacter)
-			{
-				PlayerCharacter->OnWeaponFire();
-				PlayerCharacter->PlayMontage(GetWeaponFireMontage());
-			}
-
-			FVector EyeLocation;
-			FRotator EyeRotation;
-			MyOwner->GetActorEyesViewPoint(EyeLocation, EyeRotation);
-
-			FVector ShotDirection = EyeRotation.Vector();
-			FVector TraceEnd = EyeLocation + (SpreadTrace(ShotDirection) * 5000);
-
-			FCollisionQueryParams QueryParams;
-
-			QueryParams.AddIgnoredActor(MyOwner);
-			QueryParams.AddIgnoredActor(this);
-			QueryParams.bTraceComplex = true;
-			QueryParams.bReturnPhysicalMaterial = true;
-
-			FHitResult Hit;
-
-			bool bHit = GetWorld()->LineTraceSingleByChannel(Hit, EyeLocation, TraceEnd, COLLISION_WEAPON, QueryParams);
-			DrawDebugLine(GetWorld(), EyeLocation, TraceEnd, FColor::Red, false, 1.0f, 0, 1.0f);
-
-			if (bHit)
-			{
-				AActor* HitActor = Hit.GetActor();
-
-				EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
-
-				// Head shot damage should only be applied when shields = 0
-
-				// Head shot multiplier 
-				float ActualDamage = WeaponStats.BaseDamage;
-				if (SurfaceType == SURFACE_FLESHVULNERABLE)
-				{
-					ActualDamage *= 3.0f;
-				}
-
-				UGameplayStatics::ApplyPointDamage(HitActor, ActualDamage, ShotDirection, Hit, MyOwner->GetInstigatorController(), this, DamageType);
-				
-				// Plays particle effect (Impact Effect) depending on physical material hit
-				UParticleSystem* SelectedEffect = nullptr;
-				switch (SurfaceType)
-				{
-				case SURFACE_FLESHDEFAULT:
-				case SURFACE_FLESHVULNERABLE:
-					SelectedEffect = FleshImpactEffect;
-					break;
-
-				default:
-					SelectedEffect = DefaultImpactEffect;
-					break;
-				}
-
-				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SelectedEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
-			}
-
-			PlayFireEffects();
-
-			WeaponStats.LastFireTime = GetWorld()->TimeSeconds;
-		}
-
-		else if(WeaponStats.CurrentReservesAmmo != 0)
-		{
-			// Auto reload if no ammo left
-			AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(MyOwner);
-			if(PlayerCharacter)
-			{
-				PlayerCharacter->Reload(); // Calls player reload, so montages can be played
-				Reload();
-				PlayerCharacter->OnWeaponStopFire(); // Stops 3p fire anim
-				PlayerCharacter->StopMontage(GetWeaponFireMontage()); // stops 1p fire anim
-			}
-		}
-
-		else if (WeaponStats.CurrentReservesAmmo == 0 && WeaponStats.CurrentAmmo == 0)
-		{
-			UGameplayStatics::PlaySoundAtLocation(GetWorld(), DryFireSound, GetActorLocation());
-			StopAutoFire();
-		}
+		Server_Fire(MyOwner);
 	}
 }
 
-void AC_BaseGun::LocalFire()
+void AC_BaseGun::ResetCanFire()
 {
-	if (WeaponStats.CurrentAmmo > 0 && bCanFire)
-	{
-		StartRecoil();
-	}
+	bCanFire = true;
+	GetWorldTimerManager().ClearTimer(ReloadHandle);
 }
 
-void AC_BaseGun::PlayFireEffects()
+void AC_BaseGun::StartAutoFire()
 {
-	UGameplayStatics::SpawnEmitterAttached(MuzzleEffect, WeaponMesh, MuzzleSocketName);
+	// This ensures that a player cannot fire shots faster than fire rate by just rapidly clicking. 
+	// Clamp this so: if First delay is -ve use 0 -- Max uses largest value
+	float FirstDelay = FMath::Max(WeaponStats.LastFireTime + WeaponStats.TimeBetweenShots - GetWorld()->TimeSeconds, 0.0f);
+	GetWorldTimerManager().SetTimer(AutomaticFireHandle, this, &AC_BaseGun::Fire, WeaponStats.TimeBetweenShots, true, FirstDelay);
+}
 
-	APawn* MyOwner = Cast<APawn>(GetOwner());
+void AC_BaseGun::StopAutoFire()
+{
+	AActor* MyOwner = GetOwner();
 
-	if(MyOwner)
+	if (MyOwner->HasAuthority())
 	{
-		APlayerController* PC = Cast<APlayerController>(MyOwner->GetController());
-		if(PC)
-		{
-			PC->ClientPlayCameraShake(FireShake);
-		}
+		Multi_StopFire(MyOwner);
+	}
+
+	else
+	{
+		Server_StopFire(MyOwner);
 	}
 }
+
+void AC_BaseGun::StartSemiFire()
+{
+	float FirstDelay = FMath::Max(WeaponStats.LastFireTime + WeaponStats.TimeBetweenShots - GetWorld()->TimeSeconds, 0.0f);
+	GetWorldTimerManager().SetTimer(SemiFireHandle, this, &AC_BaseGun::Fire, WeaponStats.TimeBetweenShots, false, FirstDelay);
+}
+
+void AC_BaseGun::SetCurrentAmmoImage(UTexture2D* NewTexture)
+{
+	CurrentAmmoImage = NewTexture;
+}
+
+// WEAPON RELOADING
 
 void AC_BaseGun::Reload()
 {
@@ -257,61 +194,31 @@ void AC_BaseGun::Server_Reload_Implementation()
 	Reload();
 }
 
-void AC_BaseGun::ResetCanFire()
+// WEAPON EFFECTS
+
+void AC_BaseGun::PlayFireEffects1P()
 {
-	bCanFire = true;
-	GetWorldTimerManager().ClearTimer(ReloadHandle);
+
 }
 
-void AC_BaseGun::StartAutoFire()
+void AC_BaseGun::PlayFireEffects3P()
 {
-	// This ensures that a player cannot fire shots faster than fire rate by just rapidly clicking. 
-	// Clamp this so if First delay is -ve use 0 -- Max uses largest value
-	
-	if(true) //!(WeaponStats.CurrentReservesAmmo == 0 && WeaponStats.CurrentAmmo == 0)
-	{
-		float FirstDelay = FMath::Max(WeaponStats.LastFireTime + WeaponStats.TimeBetweenShots - GetWorld()->TimeSeconds, 0.0f);
-		GetWorldTimerManager().SetTimer(AutomaticFireHandle, this, &AC_BaseGun::Fire, WeaponStats.TimeBetweenShots, true, FirstDelay);
-		GetWorldTimerManager().SetTimer(AutomaticLocalFireHandle, this, &AC_BaseGun::LocalFire, WeaponStats.TimeBetweenShots, true, FirstDelay);
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("FIRING")));
-	}
-}
+	UGameplayStatics::SpawnEmitterAttached(MuzzleEffect, WeaponMesh, MuzzleSocketName);
 
-void AC_BaseGun::StopAutoFire()
-{
-	AActor* MyOwner = GetOwner();
-	if(MyOwner)
+	APawn* MyOwner = Cast<APawn>(GetOwner());
+
+	if (MyOwner)
 	{
-		AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(MyOwner);
-		if (PlayerCharacter)
+		APlayerController* PC = Cast<APlayerController>(MyOwner->GetController());
+		if (PC)
 		{
-			PlayerCharacter->OnWeaponStopFire();
-			PlayerCharacter->StopMontage(GetWeaponFireMontage());
-			StopRecoil();
+			PC->ClientPlayCameraShake(FireShake);
 		}
 	}
-	
-	GetWorldTimerManager().ClearTimer(AutomaticFireHandle);
-	GetWorldTimerManager().ClearTimer(AutomaticLocalFireHandle);
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("STOPPED FIRING")));
-}
-
-void AC_BaseGun::StartSemiFire()
-{
-	float FirstDelay = FMath::Max(WeaponStats.LastFireTime + WeaponStats.TimeBetweenShots - GetWorld()->TimeSeconds, 0.0f);
-	GetWorldTimerManager().SetTimer(SemiFireHandle, this, &AC_BaseGun::Fire, WeaponStats.TimeBetweenShots, false, FirstDelay);
-	GetWorldTimerManager().SetTimer(SemiLocalFireHandle, this, &AC_BaseGun::LocalFire, WeaponStats.TimeBetweenShots, false, FirstDelay);
-}
-
-void AC_BaseGun::SetCurrentAmmoImage(UTexture2D* NewTexture)
-{
-	CurrentAmmoImage = NewTexture;
 }
 
 // WEAPON RECOIL 
 
-//commented out
 void AC_BaseGun::StartRecoil()
 {
 	//AActor* MyOwner = GetOwner();
@@ -354,7 +261,6 @@ void AC_BaseGun::StartRecoil()
 	//}
 }
 
-//commented out
 void AC_BaseGun::StopRecoil()
 {
 	// Only reset for auto weapon
@@ -513,7 +419,6 @@ void AC_BaseGun::StopReturnTimeline()
 	}
 }
 
-//commented out
 void AC_BaseGun::ReturnRecoil()
 {
 	if(!ReturnTimeline->IsPlaying())
@@ -550,25 +455,134 @@ void AC_BaseGun::SetMeshAmmoCounter(UTexture2D* Texture)
 
 // Replication
 
-void AC_BaseGun::Server_Fire_Implementation()
+void AC_BaseGun::Server_Fire_Implementation(AActor* NewOwner)
 {
-	Fire();
+	Multi_Fire(NewOwner);
 }
 
-void AC_BaseGun::Multi_Fire_Implementation()
+void AC_BaseGun::Multi_Fire_Implementation(AActor* NewOwner)
 {
-	Fire();
+	if(NewOwner)
+	{
+		if (WeaponStats.CurrentAmmo > 0 && bCanFire)
+		{
+			//WeaponStats.CurrentAmmo -= 1;
+			//UpdateAmmoCounter();
+
+			AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(NewOwner);
+			if (PlayerCharacter)
+			{
+				PlayerCharacter->PlayMontage(PlayerCharacter->GetMesh3P(), GetWeapon3PFireMontage());
+				PlayerCharacter->PlayMontage(PlayerCharacter->GetDefaultMesh(), GetWeaponFireMontage());
+				//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("PLAYING MONTAGE")));
+			}
+			
+		
+		//	FVector EyeLocation;
+		//	FRotator EyeRotation;
+		//	NewOwner->GetActorEyesViewPoint(EyeLocation, EyeRotation);
+
+		//	FVector ShotDirection = EyeRotation.Vector();
+		//	FVector TraceEnd = EyeLocation + (SpreadTrace(ShotDirection) * 5000);
+
+		//	FCollisionQueryParams QueryParams;
+
+		//	QueryParams.AddIgnoredActor(NewOwner);
+		//	QueryParams.AddIgnoredActor(this);
+		//	QueryParams.bTraceComplex = true;
+		//	QueryParams.bReturnPhysicalMaterial = true;
+
+		//	FHitResult Hit;
+
+		//	bool bHit = GetWorld()->LineTraceSingleByChannel(Hit, EyeLocation, TraceEnd, COLLISION_WEAPON, QueryParams);
+		//	DrawDebugLine(GetWorld(), EyeLocation, TraceEnd, FColor::Red, false, 1.0f, 0, 1.0f);
+
+		//	if (bHit)
+		//	{
+		//		AActor* HitActor = Hit.GetActor();
+
+		//		EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
+
+		//		// Head shot damage should only be applied when shields = 0
+
+		//		// Head shot multiplier 
+		//		float ActualDamage = WeaponStats.BaseDamage;
+		//		if (SurfaceType == SURFACE_FLESHVULNERABLE)
+		//		{
+		//			ActualDamage *= 3.0f;
+		//		}
+
+		//		UGameplayStatics::ApplyPointDamage(HitActor, ActualDamage, ShotDirection, Hit, NewOwner->GetInstigatorController(), this, DamageType);
+
+		//		// Plays particle effect (Impact Effect) depending on physical material hit
+		//		UParticleSystem* SelectedEffect = nullptr;
+		//		switch (SurfaceType)
+		//		{
+		//		case SURFACE_FLESHDEFAULT:
+		//		case SURFACE_FLESHVULNERABLE:
+		//			SelectedEffect = FleshImpactEffect;
+		//			break;
+
+		//		default:
+		//			SelectedEffect = DefaultImpactEffect;
+		//			break;
+		//		}
+
+		//		// Plays impact effect
+		//		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SelectedEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
+		//	}
+
+		//	//PlayFireEffects();
+
+		//	WeaponStats.LastFireTime = GetWorld()->TimeSeconds;
+		//}
+
+		//else if (WeaponStats.CurrentReservesAmmo != 0)
+		//{
+		//	// Auto reload if no ammo left
+		//	AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(NewOwner);
+		//	if (PlayerCharacter)
+		//	{
+		//		PlayerCharacter->Reload(); // Calls player reload, so montages can be played
+		//		Reload();
+		//		PlayerCharacter->OnWeaponStopFire(); // Stops 3p fire anim
+		//		PlayerCharacter->StopMontage(GetWeaponFireMontage()); // stops 1p fire anim
+		//	}
+		//}
+
+		//else if (WeaponStats.CurrentReservesAmmo == 0 && WeaponStats.CurrentAmmo == 0)
+		//{
+		//	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DryFireSound, GetActorLocation());
+		//	StopAutoFire();
+		}
+	}
 }
 
-void AC_BaseGun::Server_StopFire_Implementation()
+void AC_BaseGun::Server_StopFire_Implementation(AActor* NewOwner)
 {
-	Multi_StopFire();
+	Multi_StopFire(NewOwner);
 }
 
-void AC_BaseGun::Multi_StopFire_Implementation()
+void AC_BaseGun::Multi_StopFire_Implementation(AActor* NewOwner)
 {
-	StopAutoFire();
+	if (NewOwner)
+	{
+		AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(NewOwner);
+		if (PlayerCharacter)
+		{
+			PlayerCharacter->StopMontage(PlayerCharacter->GetMesh3P(), GetWeapon3PFireMontage());
+			PlayerCharacter->GetMesh3P()->GetAnimInstance()->Montage_Stop(1.0f, GetWeapon3PFireMontage());
+			PlayerCharacter->StopMontage(PlayerCharacter->GetDefaultMesh(), GetWeaponFireMontage());
+			StopRecoil();
+			GetWorldTimerManager().ClearTimer(AutomaticFireHandle);
+		}
+	}
+
+
+	//AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(GetOwner());
+	//PlayerCharacter->StopMontage(PlayerCharacter->GetMesh3P(), GetWeapon3PFireMontage());
 }
+
 
 // Virtual Functions
 
@@ -582,6 +596,5 @@ void AC_BaseGun::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeti
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AC_BaseGun, WeaponStats);
-	//DOREPLIFETIME(AC_BaseGun, WeaponStats.CurrentAmmo);
 
 }

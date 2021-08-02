@@ -164,9 +164,9 @@ public:
 	// Applies any updates to the character when they change weapon type
 	void OnWeaponTypeUpdate();
 
-	void PlayMontage(UAnimMontage* Montage);
+	void PlayMontage(USkeletalMeshComponent* MeshComp, UAnimMontage* Montage);
 
-	void StopMontage(UAnimMontage* Montage);
+	void StopMontage(USkeletalMeshComponent* MeshComp, UAnimMontage* Montage);
 
 
 // WEAPON AIM OFFSET

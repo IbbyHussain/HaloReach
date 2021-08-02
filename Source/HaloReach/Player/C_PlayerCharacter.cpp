@@ -672,7 +672,7 @@ void AC_PlayerCharacter::StartMelee()
 
 	if (Weapon)
 	{
-		PlayMontage(Weapon->GetWeapon1PMeleeMontage()); // 1p
+		PlayMontage(DefaultMesh, Weapon->GetWeapon1PMeleeMontage()); // 1p
 
 		if (!HasAuthority())
 		{
@@ -973,21 +973,10 @@ void AC_PlayerCharacter::EndFire()
 	}
 }
 
-void AC_PlayerCharacter::OnRep_Fire()
-{
-	AC_BaseGun* Gun = Cast<AC_BaseGun>(EquippedWeaponArray[0]);
-	Mesh3P->GetAnimInstance()->Montage_Play(Gun->GetWeapon3PFireMontage(), 1.0f);
-}
-
-void AC_PlayerCharacter::Server_Fire_Implementation(UAnimMontage* Montage)
-{
-	Mesh3P->GetAnimInstance()->Montage_Play(Montage, 1.0f);
-}
-
 void AC_PlayerCharacter::OnRep_StopFire()
 {
-	AC_BaseGun* Gun = Cast<AC_BaseGun>(EquippedWeaponArray[0]);
-	Mesh3P->GetAnimInstance()->Montage_Stop(0.1f, Gun->GetWeapon3PFireMontage());
+	//AC_BaseGun* Gun = Cast<AC_BaseGun>(EquippedWeaponArray[0]);
+	//Mesh3P->GetAnimInstance()->Montage_Stop(0.1f, Gun->GetWeapon3PFireMontage());
 }
 
 void AC_PlayerCharacter::Server_StopFire_Implementation(UAnimMontage* Montage)
@@ -1006,9 +995,20 @@ void AC_PlayerCharacter::OnWeaponFire()
 		// Call Server RPC for clients 
 		if (!HasAuthority())
 		{
-			Server_Fire(Gun->GetWeapon3PFireMontage());
+			//Server_Fire(Gun->GetWeapon3PFireMontage());
 		}
 	}
+}
+
+void AC_PlayerCharacter::OnRep_Fire()
+{
+	//AC_BaseGun* Gun = Cast<AC_BaseGun>(EquippedWeaponArray[0]);
+	//Mesh3P->GetAnimInstance()->Montage_Play(Gun->GetWeapon3PFireMontage(), 1.0f);
+}
+
+void AC_PlayerCharacter::Server_Fire_Implementation(UAnimMontage* Montage)
+{
+	Mesh3P->GetAnimInstance()->Montage_Play(Montage, 1.0f);
 }
 
 void AC_PlayerCharacter::OnWeaponStopFire()
@@ -1020,7 +1020,7 @@ void AC_PlayerCharacter::OnWeaponStopFire()
 	{
 		if (!HasAuthority())
 		{
-			Server_StopFire(Gun->GetWeapon3PFireMontage());
+			//Server_StopFire(Gun->GetWeapon3PFireMontage());
 		}
 	}
 }
@@ -1053,14 +1053,14 @@ void AC_PlayerCharacter::EndZoom()
 	HUD->DestroyZoomWidget();
 }
 
-void AC_PlayerCharacter::PlayMontage(UAnimMontage* Montage)
+void AC_PlayerCharacter::PlayMontage(USkeletalMeshComponent* MeshComp, UAnimMontage* Montage)
 {
-	DefaultMesh->GetAnimInstance()->Montage_Play(Montage, 1.0f);
+	MeshComp->GetAnimInstance()->Montage_Play(Montage, 1.0f);
 }
 
-void AC_PlayerCharacter::StopMontage(UAnimMontage* Montage)
+void AC_PlayerCharacter::StopMontage(USkeletalMeshComponent* MeshComp, UAnimMontage* Montage)
 {
-	DefaultMesh->GetAnimInstance()->Montage_Stop(1.0f, Montage);
+	MeshComp->GetAnimInstance()->Montage_Stop(1.0f, Montage);
 }
 
 void AC_PlayerCharacter::SetControlRotation()
