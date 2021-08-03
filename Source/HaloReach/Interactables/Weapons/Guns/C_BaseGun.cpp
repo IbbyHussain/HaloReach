@@ -466,8 +466,8 @@ void AC_BaseGun::Multi_Fire_Implementation(AActor* NewOwner)
 	{
 		if (WeaponStats.CurrentAmmo > 0 && bCanFire)
 		{
-			//WeaponStats.CurrentAmmo -= 1;
-			//UpdateAmmoCounter();
+			WeaponStats.CurrentAmmo -= 1;
+			UpdateAmmoCounter();
 
 			AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(NewOwner);
 			if (PlayerCharacter)
@@ -478,82 +478,83 @@ void AC_BaseGun::Multi_Fire_Implementation(AActor* NewOwner)
 			}
 			
 		
-		//	FVector EyeLocation;
-		//	FRotator EyeRotation;
-		//	NewOwner->GetActorEyesViewPoint(EyeLocation, EyeRotation);
+			FVector EyeLocation;
+			FRotator EyeRotation;
+			NewOwner->GetActorEyesViewPoint(EyeLocation, EyeRotation);
 
-		//	FVector ShotDirection = EyeRotation.Vector();
-		//	FVector TraceEnd = EyeLocation + (SpreadTrace(ShotDirection) * 5000);
+			FVector ShotDirection = EyeRotation.Vector();
+			FVector TraceEnd = EyeLocation + (SpreadTrace(ShotDirection) * 5000);
 
-		//	FCollisionQueryParams QueryParams;
+			FCollisionQueryParams QueryParams;
 
-		//	QueryParams.AddIgnoredActor(NewOwner);
-		//	QueryParams.AddIgnoredActor(this);
-		//	QueryParams.bTraceComplex = true;
-		//	QueryParams.bReturnPhysicalMaterial = true;
+			QueryParams.AddIgnoredActor(NewOwner);
+			QueryParams.AddIgnoredActor(this);
+			QueryParams.bTraceComplex = true;
+			QueryParams.bReturnPhysicalMaterial = true;
 
-		//	FHitResult Hit;
+			FHitResult Hit;
 
-		//	bool bHit = GetWorld()->LineTraceSingleByChannel(Hit, EyeLocation, TraceEnd, COLLISION_WEAPON, QueryParams);
-		//	DrawDebugLine(GetWorld(), EyeLocation, TraceEnd, FColor::Red, false, 1.0f, 0, 1.0f);
+			bool bHit = GetWorld()->LineTraceSingleByChannel(Hit, EyeLocation, TraceEnd, COLLISION_WEAPON, QueryParams);
+			DrawDebugLine(GetWorld(), EyeLocation, TraceEnd, FColor::Red, false, 1.0f, 0, 1.0f);
 
-		//	if (bHit)
-		//	{
-		//		AActor* HitActor = Hit.GetActor();
+			if (bHit)
+			{
+				AActor* HitActor = Hit.GetActor();
 
-		//		EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
+				EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
 
-		//		// Head shot damage should only be applied when shields = 0
+				// Head shot damage should only be applied when shields = 0
 
-		//		// Head shot multiplier 
-		//		float ActualDamage = WeaponStats.BaseDamage;
-		//		if (SurfaceType == SURFACE_FLESHVULNERABLE)
-		//		{
-		//			ActualDamage *= 3.0f;
-		//		}
+				// Head shot multiplier 
+				float ActualDamage = WeaponStats.BaseDamage;
+				if (SurfaceType == SURFACE_FLESHVULNERABLE)
+				{
+					ActualDamage *= 3.0f;
+				}
 
-		//		UGameplayStatics::ApplyPointDamage(HitActor, ActualDamage, ShotDirection, Hit, NewOwner->GetInstigatorController(), this, DamageType);
+				UGameplayStatics::ApplyPointDamage(HitActor, ActualDamage, ShotDirection, Hit, NewOwner->GetInstigatorController(), this, DamageType);
 
-		//		// Plays particle effect (Impact Effect) depending on physical material hit
-		//		UParticleSystem* SelectedEffect = nullptr;
-		//		switch (SurfaceType)
-		//		{
-		//		case SURFACE_FLESHDEFAULT:
-		//		case SURFACE_FLESHVULNERABLE:
-		//			SelectedEffect = FleshImpactEffect;
-		//			break;
+				// Plays particle effect (Impact Effect) depending on physical material hit
+				UParticleSystem* SelectedEffect = nullptr;
+				switch (SurfaceType)
+				{
+				case SURFACE_FLESHDEFAULT:
+				case SURFACE_FLESHVULNERABLE:
+					SelectedEffect = FleshImpactEffect;
+					break;
 
-		//		default:
-		//			SelectedEffect = DefaultImpactEffect;
-		//			break;
-		//		}
+				default:
+					SelectedEffect = DefaultImpactEffect;
+					break;
+				}
 
-		//		// Plays impact effect
-		//		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SelectedEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
-		//	}
+				// Plays impact effect
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SelectedEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
+			}
 
-		//	//PlayFireEffects();
+			//PlayFireEffects();
 
-		//	WeaponStats.LastFireTime = GetWorld()->TimeSeconds;
-		//}
+			WeaponStats.LastFireTime = GetWorld()->TimeSeconds;
+		}
 
-		//else if (WeaponStats.CurrentReservesAmmo != 0)
-		//{
-		//	// Auto reload if no ammo left
-		//	AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(NewOwner);
-		//	if (PlayerCharacter)
-		//	{
-		//		PlayerCharacter->Reload(); // Calls player reload, so montages can be played
-		//		Reload();
-		//		PlayerCharacter->OnWeaponStopFire(); // Stops 3p fire anim
-		//		PlayerCharacter->StopMontage(GetWeaponFireMontage()); // stops 1p fire anim
-		//	}
-		//}
+		else if (WeaponStats.CurrentReservesAmmo != 0)
+		{
+			// Auto reload if no ammo left
+			AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(NewOwner);
+			if (PlayerCharacter)
+			{
+				PlayerCharacter->Reload(); // Calls player reload, so montages can be played
+				Reload();
 
-		//else if (WeaponStats.CurrentReservesAmmo == 0 && WeaponStats.CurrentAmmo == 0)
-		//{
-		//	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DryFireSound, GetActorLocation());
-		//	StopAutoFire();
+				PlayerCharacter->StopMontage(PlayerCharacter->GetMesh3P(), GetWeapon3PFireMontage()); // Stops 3p fire anim
+				PlayerCharacter->StopMontage(PlayerCharacter->GetDefaultMesh(),GetWeaponFireMontage()); // stops 1p fire anim
+			}
+		}
+
+		else if (WeaponStats.CurrentReservesAmmo == 0 && WeaponStats.CurrentAmmo == 0)
+		{
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), DryFireSound, GetActorLocation());
+			StopAutoFire();
 		}
 	}
 }
@@ -571,16 +572,11 @@ void AC_BaseGun::Multi_StopFire_Implementation(AActor* NewOwner)
 		if (PlayerCharacter)
 		{
 			PlayerCharacter->StopMontage(PlayerCharacter->GetMesh3P(), GetWeapon3PFireMontage());
-			PlayerCharacter->GetMesh3P()->GetAnimInstance()->Montage_Stop(1.0f, GetWeapon3PFireMontage());
 			PlayerCharacter->StopMontage(PlayerCharacter->GetDefaultMesh(), GetWeaponFireMontage());
 			StopRecoil();
 			GetWorldTimerManager().ClearTimer(AutomaticFireHandle);
 		}
 	}
-
-
-	//AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(GetOwner());
-	//PlayerCharacter->StopMontage(PlayerCharacter->GetMesh3P(), GetWeapon3PFireMontage());
 }
 
 

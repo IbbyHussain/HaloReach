@@ -82,7 +82,6 @@ AC_PlayerCharacter::AC_PlayerCharacter()
 	bCanReload = true;
 	bCanFire = true;
 
-	bIsReloading = false;
 	bIsFiring = false;
 	bIsMeleeAttacking = false;
 
@@ -580,19 +579,21 @@ void AC_PlayerCharacter::Reload()
 		{
 			if(Gun->WeaponStats.CurrentAmmo != Gun->WeaponStats.MaxMagazineAmmo && Gun->WeaponStats.CurrentReservesAmmo != 0 && bCanReload)
 			{
-				// The OnRep only works on server 
-				bIsReloading = !bIsReloading;
-				
 				// Call Server RPC for clients 
-				if (!HasAuthority())
+				if (HasAuthority())
 				{
-					Server_Reload(Gun->GetWeapon3PReloadMontage(), Gun);
+					Multi_PlayMontage(Mesh3P, Gun->GetWeapon3PReloadMontage());
+				}
+
+				else
+				{
+					Server_PlayMontage(Mesh3P, Gun->GetWeapon3PReloadMontage());
 					Server_GunReload(Gun);
 				}
 
 				GunReload(Gun);
 
-				DefaultMesh->GetAnimInstance()->Montage_Play(Gun->GetWeaponReloadMontage(), 1.0f);
+				PlayMontage(DefaultMesh, Gun->GetWeaponReloadMontage());
 				
 				bCanReload = false;
 				bCanSwitch = false;
@@ -610,15 +611,14 @@ void AC_PlayerCharacter::Reload()
 	}
 }
 
-void AC_PlayerCharacter::OnRep_Reload()
+void AC_PlayerCharacter::Server_PlayMontage_Implementation(USkeletalMeshComponent* MeshComp, UAnimMontage* Montage)
 {
-	AC_BaseGun* Gun = Cast<AC_BaseGun>(EquippedWeaponArray[0]);
-	Mesh3P->GetAnimInstance()->Montage_Play(Gun->GetWeapon3PReloadMontage(), 1.0f);
+	Multi_PlayMontage(MeshComp, Montage);
 }
 
-void AC_PlayerCharacter::Server_Reload_Implementation(UAnimMontage* Montage, AC_BaseGun* BaseGun)
+void AC_PlayerCharacter::Multi_PlayMontage_Implementation(USkeletalMeshComponent* MeshComp, UAnimMontage* Montage)
 {
-	Mesh3P->GetAnimInstance()->Montage_Play(Montage, 1.0f);
+	PlayMontage(MeshComp, Montage);
 }
 
 void AC_PlayerCharacter::ResetCanReload()
@@ -941,7 +941,6 @@ void AC_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	DOREPLIFETIME(AC_PlayerCharacter, CombatState);
 	DOREPLIFETIME(AC_PlayerCharacter, WeaponType);
 
-	DOREPLIFETIME(AC_PlayerCharacter, bIsReloading);
 	DOREPLIFETIME(AC_PlayerCharacter, bIsFiring);
 	DOREPLIFETIME(AC_PlayerCharacter, bStopFiring);
 	DOREPLIFETIME(AC_PlayerCharacter, bIsSwitching);

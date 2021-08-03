@@ -229,15 +229,14 @@ public:
 
 // WEAPON RELOADING
 
-	UPROPERTY(ReplicatedUsing = OnRep_Reload)
-	bool bIsReloading;
-
-	UFUNCTION()
-	void OnRep_Reload();
-
 	UFUNCTION(Server, Reliable)
-	void Server_Reload(UAnimMontage* Montage, AC_BaseGun* BaseGun);
-	void Server_Reload_Implementation(UAnimMontage* Montage, AC_BaseGun* BaseGun);
+	void Server_PlayMontage(USkeletalMeshComponent* MeshComp, UAnimMontage* Montage);
+	void Server_PlayMontage_Implementation(USkeletalMeshComponent* MeshComp, UAnimMontage* Montage);
+
+	UFUNCTION(NetMultiCast, Reliable)
+	void Multi_PlayMontage(USkeletalMeshComponent* MeshComp, UAnimMontage* Montage);
+	void Multi_PlayMontage_Implementation(USkeletalMeshComponent* MeshComp, UAnimMontage* Montage);
+
 
 	bool bCanReload;
 
