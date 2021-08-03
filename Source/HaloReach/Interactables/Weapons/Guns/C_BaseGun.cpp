@@ -12,6 +12,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Engine/Engine.h"
 #include "UnrealClient.h"
+#include "HaloReach/Interactables/Weapons/C_Weapon3P.h"
 #include "Kismet/KismetMathLibrary.h"
 
 AC_BaseGun::AC_BaseGun()
@@ -105,8 +106,6 @@ void AC_BaseGun::Fire()
 	if(MyOwner->HasAuthority())
 	{
 		Multi_Fire(MyOwner, PlayerCharacter->CameraComp->GetComponentRotation());
-		//Server_Fire(MyOwner);
-
 	}
 
 	else
@@ -199,11 +198,6 @@ void AC_BaseGun::Server_Reload_Implementation()
 
 void AC_BaseGun::PlayFireEffects1P()
 {
-
-}
-
-void AC_BaseGun::PlayFireEffects3P()
-{
 	UGameplayStatics::SpawnEmitterAttached(MuzzleEffect, WeaponMesh, MuzzleSocketName);
 
 	APawn* MyOwner = Cast<APawn>(GetOwner());
@@ -216,6 +210,12 @@ void AC_BaseGun::PlayFireEffects3P()
 			PC->ClientPlayCameraShake(FireShake);
 		}
 	}
+}
+
+void AC_BaseGun::PlayFireEffects3P()
+{
+	AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(GetOwner());
+	UGameplayStatics::SpawnEmitterAttached(MuzzleEffect, PlayerCharacter->Primary3PWeapon->WeaponMesh3P, MuzzleSocket3PName);
 }
 
 // WEAPON RECOIL 
@@ -536,7 +536,15 @@ void AC_BaseGun::Multi_Fire_Implementation(AActor* NewOwner, FRotator TraceRotat
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SelectedEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
 			}
 
-			//PlayFireEffects();
+			if (PlayerCharacter->IsLocallyControlled())
+			{
+				PlayFireEffects1P();
+			}
+
+			else
+			{
+				PlayFireEffects3P();
+			}
 
 			WeaponStats.LastFireTime = GetWorld()->TimeSeconds;
 		}

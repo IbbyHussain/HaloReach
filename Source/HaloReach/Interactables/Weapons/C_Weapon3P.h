@@ -15,7 +15,6 @@ public:
 	// Sets default values for this actor's properties
 	AC_Weapon3P();
 
-
 	UPROPERTY(EditDefaultsOnly, Category = "Pickup | Components")
 	USkeletalMeshComponent* WeaponMesh3P;
 

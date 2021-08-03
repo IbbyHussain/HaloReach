@@ -142,8 +142,13 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Gun | Weapon Effects")
 	UParticleSystem* FleshImpactEffect;
 
+	// Muzzle socket used for first person weapon mesh
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Gun | Weapon Effects")
 	FName MuzzleSocketName;
+
+	// Muzzle socket used for third person weapon mesh
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Gun | Weapon Effects")
+	FName MuzzleSocket3PName;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Gun | Weapon Effects")
 	TSubclassOf<UMatineeCameraShake> FireShake;
