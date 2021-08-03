@@ -101,16 +101,17 @@ void AC_BaseGun::Fire()
 {
 	AActor* MyOwner = GetOwner();
 
+	AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(MyOwner);
 	if(MyOwner->HasAuthority())
 	{
-		Multi_Fire(MyOwner);
+		Multi_Fire(MyOwner, PlayerCharacter->CameraComp->GetComponentRotation());
 		//Server_Fire(MyOwner);
 
 	}
 
 	else
 	{
-		Server_Fire(MyOwner);
+		Server_Fire(MyOwner, PlayerCharacter->CameraComp->GetComponentRotation());
 	}
 }
 
@@ -455,12 +456,12 @@ void AC_BaseGun::SetMeshAmmoCounter(UTexture2D* Texture)
 
 // Replication
 
-void AC_BaseGun::Server_Fire_Implementation(AActor* NewOwner)
+void AC_BaseGun::Server_Fire_Implementation(AActor* NewOwner, FRotator TraceRotation)
 {
-	Multi_Fire(NewOwner);
+	Multi_Fire(NewOwner, TraceRotation);
 }
 
-void AC_BaseGun::Multi_Fire_Implementation(AActor* NewOwner)
+void AC_BaseGun::Multi_Fire_Implementation(AActor* NewOwner, FRotator TraceRotation)
 {
 	if(NewOwner)
 	{
@@ -480,7 +481,10 @@ void AC_BaseGun::Multi_Fire_Implementation(AActor* NewOwner)
 		
 			FVector EyeLocation;
 			FRotator EyeRotation;
-			NewOwner->GetActorEyesViewPoint(EyeLocation, EyeRotation);
+			//NewOwner->GetActorEyesViewPoint(StartLoc, EyeRotation);
+
+			EyeLocation = PlayerCharacter->CameraComp->GetComponentLocation();
+			EyeRotation = TraceRotation;
 
 			FVector ShotDirection = EyeRotation.Vector();
 			FVector TraceEnd = EyeLocation + (SpreadTrace(ShotDirection) * 5000);
@@ -592,5 +596,4 @@ void AC_BaseGun::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeti
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AC_BaseGun, WeaponStats);
-
 }

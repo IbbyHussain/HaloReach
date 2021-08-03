@@ -314,12 +314,12 @@ private:
 // Replication
 
 	UFUNCTION(Server, Reliable)
-	void Server_Fire(AActor* NewOwner);
-	void Server_Fire_Implementation(AActor* NewOwner);
+	void Server_Fire(AActor* NewOwner, FRotator TraceRotation);
+	void Server_Fire_Implementation(AActor* NewOwner, FRotator TraceRotation);
 
 	UFUNCTION(NetMultiCast, Reliable)
-	void Multi_Fire(AActor* NewOwner);
-	void Multi_Fire_Implementation(AActor* NewOwner);
+	void Multi_Fire(AActor* NewOwner, FRotator TraceRotation);
+	void Multi_Fire_Implementation(AActor* NewOwner, FRotator TraceRotation);
 
 	// Stop Fire
 
