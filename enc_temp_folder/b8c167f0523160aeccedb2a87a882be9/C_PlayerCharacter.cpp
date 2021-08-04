@@ -325,7 +325,6 @@ void AC_PlayerCharacter::ResetJump()
 
 void AC_PlayerCharacter::Server_Jump_Implementation()
 {
-	// Launch character requires to be executed on server
 	UpdateMovementSettings(EMovementState::JUMP);
 	AC_PlayerCharacter::LaunchCharacter(Movement.JumpHeight, false, true);
 }

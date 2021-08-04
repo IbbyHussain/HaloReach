@@ -418,7 +418,7 @@ public: // temp
 
 	bool CheckIdle();
 
-	// JUMP
+// JUMP
 
 	bool bCanJump;
 
@@ -428,7 +428,12 @@ public: // temp
 
 	void ResetJump();
 
-	// CROUCH
+	UFUNCTION(Server, Reliable)
+	void Server_Jump();
+	void Server_Jump_Implementation();
+
+
+// CROUCH
 
 	void StartCrouch();
 
