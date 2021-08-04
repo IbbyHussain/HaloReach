@@ -437,6 +437,20 @@ public: // temp
 
 	void StartCrouch();
 
+	UFUNCTION(Server, Reliable)
+	void Server_CrouchTimeline(bool bCrouch);
+	void Server_CrouchTimeline_Implementation(bool bCrouch);
+
+	void SetCrouchKeyDown(bool bCrouch);
+
+	UFUNCTION(Server, Reliable)
+	void Server_Crouch(float Height, float NewHeight, float MeshHeight, float NewMeshHeight, float Alpha);
+	void Server_Crouch_Implementation(float Height, float NewHeight, float MeshHeight, float NewMeshHeight, float Alpha);
+
+	UFUNCTION(NetMultiCast, Reliable)
+	void Multi_Crouch(float Height, float NewHeight, float MeshHeight, float NewMeshHeight, float Alpha);
+	void Multi_Crouch_Implementation(float Height, float NewHeight, float MeshHeight, float NewMeshHeight, float Alpha);
+
 	void EndCrouch();
 
 	class UTimelineComponent* CrouchTimeline;
@@ -449,12 +463,22 @@ public: // temp
 
 	FOnTimelineFloat CrouchInterpFunction{};
 
+	UPROPERTY(Replicated)
 	float DefaultCameraHeight;
+
+	UPROPERTY(Replicated)
 	float DefaultCapsuleHeight;
+
+	UPROPERTY(Replicated)
 	float DefaultMeshHeight;
 
+	UPROPERTY(Replicated)
 	float CrouchedCameraHeight;
+
+	UPROPERTY(Replicated)
 	float CrouchedCapsuleHeight;
+
+	UPROPERTY(Replicated)
 	float CrouchedMeshHeight;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Player | Crouch")
@@ -467,6 +491,8 @@ public: // temp
 	float CrouchedMeshHeightMultiplier;
 
 	bool bCanCrouch;
+
+	UPROPERTY(Replicated, EditDefaultsOnly, BlueprintReadWrite, Category = "Player | Crouch")
 	bool bCrouchKeyDown;
 
 	float MeshX;

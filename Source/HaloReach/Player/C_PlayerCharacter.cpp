@@ -135,12 +135,12 @@ void AC_PlayerCharacter::BeginPlay()
 	// Sets the default settings of the character 
 	DefaultCameraHeight = CameraComp->GetRelativeLocation().Z;
 	DefaultCapsuleHeight = GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
-	DefaultMeshHeight = GetMesh()->GetRelativeLocation().Z;
+	DefaultMeshHeight = Mesh3P->GetRelativeLocation().Z;
 
 	// Sets the crouched settings of the character 
 	CrouchedCameraHeight = DefaultCameraHeight * CrouchedCameraHeightMultiplier;
 	CrouchedCapsuleHeight = DefaultCapsuleHeight * CrouchedCapsuleHeightMultiplier;
-	CrouchedMeshHeight = DefaultMeshHeight / CrouchedMeshHeightMultiplier;
+	CrouchedMeshHeight = DefaultMeshHeight + 45.0f;
 
 	//Sets the values of the crouch timeline
 	if (FCrouchCurve)
@@ -294,6 +294,8 @@ void AC_PlayerCharacter::MoveRight(float Axis)
 	AddMovementInput(Direction, Axis);
 }
 
+// JUMP SYSYTEM
+
 void AC_PlayerCharacter::JumpStart()
 {
 	if(bCanJump && (MovementState == EMovementState::WALK || MovementState == EMovementState::SPRINT))
@@ -330,20 +332,41 @@ void AC_PlayerCharacter::Server_Jump_Implementation()
 	AC_PlayerCharacter::LaunchCharacter(Movement.JumpHeight, false, true);
 }
 
+// CROUCH SYSTEM
+
 void AC_PlayerCharacter::StartCrouch()
 {
 	if (bCanCrouch && MovementState == EMovementState::WALK || MovementState == EMovementState::SPRINT)
 	{
 		UpdateMovementSettings(EMovementState::CROUCH);
-		CrouchTimeline->Play();
 		CameraManager->SetViewPitchAmount(-70.0f, 89.9f);
+		CrouchTimeline->Play();
+	}
+}
+
+void AC_PlayerCharacter::Server_CrouchTimeline_Implementation(bool bCrouch)
+{
+	bCrouchKeyDown = bCrouch;
+}
+
+void AC_PlayerCharacter::SetCrouchKeyDown(bool bCrouch)
+{
+	if (HasAuthority())
+	{
+		bCrouchKeyDown = bCrouch;
+	}
+
+	else
+	{
+		Server_CrouchTimeline(bCrouch);
 	}
 }
 
 void AC_PlayerCharacter::EndCrouch()
 {
-	bCrouchKeyDown = false;
 	CrouchTimeline->Reverse();
+	SetCrouchKeyDown(false);
+	bCrouchKeyDown = false;
 	CameraManager->SetViewPitchAmount(-89.9f, 89.9f);
 }
 
@@ -353,16 +376,34 @@ void AC_PlayerCharacter::CrouchTimelineFloatReturn(float Value)
 	float x = CameraComp->GetRelativeLocation().X;
 	float y = CameraComp->GetRelativeLocation().Y;
 
+	MeshX = Mesh3P->GetRelativeLocation().X;
+	MeshY = Mesh3P->GetRelativeLocation().Y;
+	
+	if (HasAuthority())
+	{
+		Multi_Crouch(DefaultCapsuleHeight, CrouchedCapsuleHeight, DefaultMeshHeight, CrouchedMeshHeight, Value);
+	}
+
+	else
+	{
+		Server_Crouch(DefaultCapsuleHeight, CrouchedCapsuleHeight, DefaultMeshHeight, CrouchedMeshHeight, Value);
+	}
+
 	// Smoothly transitions between Camera heights
 	CameraComp->SetRelativeLocation(FVector(x, y, (FMath::Lerp(DefaultCameraHeight, CrouchedCameraHeight, Value))));
+}
 
+void AC_PlayerCharacter::Server_Crouch_Implementation(float Height, float NewHeight, float MeshHeight, float NewMeshHeight, float Alpha)
+{
+	Multi_Crouch(Height, NewHeight, MeshHeight, NewMeshHeight, Alpha);
+}
+
+void AC_PlayerCharacter::Multi_Crouch_Implementation(float Height, float NewHeight, float MeshHeight, float NewMeshHeight, float Alpha)
+{
 	// Smoothly transitions between capsule heights
-	GetCapsuleComponent()->SetCapsuleHalfHeight(FMath::Lerp(DefaultCapsuleHeight, CrouchedCapsuleHeight, Value));
+	GetCapsuleComponent()->SetCapsuleHalfHeight(FMath::Lerp(Height, NewHeight, Alpha));
 
-	MeshX = GetMesh()->GetRelativeLocation().X;
-	MeshY = GetMesh()->GetRelativeLocation().Y;
-
-	GetMesh()->SetRelativeLocation(FVector(MeshX, MeshY, (FMath::Lerp(DefaultMeshHeight, CrouchedMeshHeight, Value))));
+	Mesh3P->SetRelativeLocation(FVector(MeshX, MeshY, FMath::Lerp(MeshHeight, NewMeshHeight, Alpha)));
 }
 
 void AC_PlayerCharacter::UpdateMovementSettings(EMovementState NewState)
@@ -387,7 +428,9 @@ void AC_PlayerCharacter::UpdateMovementSettings(EMovementState NewState)
 	case EMovementState::CROUCH:
 
 		GetCharacterMovement()->MaxWalkSpeed = 150.0f;
-		bCrouchKeyDown = true;
+
+		SetCrouchKeyDown(true);
+
 		bCanJump = false;
 		//UE_LOG(LogTemp, Log, TEXT("Player is Crouching"));
 		break;
@@ -960,6 +1003,18 @@ void AC_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	DOREPLIFETIME(AC_PlayerCharacter, bStopFiring);
 	DOREPLIFETIME(AC_PlayerCharacter, bIsSwitching);
 	DOREPLIFETIME(AC_PlayerCharacter, bIsMeleeAttacking);
+	DOREPLIFETIME(AC_PlayerCharacter, bCrouchKeyDown);
+
+	/*DOREPLIFETIME(AC_PlayerCharacter, DefaultMeshHeight);
+	DOREPLIFETIME(AC_PlayerCharacter, CrouchedMeshHeight);
+
+	DOREPLIFETIME(AC_PlayerCharacter, DefaultCameraHeight);
+	DOREPLIFETIME(AC_PlayerCharacter, CrouchedCameraHeight);
+
+	DOREPLIFETIME(AC_PlayerCharacter, DefaultCapsuleHeight);
+	DOREPLIFETIME(AC_PlayerCharacter, CrouchedCapsuleHeight);*/
+
+
 	DOREPLIFETIME_CONDITION(AC_PlayerCharacter, ControlRotation, COND_SkipOwner);
 }
 
