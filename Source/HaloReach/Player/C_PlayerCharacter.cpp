@@ -58,8 +58,6 @@ AC_PlayerCharacter::AC_PlayerCharacter(const FObjectInitializer& ObjectInitializ
 
 	HealthComp = CreateDefaultSubobject<UC_HealthComponent>(TEXT("HealthComponent"));
 
-	GetCharacterMovement()->MaxWalkSpeed = 500.0f;
-
 	//Crouch Timeline
 	CrouchTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("CrouchTimeline"));
 	CrouchInterpFunction.BindUFunction(this, FName("CrouchTimelineFloatReturn"));
@@ -362,7 +360,7 @@ void AC_PlayerCharacter::Server_CrouchTimeline_Implementation(bool bCrouch)
 
 void AC_PlayerCharacter::Server_CrouchSpeed_Implementation()
 {
-	GetCharacterMovement()->MaxWalkSpeed = 150.0f;
+	//GetCharacterMovement()->MaxWalkSpeed = 150.0f;
 }
 
 void AC_PlayerCharacter::SetCrouchKeyDown(bool bCrouch)
@@ -428,7 +426,7 @@ void AC_PlayerCharacter::UpdateMovementSettings(EMovementState NewState)
 	{
 	case EMovementState::WALK:
 
-		GetCharacterMovement()->MaxWalkSpeed = 500.0f;
+		//GetCharacterMovement()->MaxWalkSpeed = 500.0f;
 		bCanJump = true;
 		bCanCrouch = true;
 		//UE_LOG(LogTemp, Log, TEXT("Player is Walking"));
@@ -445,7 +443,7 @@ void AC_PlayerCharacter::UpdateMovementSettings(EMovementState NewState)
 
 		if(HasAuthority())
 		{
-			GetCharacterMovement()->MaxWalkSpeed = 150.0f;
+			//GetCharacterMovement()->MaxWalkSpeed = 150.0f;
 		}
 
 		else
