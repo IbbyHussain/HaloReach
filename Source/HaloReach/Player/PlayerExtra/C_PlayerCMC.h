@@ -6,9 +6,6 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "C_PlayerCMC.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class HALOREACH_API UC_PlayerCMC : public UCharacterMovementComponent
 {
@@ -20,11 +17,33 @@ public:
 
 	UC_PlayerCMC();
 
+#pragma region Player Speed
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My Character Movement|Grounded", Meta = (AllowPrivateAccess = "true"))
+	float SprintSpeed = 800.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My Character Movement|Grounded", Meta = (AllowPrivateAccess = "true"))
+	float DefaultSpeed = 500.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My Character Movement|Grounded", Meta = (AllowPrivateAccess = "true"))
+	float CrouchSpeed = 200.0f;
+
+	UFUNCTION(Unreliable, Server)
+	void Server_SetMaxWalkSpeed(const float NewMaxWalkSpeed);
+	void Server_SetMaxWalkSpeed_Implementation(const float NewMaxWalkSpeed);
+
+	float MyNewMaxWalkSpeed;
+
+	UFUNCTION(BlueprintCallable, Category = "Max Walk Speed")
+	void SetMaxWalkSpeed(float NewMaxWalkSpeed);
+
+#pragma endregion
+
 #pragma region Overrides
 public:
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual void UpdateFromCompressedFlags(uint8 Flags) override;
-
+	//virtual float GetMaxSpeed() const override;
 	virtual FNetworkPredictionData_Client* GetPredictionData_Client() const override;
 #pragma endregion
 
@@ -33,14 +52,26 @@ public:
 	// These compressed flags are copied into the FSavedMove_My classes compressed flags which are then sent to the server
 	// bit flags, which act as booleans. Each custom movement mode needs one
 private:
-	uint8 WantsToSprint : 1;
-	uint8 WallRunKeysDown : 1;
+
+	// Flag for changing the max walk speed
+	uint8 WantsToChangeSpeed : 1;
+	uint8 WantsToDoge : 1;
+	uint8 WantsToJetpack : 1;
+
 #pragma endregion
 
 #pragma region Private Variables
+
 	// True if the sprint key is down, used to control sprint movement
 	bool SprintKeyDown = false;
+	bool DogeKeyDown = false;
+	bool JetpackKeyDown = false;
+
 #pragma endregion
+
+	// Sets sprinting to either enabled or disabled, the function that controls sprinting
+	UFUNCTION(BlueprintCallable, Category = "My Character Movement")
+	void SetSprinting(bool sprinting);
 };
 
 class FSavedMove_My : public FSavedMove_Character
@@ -69,9 +100,7 @@ private:
 
 	// Compressed flags, basically booleans keeps client and server synched. Used by the server
 	// Need one for each custom move
-	uint8 SavedWantsToSprint : 1;
-	uint8 SavedWallRunKeysDown : 1;
-	
+	uint8 SavedWantsToChangeSpeed : 1;
 };
 
 class FNetworkPredictionData_Client_My : public FNetworkPredictionData_Client_Character
