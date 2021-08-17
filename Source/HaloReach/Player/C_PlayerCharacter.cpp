@@ -22,7 +22,11 @@
 
 #include "HaloReach/Libraries/C_SpawnLibrary.h"
 
-AC_PlayerCharacter::AC_PlayerCharacter()
+#include "GameFramework/CharacterMovementComponent.h"
+
+
+AC_PlayerCharacter::AC_PlayerCharacter(const FObjectInitializer& ObjectInitializer) : 
+	Super(ObjectInitializer.SetDefaultSubobjectClass<UC_PlayerCMC>(ACharacter::CharacterMovementComponentName))
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -199,6 +203,13 @@ void AC_PlayerCharacter::Tick(float DeltaTime)
 	SetControlRotation();
 }
 
+void AC_PlayerCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	PlayerCMC = Cast<UC_PlayerCMC>(Super::GetMovementComponent());
+}
+
 // HEALTH SYSTEM
 
 void AC_PlayerCharacter::OnHealthChanged(UC_HealthComponent* HealthComponent, float Health, bool bUpdateCombatState)
@@ -349,6 +360,11 @@ void AC_PlayerCharacter::Server_CrouchTimeline_Implementation(bool bCrouch)
 	bCrouchKeyDown = bCrouch;
 }
 
+void AC_PlayerCharacter::Server_CrouchSpeed_Implementation()
+{
+	GetCharacterMovement()->MaxWalkSpeed = 150.0f;
+}
+
 void AC_PlayerCharacter::SetCrouchKeyDown(bool bCrouch)
 {
 	if (HasAuthority())
@@ -427,7 +443,15 @@ void AC_PlayerCharacter::UpdateMovementSettings(EMovementState NewState)
 
 	case EMovementState::CROUCH:
 
-		GetCharacterMovement()->MaxWalkSpeed = 150.0f;
+		if(HasAuthority())
+		{
+			GetCharacterMovement()->MaxWalkSpeed = 150.0f;
+		}
+
+		else
+		{
+			Server_CrouchSpeed();
+		}
 
 		SetCrouchKeyDown(true);
 

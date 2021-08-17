@@ -8,6 +8,9 @@
 #include "HaloReach/Interfaces/C_InteractInterface.h"
 #include "HaloReach/GlobalEnums.h"
 #include "Components/TimelineComponent.h"
+
+#include "HaloReach/Player/PlayerExtra/C_PlayerCMC.h"
+
 #include "C_PlayerCharacter.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeaponReload);
@@ -92,7 +95,13 @@ class HALOREACH_API AC_PlayerCharacter : public ACharacter
 
 private:
 
-	AC_PlayerCharacter();
+	AC_PlayerCharacter(const FObjectInitializer& ObjectInitializer);
+
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	FORCEINLINE class UC_PlayerCMC* GetPlayerMovementComponent() const { return PlayerCMC; }
+
+	// Custom character movement component
+	UC_PlayerCMC* PlayerCMC;
 
 // CONTAINER DECLARATIONS
 
@@ -110,6 +119,8 @@ private:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void Landed(const FHitResult& Hit) override;
+
+	virtual void PostInitializeComponents() override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
@@ -440,6 +451,10 @@ public: // temp
 	UFUNCTION(Server, Reliable)
 	void Server_CrouchTimeline(bool bCrouch);
 	void Server_CrouchTimeline_Implementation(bool bCrouch);
+
+	UFUNCTION(Server, Reliable)
+	void Server_CrouchSpeed();
+	void Server_CrouchSpeed_Implementation();
 
 	void SetCrouchKeyDown(bool bCrouch);
 
