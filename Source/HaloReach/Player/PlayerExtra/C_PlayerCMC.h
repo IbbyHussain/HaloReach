@@ -20,23 +20,11 @@ public:
 
 	UC_PlayerCMC();
 
-	//Set Max Walk Speed
-
-	UFUNCTION(Unreliable, Server)
-	void Server_SetMaxWalkSpeed(const float NewMaxWalkSpeed);
-	void Server_SetMaxWalkSpeed_Implementation(const float NewMaxWalkSpeed);
-
-	float MyNewMaxWalkSpeed;
-
-	//Set Max Walk Speed (Called from the owning client)
-	UFUNCTION(BlueprintCallable, Category = "Max Walk Speed")
-	void SetMaxWalkSpeed(float NewMaxWalkSpeed);
-
 #pragma region Overrides
 public:
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual void UpdateFromCompressedFlags(uint8 Flags) override;
-	void OnMovementUpdated(float DeltaTime, const FVector& OldLocation, const FVector& OldVelocity);
+
 	virtual FNetworkPredictionData_Client* GetPredictionData_Client() const override;
 #pragma endregion
 
