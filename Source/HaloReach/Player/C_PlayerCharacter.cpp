@@ -2,7 +2,7 @@
 #include "C_PlayerCharacter.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
-//#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PlayerExtra/C_PlayerCameraManager.h"
@@ -57,6 +57,8 @@ AC_PlayerCharacter::AC_PlayerCharacter(const FObjectInitializer& ObjectInitializ
 	Mesh3P->CastShadow = true;
 
 	HealthComp = CreateDefaultSubobject<UC_HealthComponent>(TEXT("HealthComponent"));
+
+	GetCharacterMovement()->MaxWalkSpeed = 500.0f;
 
 	//Crouch Timeline
 	CrouchTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("CrouchTimeline"));
@@ -181,6 +183,8 @@ void AC_PlayerCharacter::BeginPlay()
 		MeleeTrackTimeline->SetTimelineFinishedFunc(MeleeTrackTimelineFinished);
 		MeleeTrackTimeline->SetLooping(false);
 	}
+
+
 }
 
 void AC_PlayerCharacter::Tick(float DeltaTime)
