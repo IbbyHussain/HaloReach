@@ -89,6 +89,9 @@ AC_PlayerCharacter::AC_PlayerCharacter(const FObjectInitializer& ObjectInitializ
 
 	bCanMelee = true;
 
+	DefaultSpeed = 500.0f;
+	CrouchSpeed = 150.0f;
+	
 	ActorsIgnored = { this };
 	IgnoredActorsTracking = { this };
 
@@ -107,6 +110,8 @@ void AC_PlayerCharacter::BeginPlay()
 
 	HUD = Cast<AC_PlayerHUD>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetHUD());
 	//HUD = Cast<AC_PlayerHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+
+	GetPlayerMovementComponent()->SetPlayerSpeed(DefaultSpeed);
 
 	if(HasAuthority())
 	{
@@ -360,7 +365,7 @@ void AC_PlayerCharacter::Server_CrouchTimeline_Implementation(bool bCrouch)
 
 void AC_PlayerCharacter::Server_CrouchSpeed_Implementation()
 {
-	//GetCharacterMovement()->MaxWalkSpeed = 150.0f;
+	GetPlayerMovementComponent()->SetPlayerSpeed(CrouchSpeed);
 }
 
 void AC_PlayerCharacter::SetCrouchKeyDown(bool bCrouch)
@@ -426,39 +431,35 @@ void AC_PlayerCharacter::UpdateMovementSettings(EMovementState NewState)
 	{
 	case EMovementState::WALK:
 
-		//GetCharacterMovement()->MaxWalkSpeed = 500.0f;
+		GetPlayerMovementComponent()->SetPlayerSpeed(DefaultSpeed);
 		bCanJump = true;
 		bCanCrouch = true;
-		//UE_LOG(LogTemp, Log, TEXT("Player is Walking"));
 		break;
 
 	case EMovementState::JUMP:
 
 		bCanJump = false;
 		bCanCrouch = false;
-		//UE_LOG(LogTemp, Log, TEXT("Player is Jumping"));
 		break;
 
 	case EMovementState::CROUCH:
 
-		if(HasAuthority())
-		{
-			//GetCharacterMovement()->MaxWalkSpeed = 150.0f;
-		}
+		//if(HasAuthority())
+		//{
+		//	GetPlayerMovementComponent()->SetPlayerSpeed(CrouchSpeed);
+		//}
 
-		else
-		{
-			Server_CrouchSpeed();
-		}
-
+		//else
+		//{
+		//	Server_CrouchSpeed();
+		//}
+		GetPlayerMovementComponent()->SetPlayerSpeed(CrouchSpeed);
 		SetCrouchKeyDown(true);
 
 		bCanJump = false;
-		//UE_LOG(LogTemp, Log, TEXT("Player is Crouching"));
 		break;
 
 	default:
-		//UE_LOG(LogTemp, Log, TEXT("Player is UNDEFINED"));
 		break;
 	}
 }

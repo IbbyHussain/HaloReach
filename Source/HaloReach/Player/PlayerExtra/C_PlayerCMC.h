@@ -45,6 +45,7 @@ private:
 
 # pragma region Player Speed
 
+public:
 	//Set Max Walk Speed (Called from the owning client)
 	UFUNCTION(BlueprintCallable, Category = "Max Walk Speed")
 	void SetPlayerSpeed(float PlayerSpeed);

@@ -446,6 +446,12 @@ public: // temp
 
 // CROUCH
 
+	UPROPERTY(EditDefaultsOnly, Category = "Player | Speeds")
+	float DefaultSpeed;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player | Speeds")
+	float CrouchSpeed;
+
 	void StartCrouch();
 
 	UFUNCTION(Server, Reliable)

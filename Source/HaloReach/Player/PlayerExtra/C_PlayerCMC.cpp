@@ -44,10 +44,8 @@ void UC_PlayerCMC::SetPlayerSpeed(float PlayerSpeed)
 bool UC_PlayerCMC::Server_SetPlayerSpeed_Validate(const float PlayerSpeed)
 {
 	// Temporary validation, until sprint and crouch speeds are determined
-	if (NewPlayerSpeed < 0.f || NewPlayerSpeed > 2000.f)
-		return false;
-	else
-		return true;
+	
+	return true;
 }
 
 void UC_PlayerCMC::Server_SetPlayerSpeed_Implementation(const float PlayerSpeed)
