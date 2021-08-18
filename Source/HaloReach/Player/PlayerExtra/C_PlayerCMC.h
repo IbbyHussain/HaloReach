@@ -20,17 +20,6 @@ public:
 
 	UC_PlayerCMC();
 
-	UFUNCTION(Unreliable, Server, WithValidation)
-	void Server_SetMaxWalkSpeed(const float NewMaxWalkSpeed);
-	bool Server_SetMaxWalkSpeed_Validate(const float NewMaxWalkSpeed);
-	void Server_SetMaxWalkSpeed_Implementation(const float NewMaxWalkSpeed);
-
-	float MyNewMaxWalkSpeed;
-
-	//Set Max Walk Speed (Called from the owning client)
-	UFUNCTION(BlueprintCallable, Category = "Max Walk Speed")
-	void SetMaxWalkSpeed(float NewMaxWalkSpeed);
-
 #pragma region Overrides
 public:
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -52,6 +41,24 @@ private:
 	// True if the sprint key is down, used to control sprint movement
 	bool SprintKeyDown = false;
 #pragma endregion
+
+
+# pragma region Player Speed
+
+	//Set Max Walk Speed (Called from the owning client)
+	UFUNCTION(BlueprintCallable, Category = "Max Walk Speed")
+	void SetPlayerSpeed(float PlayerSpeed);
+
+	UFUNCTION(Unreliable, Server, WithValidation)
+	void Server_SetPlayerSpeed(const float PlayerSpeed);
+	bool Server_SetPlayerSpeed_Validate(const float PlayerSpeed);
+	void Server_SetPlayerSpeed_Implementation(const float PlayerSpeed);
+
+	float NewPlayerSpeed;
+
+# pragma endregion
+
+
 };
 
 class FSavedMove_My : public FSavedMove_Character

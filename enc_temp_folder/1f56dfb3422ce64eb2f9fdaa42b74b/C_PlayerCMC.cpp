@@ -22,8 +22,6 @@ void UC_PlayerCMC::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 	if (WantsToSprint)
 	{
 		WantsToSprint = false;
-
-		// Sets the new Max Walk Speed, cannot set directly due to corrections
 		MaxWalkSpeed = NewPlayerSpeed;
 	}
 }
@@ -32,7 +30,6 @@ void UC_PlayerCMC::SetPlayerSpeed(float PlayerSpeed)
 {
 	if (PawnOwner->IsLocallyControlled())
 	{
-		// NewPlayerSpeed stores the desired new speed as cannot set MaxWalkSpeed directly
 		NewPlayerSpeed = PlayerSpeed;
 		Server_SetPlayerSpeed(PlayerSpeed);
 	}
@@ -43,11 +40,7 @@ void UC_PlayerCMC::SetPlayerSpeed(float PlayerSpeed)
 
 bool UC_PlayerCMC::Server_SetPlayerSpeed_Validate(const float PlayerSpeed)
 {
-	// Temporary validation, until sprint and crouch speeds are determined
-	if (NewPlayerSpeed < 0.f || NewPlayerSpeed > 2000.f)
-		return false;
-	else
-		return true;
+	return true;
 }
 
 void UC_PlayerCMC::Server_SetPlayerSpeed_Implementation(const float PlayerSpeed)
