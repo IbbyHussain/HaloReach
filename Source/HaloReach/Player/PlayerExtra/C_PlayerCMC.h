@@ -20,6 +20,17 @@ public:
 
 	UC_PlayerCMC();
 
+	UFUNCTION(Unreliable, Server, WithValidation)
+	void Server_SetMaxWalkSpeed(const float NewMaxWalkSpeed);
+	bool Server_SetMaxWalkSpeed_Validate(const float NewMaxWalkSpeed);
+	void Server_SetMaxWalkSpeed_Implementation(const float NewMaxWalkSpeed);
+
+	float MyNewMaxWalkSpeed;
+
+	//Set Max Walk Speed (Called from the owning client)
+	UFUNCTION(BlueprintCallable, Category = "Max Walk Speed")
+	void SetMaxWalkSpeed(float NewMaxWalkSpeed);
+
 #pragma region Overrides
 public:
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

@@ -12,9 +12,40 @@ UC_PlayerCMC::UC_PlayerCMC()
 
 }
 
+
+
+
 void UC_PlayerCMC::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (WantsToSprint)
+	{
+		WantsToSprint = false;
+		MaxWalkSpeed = MyNewMaxWalkSpeed;
+	}
+}
+
+void UC_PlayerCMC::SetMaxWalkSpeed(float NewMaxWalkSpeed)
+{
+	if (PawnOwner->IsLocallyControlled())
+	{
+		MyNewMaxWalkSpeed = NewMaxWalkSpeed;
+		Server_SetMaxWalkSpeed(NewMaxWalkSpeed);
+	}
+
+	WantsToSprint = true;
+}
+
+
+bool UC_PlayerCMC::Server_SetMaxWalkSpeed_Validate(const float NewMaxWalkSpeed)
+{
+	return true;
+}
+
+void UC_PlayerCMC::Server_SetMaxWalkSpeed_Implementation(const float NewMaxWalkSpeed)
+{
+	MyNewMaxWalkSpeed = NewMaxWalkSpeed;
 }
 
 void UC_PlayerCMC::UpdateFromCompressedFlags(uint8 Flags)
