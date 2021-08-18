@@ -354,6 +354,7 @@ void AC_PlayerCharacter::StartCrouch()
 	{
 		UpdateMovementSettings(EMovementState::CROUCH);
 		CameraManager->SetViewPitchAmount(-70.0f, 89.9f);
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), CrouchStartSound, GetActorLocation());
 		CrouchTimeline->Play();
 	}
 }
@@ -387,6 +388,7 @@ void AC_PlayerCharacter::EndCrouch()
 	SetCrouchKeyDown(false);
 	bCrouchKeyDown = false;
 	CameraManager->SetViewPitchAmount(-89.9f, 89.9f);
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), CrouchEndSound, GetActorLocation());
 }
 
 // Crouch Timeline Update

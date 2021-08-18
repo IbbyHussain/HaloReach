@@ -452,6 +452,13 @@ public: // temp
 	UPROPERTY(EditDefaultsOnly, Category = "Player | Speeds")
 	float CrouchSpeed;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Player | Sounds")
+	USoundBase* CrouchStartSound;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player | Sounds")
+	USoundBase* CrouchEndSound;
+
+
 	void StartCrouch();
 
 	UFUNCTION(Server, Reliable)
