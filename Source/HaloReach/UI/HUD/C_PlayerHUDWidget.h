@@ -108,4 +108,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpdateAmmoImage();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UC_CrosshairWidget* Crosshair;
+
 };

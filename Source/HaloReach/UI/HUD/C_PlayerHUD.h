@@ -55,4 +55,11 @@ public:
 
 	void DestroyZoomWidget();
 
+	// cross hair
+
+public:
+
+	UFUNCTION(BlueprintCallable)
+	float AddCrosshairSpreadHUD(float Amount);
+
 };

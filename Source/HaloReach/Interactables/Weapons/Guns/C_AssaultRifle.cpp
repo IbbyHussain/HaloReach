@@ -24,11 +24,15 @@ void AC_AssaultRifle::BeginPlay()
 
 void AC_AssaultRifle::Attack()
 {
+	Super::Attack();
+
 	StartAutoFire();
 }
 
 void AC_AssaultRifle::StopAttack()
 {
+	Super::StopAttack();
+
 	StopAutoFire();
 }
 

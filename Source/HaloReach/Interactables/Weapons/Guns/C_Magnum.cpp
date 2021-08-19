@@ -21,6 +21,8 @@ void AC_Magnum::BeginPlay()
 
 void AC_Magnum::Attack()
 {
+	Super::Attack();
+
 	StartSemiFire();
 }
 

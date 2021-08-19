@@ -5,6 +5,7 @@
 #include "HaloReach/UI/HUD/C_PlayerHUDWidget.h"
 #include "Engine/World.h"
 #include "HaloReach/Player/C_PlayerCharacter.h"
+#include "HaloReach/UI/HUD/C_CrosshairWidget.h"
 
 AC_PlayerHUD::AC_PlayerHUD()
 {
@@ -51,6 +52,8 @@ void AC_PlayerHUD::BeginPlay()
 			HUDWidget->AddToViewport();
 		}
 	}
+
+
 }
 
 void AC_PlayerHUD::HideHUDWidget()
@@ -102,4 +105,16 @@ void AC_PlayerHUD::CreateZoomWidget(TSubclassOf<UUserWidget> WidgetClass)
 void AC_PlayerHUD::DestroyZoomWidget()
 {
 	DestroyWidget(ZoomWidget);
+}
+
+// crosshair
+
+float AC_PlayerHUD::AddCrosshairSpreadHUD(float Amount)
+{
+	if(HUDWidget)
+	{
+		HUDWidget->Crosshair->AddCrosshairSpread(Amount);
+		return 0.0f;
+	}
+	return 0.0f;
 }

@@ -4,6 +4,8 @@
 #include "HaloReach/Interactables/Weapons/C_BaseWeapon.h"
 #include "HaloReach/Player/C_PlayerCharacter.h"
 #include "Net/UnrealNetwork.h"
+#include "Kismet/GameplayStatics.h"
+#include "HaloReach/UI/HUD/C_PlayerHUD.h"
 
 AC_BaseWeapon::AC_BaseWeapon()
 {
@@ -70,6 +72,12 @@ UAnimMontage* AC_BaseWeapon::GetWeapon3PMeleeMontage()
 void AC_BaseWeapon::Attack()
 {
 	//UE_LOG(LogTemp, Log, TEXT("Attacked!"));
+	AC_PlayerHUD* HUD = Cast<AC_PlayerHUD>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetHUD());
+	if(HUD)
+	{
+		HUD->AddCrosshairSpreadHUD(10.0f);
+	}
+
 }
 
 void AC_BaseWeapon::StopAttack()
