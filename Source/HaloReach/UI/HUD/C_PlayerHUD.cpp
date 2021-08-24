@@ -109,12 +109,12 @@ void AC_PlayerHUD::DestroyZoomWidget()
 
 // crosshair
 
-float AC_PlayerHUD::AddCrosshairSpreadHUD(float Amount)
+float AC_PlayerHUD::AddCrosshairSpreadHUD(float Amount, float DefaultSpread, float MaxSpread)
 {
 	if(HUDWidget)
 	{
-		HUDWidget->Crosshair->AddCrosshairSpread(Amount);
-		return 0.0f;
+		return HUDWidget->Crosshair->AddCrosshairSpread(Amount, DefaultSpread, MaxSpread);
 	}
+
 	return 0.0f;
 }

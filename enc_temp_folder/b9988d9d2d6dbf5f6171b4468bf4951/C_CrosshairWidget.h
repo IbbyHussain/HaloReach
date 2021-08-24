@@ -62,4 +62,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	float AddCrosshairSpread(float Amount, float DefaultSpread, float MaxSpread);
+
+
+
+	
 };

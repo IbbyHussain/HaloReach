@@ -23,7 +23,7 @@ public:
 	void DestroyWidget(UUserWidget*& Widget);
 
 	// HUD Widget
-
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Widgets")
 	class UC_PlayerHUDWidget* HUDWidget;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
@@ -60,6 +60,6 @@ public:
 public:
 
 	UFUNCTION(BlueprintCallable)
-	float AddCrosshairSpreadHUD(float Amount);
+	float AddCrosshairSpreadHUD(float Amount, float DefaultSpread, float MaxSpread);
 
 };

@@ -90,6 +90,12 @@ protected:
 
 	class AC_PlayerCharacter* Player;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Spread")
+	float DefaultWeaponSpread;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Spread")
+	float MaxWeaponSpread;
+
 public:
 
 	virtual void Attack();

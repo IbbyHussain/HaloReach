@@ -75,7 +75,8 @@ void AC_BaseWeapon::Attack()
 	AC_PlayerHUD* HUD = Cast<AC_PlayerHUD>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetHUD());
 	if(HUD)
 	{
-		HUD->AddCrosshairSpreadHUD(10.0f);
+		// increment by 5, then reset
+		HUD->AddCrosshairSpreadHUD(10.0f, DefaultWeaponSpread, MaxWeaponSpread);
 	}
 
 }
