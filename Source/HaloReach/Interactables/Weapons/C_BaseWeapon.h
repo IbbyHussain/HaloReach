@@ -90,13 +90,6 @@ protected:
 	UAnimMontage* Melee3PMontage;
 
 	class AC_PlayerCharacter* Player;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Spread")
-	float DefaultWeaponSpread;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Spread")
-	float MaxWeaponSpread;
-
 public:
 
 	virtual void Attack();
@@ -129,7 +122,20 @@ public:
 	UFUNCTION()
 	void SpreadTimelineFloatReturn(float Value);
 
+	// The amount of spread the crosshair has by default where 0 means the crosshair is completely clossed
+	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Spread")
+	float DefaultWeaponSpread;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Spread")
+	float MaxWeaponSpread;
+
+	// Amount of spread this weapon has per attack
+	UPROPERTY(EditDefaultsOnly, Category = "Base Weapon | Spread")
+	float SpreadAmount;
+
 	float CurrentSpread;
+
+	void AddWeaponSpread();
 
 
 # pragma endregion

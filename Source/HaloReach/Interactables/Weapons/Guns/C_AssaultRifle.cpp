@@ -24,8 +24,6 @@ void AC_AssaultRifle::BeginPlay()
 
 void AC_AssaultRifle::Attack()
 {
-	Super::Attack();
-
 	StartAutoFire();
 }
 

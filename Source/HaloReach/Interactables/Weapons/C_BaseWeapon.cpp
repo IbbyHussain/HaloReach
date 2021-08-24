@@ -84,15 +84,8 @@ UAnimMontage* AC_BaseWeapon::GetWeapon3PMeleeMontage()
 
 void AC_BaseWeapon::Attack()
 {
-	//UE_LOG(LogTemp, Log, TEXT("Attacked!"));
-	AC_PlayerHUD* HUD = Cast<AC_PlayerHUD>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetHUD());
-	if(HUD)
-	{
-		// increment by 5, then reset
-		CurrentSpread = HUD->AddCrosshairSpreadHUD(10.0f, DefaultWeaponSpread, MaxWeaponSpread);
-		SpreadTimeline->PlayFromStart();
-	}
-
+	// This will not work for automatic weapons, as Attack calls startautofire() not fire()
+	AddWeaponSpread();
 }
 
 void AC_BaseWeapon::StopAttack()
@@ -106,5 +99,16 @@ void AC_BaseWeapon::SpreadTimelineFloatReturn(float Value)
 	if(HUD)
 	{
 		HUD->HUDWidget->Crosshair->crosshair_spread = FMath::Lerp(CurrentSpread, DefaultWeaponSpread, Value);
+	}
+}
+
+void AC_BaseWeapon::AddWeaponSpread()
+{
+	AC_PlayerHUD* HUD = Cast<AC_PlayerHUD>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetHUD());
+	if (HUD)
+	{
+		// increment by 5, then reset
+		CurrentSpread = HUD->AddCrosshairSpreadHUD(SpreadAmount, DefaultWeaponSpread, MaxWeaponSpread);
+		SpreadTimeline->PlayFromStart();
 	}
 }
