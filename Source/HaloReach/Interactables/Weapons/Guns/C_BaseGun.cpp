@@ -478,8 +478,6 @@ void AC_BaseGun::Multi_Fire_Implementation(AActor* NewOwner, FRotator TraceRotat
 				//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("PLAYING MONTAGE")));
 			}
 			
-			AddWeaponSpread();
-		
 			FVector EyeLocation;
 			FRotator EyeRotation;
 			//NewOwner->GetActorEyesViewPoint(StartLoc, EyeRotation);
@@ -540,6 +538,7 @@ void AC_BaseGun::Multi_Fire_Implementation(AActor* NewOwner, FRotator TraceRotat
 			if (PlayerCharacter->IsLocallyControlled())
 			{
 				PlayFireEffects1P();
+				AddWeaponSpread();
 			}
 
 			else

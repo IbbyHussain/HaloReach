@@ -84,13 +84,10 @@ UAnimMontage* AC_BaseWeapon::GetWeapon3PMeleeMontage()
 
 void AC_BaseWeapon::Attack()
 {
-	// This will not work for automatic weapons, as Attack calls startautofire() not fire()
-	AddWeaponSpread();
 }
 
 void AC_BaseWeapon::StopAttack()
 {
-
 }
 
 void AC_BaseWeapon::SpreadTimelineFloatReturn(float Value)
