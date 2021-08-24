@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "HaloReach/GlobalEnums.h"
+#include "Components/TimelineComponent.h"
 #include "C_BaseWeapon.generated.h"
 
 UCLASS()
@@ -114,4 +115,22 @@ public:
 
 	float MeleeTime;
 
+
+# pragma region Weapon Spread
+
+	UPROPERTY(EditAnywhere, Category = "Timeline")
+	UCurveFloat* FSpreadCurve;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Timeline")
+	UTimelineComponent* SpreadTimeline;
+
+	FOnTimelineFloat SpreadInterpFunction{};
+
+	UFUNCTION()
+	void SpreadTimelineFloatReturn(float Value);
+
+	float CurrentSpread;
+
+
+# pragma endregion
 };
