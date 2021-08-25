@@ -50,7 +50,7 @@ void UC_HealthComponent::Client_Test_Implementation(float Damage)
 		Shields -= Damage;
 
 		// This ensures that if the amount of damage exceeds the amount of shields, the leftover damage is dealt to Health
-		// E.g shields = 70 and Health = 45. If damage is 100, shields = 0 and health = 15 
+		// E.g shields = 70 and Health = 45. If damage is 100, shields = 0 and health = 15 - NO LONGER USED - KEPT FOR FUTURE REFERENCE
 		if (Shields < 0.0f)
 		{
 			//Shields *= -1.0f;

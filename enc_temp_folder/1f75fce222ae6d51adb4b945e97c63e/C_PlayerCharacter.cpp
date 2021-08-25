@@ -555,6 +555,8 @@ void AC_PlayerCharacter::SwitchWeapons()
 
 			DefaultMesh->GetAnimInstance()->Montage_Play(Gun->GetWeaponEquipMontage(), 1.0f);
 
+			//bIsSwitching = !bIsSwitching;
+			
 			// Call Server RPC for clients 
 			if(HasAuthority())
 			{
@@ -590,6 +592,17 @@ void AC_PlayerCharacter::ResetCanSwitch()
 	bCanReload = true;
 	bCanFire = true;
 	bCanMelee = true;
+}
+
+void AC_PlayerCharacter::OnRep_Switch()
+{
+	AC_BaseGun* Gun = Cast<AC_BaseGun>(EquippedWeaponArray[0]);
+	Mesh3P->GetAnimInstance()->Montage_Play(Gun->GetWeapon3PEquipMontage(), 1.0f);
+}
+
+void AC_PlayerCharacter::Server_Switch_Implementation(UAnimMontage* Montage)
+{
+	Mesh3P->GetAnimInstance()->Montage_Play(Montage, 1.0f);
 }
 
 # pragma endregion
@@ -1022,6 +1035,7 @@ void AC_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 
 	DOREPLIFETIME(AC_PlayerCharacter, bIsFiring);
 	DOREPLIFETIME(AC_PlayerCharacter, bStopFiring);
+	DOREPLIFETIME(AC_PlayerCharacter, bIsSwitching);
 	DOREPLIFETIME(AC_PlayerCharacter, bIsMeleeAttacking);
 	DOREPLIFETIME(AC_PlayerCharacter, bCrouchKeyDown);
 
