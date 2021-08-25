@@ -85,7 +85,6 @@ AC_PlayerCharacter::AC_PlayerCharacter(const FObjectInitializer& ObjectInitializ
 	bCanFire = true;
 
 	bIsFiring = false;
-	bIsMeleeAttacking = false;
 
 	bCanMelee = true;
 
@@ -685,12 +684,6 @@ void AC_PlayerCharacter::Reload()
 				bCanZoom = false;
 				bCanMelee = false;
 
-				bCanMelee = false;
-				bCanZoom = false;
-				bCanSwitch = false;
-				bCanFire = false;
-				bCanReload = false;
-
 				// If we are zoomed in when reload starts
 				EndZoom();
 
@@ -751,14 +744,11 @@ void AC_PlayerCharacter::Server_GunReload_Implementation(AC_BaseGun* Gun)
 	GunReload(Gun);
 }
 
-// Melee attack
+# pragma region Melee Attack
 
 void AC_PlayerCharacter::StartMelee()
 {
 	ClearActorsIgnoredArray();
-
-	// Used for melee montage rep
-	bIsMeleeAttacking = !bIsMeleeAttacking;
 
 	AC_BaseWeapon* Weapon = EquippedWeaponArray[0];
 
@@ -766,14 +756,18 @@ void AC_PlayerCharacter::StartMelee()
 	{
 		PlayMontage(DefaultMesh, Weapon->GetWeapon1PMeleeMontage()); // 1p
 
-		if (!HasAuthority())
+		if (HasAuthority())
 		{
-			Server_Melee(Weapon->GetWeapon3PMeleeMontage());
+			Multi_PlayMontage(Mesh3P, Weapon->GetWeapon3PMeleeMontage());
+		}
+
+		else
+		{
+			Server_PlayMontage(Mesh3P, Weapon->GetWeapon3PMeleeMontage());
 		}
 
 		GetWorldTimerManager().SetTimer(MeleeHandle, this, &AC_PlayerCharacter::ResetMelee, Weapon->MeleeTime, false);
 	}
-	
 }
 
 void AC_PlayerCharacter::ResetMelee()
@@ -783,17 +777,6 @@ void AC_PlayerCharacter::ResetMelee()
 	bCanSwitch = true;
 	bCanFire = true;
 	bCanReload = true;
-}
-
-void AC_PlayerCharacter::OnRep_Melee()
-{
-	AC_BaseWeapon* Weapon = EquippedWeaponArray[0];
-	Mesh3P->GetAnimInstance()->Montage_Play(Weapon->GetWeapon3PMeleeMontage(), 1.0f);
-}
-
-void AC_PlayerCharacter::Server_Melee_Implementation(UAnimMontage* Montage)
-{
-	Mesh3P->GetAnimInstance()->Montage_Play(Montage, 1.0f);
 }
 
 void AC_PlayerCharacter::ClearActorsIgnoredArray()
@@ -866,7 +849,7 @@ void AC_PlayerCharacter::Server_MeleeAttack_Implementation(AC_PlayerCharacter* H
 	}
 }
 
-// called on input 
+// called on input binding
 void AC_PlayerCharacter::MeleeTracking()
 {
 	if (bCanMelee)
@@ -1017,6 +1000,8 @@ void AC_PlayerCharacter::StopMeleeTrackTimeline()
 	}
 }
 
+# pragma endregion
+
 // REPLICATION TESTING
 
 void AC_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -1035,10 +1020,7 @@ void AC_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 
 	DOREPLIFETIME(AC_PlayerCharacter, bIsFiring);
 	DOREPLIFETIME(AC_PlayerCharacter, bStopFiring);
-	DOREPLIFETIME(AC_PlayerCharacter, bIsMeleeAttacking);
 	DOREPLIFETIME(AC_PlayerCharacter, bCrouchKeyDown);
-	//DOREPLIFETIME(AC_PlayerCharacter, bCanFire);
-
 
 	/*DOREPLIFETIME(AC_PlayerCharacter, DefaultMeshHeight);
 	DOREPLIFETIME(AC_PlayerCharacter, CrouchedMeshHeight);
@@ -1048,7 +1030,6 @@ void AC_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 
 	DOREPLIFETIME(AC_PlayerCharacter, DefaultCapsuleHeight);
 	DOREPLIFETIME(AC_PlayerCharacter, CrouchedCapsuleHeight);*/
-
 
 	DOREPLIFETIME_CONDITION(AC_PlayerCharacter, ControlRotation, COND_SkipOwner);
 }

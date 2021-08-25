@@ -265,16 +265,6 @@ public:
 	// Method will use sphere traces to deal damage, will be used in an anim notify state
 	void MeleeAttack(USkeletalMeshComponent* MeshComp);
 
-	UPROPERTY(ReplicatedUsing = OnRep_Melee)
-		bool bIsMeleeAttacking;
-
-	UFUNCTION()
-		void OnRep_Melee();
-
-	UFUNCTION(Server, Reliable)
-		void Server_Melee(UAnimMontage* Montage);
-	void Server_Melee_Implementation(UAnimMontage* Montage);
-
 	TArray<AActor*> ActorsIgnored;
 
 	TArray<AC_PlayerCharacter*> HitPlayers;
@@ -282,7 +272,7 @@ public:
 	void ClearActorsIgnoredArray();
 
 	UFUNCTION(Server, Reliable)
-		void Server_MeleeAttack(AC_PlayerCharacter* HitActor);
+	void Server_MeleeAttack(AC_PlayerCharacter* HitActor);
 	void Server_MeleeAttack_Implementation(AC_PlayerCharacter* HitActor);
 
 	// Melee Tracking
@@ -293,10 +283,10 @@ public:
 
 	// Where the melee track BOX should start
 	UPROPERTY(EditDefaultsOnly, Category = "Player | Melee Tracking")
-		FName MeleeStartSocket;
+	FName MeleeStartSocket;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Player | Melee Tracking")
-		UCurveFloat* FMeleeTrackCurve;
+	UCurveFloat* FMeleeTrackCurve;
 
 	UTimelineComponent* MeleeTrackTimeline;
 
