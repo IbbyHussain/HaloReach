@@ -257,9 +257,10 @@ public:
 
 	void Reload();
 
-// WEAPON MELEE ATTACK
 
-	// Plays montage for melee attacj - input binding
+# pragma region Melee Attack
+
+	// Plays montage for melee attack - input binding
 	void StartMelee();
 
 	void ResetMelee();
@@ -272,13 +273,13 @@ public:
 	void MeleeAttack(USkeletalMeshComponent* MeshComp);
 
 	UPROPERTY(ReplicatedUsing = OnRep_Melee)
-	bool bIsMeleeAttacking;
-	
+		bool bIsMeleeAttacking;
+
 	UFUNCTION()
-	void OnRep_Melee();
+		void OnRep_Melee();
 
 	UFUNCTION(Server, Reliable)
-	void Server_Melee(UAnimMontage* Montage);
+		void Server_Melee(UAnimMontage* Montage);
 	void Server_Melee_Implementation(UAnimMontage* Montage);
 
 	TArray<AActor*> ActorsIgnored;
@@ -288,7 +289,7 @@ public:
 	void ClearActorsIgnoredArray();
 
 	UFUNCTION(Server, Reliable)
-	void Server_MeleeAttack(AC_PlayerCharacter* HitActor);
+		void Server_MeleeAttack(AC_PlayerCharacter* HitActor);
 	void Server_MeleeAttack_Implementation(AC_PlayerCharacter* HitActor);
 
 	// Melee Tracking
@@ -299,10 +300,10 @@ public:
 
 	// Where the melee track BOX should start
 	UPROPERTY(EditDefaultsOnly, Category = "Player | Melee Tracking")
-	FName MeleeStartSocket;
+		FName MeleeStartSocket;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Player | Melee Tracking")
-	UCurveFloat* FMeleeTrackCurve;
+		UCurveFloat* FMeleeTrackCurve;
 
 	UTimelineComponent* MeleeTrackTimeline;
 
@@ -310,10 +311,10 @@ public:
 	FOnTimelineEvent MeleeTrackTimelineFinished{};
 
 	UFUNCTION()
-	void MeleeTrackTimelineFloatReturn(float Value);
+		void MeleeTrackTimelineFloatReturn(float Value);
 
 	UFUNCTION()
-	void OnMeleeTrackTimelineFinished();
+		void OnMeleeTrackTimelineFinished();
 
 	bool bIsOverlappingEnemy(AC_PlayerCharacter* Enemy);
 
@@ -321,12 +322,12 @@ public:
 	FVector PlayerLoc;
 
 	UFUNCTION(Server, Reliable)
-	void Server_StartMelee(FVector StartLocation, FVector EndLocation, float Alpha);
+		void Server_StartMelee(FVector StartLocation, FVector EndLocation, float Alpha);
 	void Server_StartMelee_Implementation(FVector StartLocation, FVector EndLocation, float Alpha);
 
 public: // temp
 	UFUNCTION(BlueprintCallable)
-	void StopMeleeTrackTimeline();
+		void StopMeleeTrackTimeline();
 
 	TMap<float, AC_PlayerCharacter*> EnemyMap;
 
@@ -336,6 +337,8 @@ public: // temp
 
 	float ShortestDistance;
 
+# pragma endregion
+	
 // REPLICATION TESTINGS
 
 	// Arraty which keeps track of equipped weapons

@@ -53,8 +53,8 @@ void UC_HealthComponent::Client_Test_Implementation(float Damage)
 		// E.g shields = 70 and Health = 45. If damage is 100, shields = 0 and health = 15 
 		if (Shields < 0.0f)
 		{
-			Shields *= -1.0f;
-			Health = FMath::Clamp(Health - Shields, 0.0f, MaxHealth);
+			//Shields *= -1.0f;
+			//Health = FMath::Clamp(Health - Shields, 0.0f, MaxHealth);
 			Shields = 0.0f;
 		}
 	}

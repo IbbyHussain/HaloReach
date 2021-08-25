@@ -833,8 +833,8 @@ void AC_PlayerCharacter::MeleeAttack(USkeletalMeshComponent* MeshComp)
 
 		else
 		{
-			// will one hit shields
-			UGameplayStatics::ApplyDamage(HitPlayer, HitPlayer->HealthComp->MaxShields, UGameplayStatics::GetPlayerController(this, 0), this, NULL);
+			// will one hit shields, but does not allow for damage to affect health
+			UGameplayStatics::ApplyDamage(HitPlayer, HitPlayer->HealthComp->GetShields(), UGameplayStatics::GetPlayerController(this, 0), this, NULL);
 		}
 
 		// Stops player from being damaged multiple times
