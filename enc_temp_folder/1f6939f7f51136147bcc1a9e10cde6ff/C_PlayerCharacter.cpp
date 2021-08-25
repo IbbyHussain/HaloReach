@@ -420,11 +420,15 @@ void AC_PlayerCharacter::Server_Crouch_Implementation(float Height, float NewHei
 
 void AC_PlayerCharacter::Multi_Crouch_Implementation(float Height, float NewHeight, float MeshHeight, float NewMeshHeight, float Alpha)
 {
-	// Ensures player mesh is not below the ground
 	GetCapsuleComponent()->SetCapsuleHalfHeight(FMath::Lerp(96.0f, 50.0f, Alpha));
 
 	float x = FMath::Lerp(96.0f, 50.0f, Alpha) * -1.0f;
 	Mesh3P->SetRelativeLocation(FVector(0.0f, 0.0f, x));
+
+	// Smoothly transitions between capsule heights
+	//GetCapsuleComponent()->SetCapsuleHalfHeight(FMath::Lerp(Height, NewHeight, Alpha));
+
+	//Mesh3P->SetRelativeLocation(FVector(MeshX, MeshY, FMath::Lerp(MeshHeight, NewMeshHeight, Alpha)));
 }
 
 void AC_PlayerCharacter::UpdateMovementSettings(EMovementState NewState)
