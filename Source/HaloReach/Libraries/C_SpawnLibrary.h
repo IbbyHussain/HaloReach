@@ -22,6 +22,9 @@ public:
 	template<typename ClassName>
 	static ClassName* SpawnActorAtSocket(UWorld* World, TSubclassOf<ClassName> ObjectClass, ClassName* ObjectPointer, USkeletalMeshComponent* MeshComp, FName SpawnSocket);
 
+	template<typename ClassName>
+	static ClassName* SpawnActorAtLocation(UWorld* World, TSubclassOf<ClassName> ObjectClass, ClassName* ObjectPointer, FVector Location, FRotator Rotation);
+
 	static void DestroyActor(AActor* ActorToDestroy);
 };
 
@@ -40,6 +43,20 @@ ClassName* UC_SpawnLibrary::SpawnActorAtSocket(UWorld* World, TSubclassOf<ClassN
 
 	ObjectPointer = World->SpawnActor<ClassName>(ObjectClass, SpawnLocation, SpawnRotation, SpawnParams);
 	ObjectPointer->AttachToComponent(MeshComp, FAttachmentTransformRules::SnapToTargetIncludingScale, SpawnSocket);
+
+	return ObjectPointer;
+}
+
+template<typename ClassName>
+ClassName* UC_SpawnLibrary::SpawnActorAtLocation(UWorld* World, TSubclassOf<ClassName> ObjectClass, ClassName* ObjectPointer, FVector Location, FRotator Rotation)
+{
+	//Simple spawn actor attached to a socket
+	FActorSpawnParameters SpawnParams;
+
+	// Static cast to get world and call non-static functions
+	auto NewWorld = static_cast<UWorld*>(World);
+
+	ObjectPointer = World->SpawnActor<ClassName>(ObjectClass, Location, Rotation, SpawnParams);
 
 	return ObjectPointer;
 }

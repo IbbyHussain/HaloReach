@@ -103,14 +103,17 @@ void AC_BaseGun::Fire()
 	AActor* MyOwner = GetOwner();
 
 	AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(MyOwner);
-	if(MyOwner->HasAuthority())
+	if(PlayerCharacter)
 	{
-		Multi_Fire(MyOwner, PlayerCharacter->CameraComp->GetComponentRotation());
-	}
+		if (MyOwner->HasAuthority())
+		{
+			Multi_Fire(MyOwner, PlayerCharacter->CameraComp->GetComponentRotation());
+		}
 
-	else
-	{
-		Server_Fire(MyOwner, PlayerCharacter->CameraComp->GetComponentRotation());
+		else
+		{
+			Server_Fire(MyOwner, PlayerCharacter->CameraComp->GetComponentRotation());
+		}
 	}
 }
 

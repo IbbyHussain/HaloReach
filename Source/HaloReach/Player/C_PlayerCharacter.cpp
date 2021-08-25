@@ -1170,6 +1170,8 @@ void AC_PlayerCharacter::SetControlRotation()
 
 void AC_PlayerCharacter::Death()
 {
+	bIsDead = true;
+
 	CameraComp->SetActive(false);
 	DeathCameraComp->SetActive(true);
 
@@ -1177,23 +1179,39 @@ void AC_PlayerCharacter::Death()
 	DefaultMesh->SetVisibility(false);
 	Mesh3P->SetOwnerNoSee(false);
 
+	APlayerController* PlayerController = Cast<APlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	if(PlayerController)
+	{
+		DisableInput(PlayerController);
+	}
+
 	if(HasAuthority())
 	{
-		Multi_PlayMontage(Mesh3P, DeathMontageArray[UKismetMathLibrary::RandomIntegerInRange(0, DeathMontageArray.Num())]);
+		Multi_PlayMontage(Mesh3P, DeathMontageArray[UKismetMathLibrary::RandomIntegerInRange(0, DeathMontageArray.Num() - 1)]);
 	}
 
 	else
 	{
-		Server_PlayMontage(Mesh3P, DeathMontageArray[UKismetMathLibrary::RandomIntegerInRange(0, DeathMontageArray.Num())]);
+		Server_PlayMontage(Mesh3P, DeathMontageArray[UKismetMathLibrary::RandomIntegerInRange(0, DeathMontageArray.Num() - 1)]);
 	}
 
-	// Disbale input
+	GetWorldTimerManager().SetTimer(RespawnHandle, this, &AC_PlayerCharacter::Respawn, 3.0f, false);
+
+	// Disbale input, except mouse 
+	// Hide HUD
 	// camera movement
-	// play anim
+	// play animPlayer Death 
 	// ragdoll
 
 	//GetWorldTimerManager().ClearAllTimersForObject(this);
 
+}
+
+void AC_PlayerCharacter::Respawn()
+{
+	Mesh3P->SetSimulatePhysics(true);
+
+	RespawnPlayer.Broadcast();
 }
 
 

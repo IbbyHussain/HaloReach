@@ -14,6 +14,7 @@
 #include "C_PlayerCharacter.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeaponReload);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRespawnPlayer);
 
 class AC_BaseWeapon;
 class AC_Weapon3P;
@@ -580,6 +581,15 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player | Death")
 	TArray<UAnimMontage*> DeathMontageArray;
+
+	FTimerHandle RespawnHandle;
+
+	void Respawn();
+
+	UPROPERTY(BlueprintAssignable, Category = "aaa")
+	FOnRespawnPlayer RespawnPlayer;
+
+	bool bIsDead;
 
 # pragma endregion
 };
