@@ -19,6 +19,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Kismet/KismetArrayLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "GameFramework/SpringArmComponent.h"
 
 #include "HaloReach/Libraries/C_SpawnLibrary.h"
 
@@ -36,6 +37,7 @@ AC_PlayerCharacter::AC_PlayerCharacter(const FObjectInitializer& ObjectInitializ
 	CameraComp->SetupAttachment(GetCapsuleComponent());
 	//CameraComp->SetRelativeLocation(FVector(-39.56f, 1.75f, 64.f)); // Position the camera
 	CameraComp->bUsePawnControlRotation = true;
+	CameraComp->SetActive(true);
 
 	// Create a mesh component that will be used when being viewed from a '1st person' view (when controlling this pawn)
 	DefaultMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Meshcomp"));
@@ -50,7 +52,7 @@ AC_PlayerCharacter::AC_PlayerCharacter(const FObjectInitializer& ObjectInitializ
 	// Create a mesh component that will be used when being viewed from a '3rd person' view (when controlling this pawn)
 	Mesh3P = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("3P Mesh"));
 	// The local player will not see the Mesh3P SKMesh only other clients
-	Mesh3P->bOwnerNoSee = true;
+	Mesh3P->SetOwnerNoSee(true);
 	Mesh3P->SetupAttachment(GetCapsuleComponent());
 	// Use this mesh's shadows
 	Mesh3P->bCastDynamicShadow = true;
@@ -61,6 +63,15 @@ AC_PlayerCharacter::AC_PlayerCharacter(const FObjectInitializer& ObjectInitializ
 	//Crouch Timeline
 	CrouchTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("CrouchTimeline"));
 	CrouchInterpFunction.BindUFunction(this, FName("CrouchTimelineFloatReturn"));
+
+	// Death Camera components
+
+	DeathSpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("Death SpringArm"));
+	DeathSpringArmComp->SetupAttachment(RootComponent);
+	DeathSpringArmComp->TargetArmLength = 500.0f;
+
+	DeathCameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("Death Camera"));
+	DeathCameraComp->SetupAttachment(DeathSpringArmComp, USpringArmComponent::SocketName);
 
 	bCanCrouch = true;
 	bCrouchKeyDown = false;
@@ -223,7 +234,7 @@ void AC_PlayerCharacter::OnHealthChanged(UC_HealthComponent* HealthComponent, fl
 		if (HealthComp->GetHealth() <= 0.0f)
 		{
 			//UE_LOG(LogTemp, Error, TEXT("Player is DEAD"));
-			GetWorldTimerManager().ClearAllTimersForObject(this);
+			Death();
 		}
 
 		else
@@ -237,8 +248,6 @@ void AC_PlayerCharacter::OnHealthChanged(UC_HealthComponent* HealthComponent, fl
 
 			GetWorld()->GetTimerManager().SetTimer(OutOfCombatHandle, OutOfCombatDelegate, 5.0f, false);
 		}
-
-
 	}
 }
 
@@ -1156,6 +1165,42 @@ void AC_PlayerCharacter::SetControlRotation()
 		ControlRotation = GetController()->GetControlRotation();
 	}
 }
+
+# pragma region PlayerDeath
+
+void AC_PlayerCharacter::Death()
+{
+	CameraComp->SetActive(false);
+	DeathCameraComp->SetActive(true);
+
+	// 3p mesh is now visible to local player
+	DefaultMesh->SetVisibility(false);
+	Mesh3P->SetOwnerNoSee(false);
+
+	if(HasAuthority())
+	{
+		Multi_PlayMontage(Mesh3P, DeathMontageArray[UKismetMathLibrary::RandomIntegerInRange(0, DeathMontageArray.Num())]);
+	}
+
+	else
+	{
+		Server_PlayMontage(Mesh3P, DeathMontageArray[UKismetMathLibrary::RandomIntegerInRange(0, DeathMontageArray.Num())]);
+	}
+
+	// Disbale input
+	// camera movement
+	// play anim
+	// ragdoll
+
+	//GetWorldTimerManager().ClearAllTimersForObject(this);
+
+}
+
+
+
+
+# pragma endregion
+
 
 // INPUT
 

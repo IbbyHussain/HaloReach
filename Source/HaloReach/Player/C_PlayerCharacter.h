@@ -566,4 +566,20 @@ public:
 	{
 		return Mesh3P;
 	}
+
+
+# pragma region Player Death
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player | PlayerComponents")
+	UCameraComponent* DeathCameraComp;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player | PlayerComponents")
+	class USpringArmComponent* DeathSpringArmComp;
+
+	void Death();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player | Death")
+	TArray<UAnimMontage*> DeathMontageArray;
+
+# pragma endregion
 };
