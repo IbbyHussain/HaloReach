@@ -192,6 +192,7 @@ public:
 
 // WEAPON FIRE
 
+	UPROPERTY(Replicated)
 	bool bCanFire;
 
 	UPROPERTY(ReplicatedUsing = OnRep_Fire)

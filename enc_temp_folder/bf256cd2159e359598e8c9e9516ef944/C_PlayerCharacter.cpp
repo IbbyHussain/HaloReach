@@ -555,8 +555,6 @@ void AC_PlayerCharacter::SwitchWeapons()
 
 			DefaultMesh->GetAnimInstance()->Montage_Play(Gun->GetWeaponEquipMontage(), 1.0f);
 
-			//bIsSwitching = !bIsSwitching;
-			
 			// Call Server RPC for clients 
 			if(HasAuthority())
 			{
@@ -592,17 +590,6 @@ void AC_PlayerCharacter::ResetCanSwitch()
 	bCanReload = true;
 	bCanFire = true;
 	bCanMelee = true;
-}
-
-void AC_PlayerCharacter::OnRep_Switch()
-{
-	AC_BaseGun* Gun = Cast<AC_BaseGun>(EquippedWeaponArray[0]);
-	Mesh3P->GetAnimInstance()->Montage_Play(Gun->GetWeapon3PEquipMontage(), 1.0f);
-}
-
-void AC_PlayerCharacter::Server_Switch_Implementation(UAnimMontage* Montage)
-{
-	Mesh3P->GetAnimInstance()->Montage_Play(Montage, 1.0f);
 }
 
 # pragma endregion
@@ -671,6 +658,10 @@ void AC_PlayerCharacter::Reload()
 		{
 			if(Gun->WeaponStats.CurrentAmmo != Gun->WeaponStats.MaxMagazineAmmo && Gun->WeaponStats.CurrentReservesAmmo != 0 && bCanReload)
 			{
+				// Restrictions 
+				EndFire();
+				EndZoom();
+
 				// Call Server RPC for clients 
 				if (HasAuthority())
 				{
@@ -688,9 +679,16 @@ void AC_PlayerCharacter::Reload()
 				PlayMontage(DefaultMesh, Gun->GetWeaponReloadMontage());
 				
 				bCanReload = false;
+				bCanFire = false;
 				bCanSwitch = false;
 				bCanZoom = false;
 				bCanMelee = false;
+
+				bCanMelee = false;
+				bCanZoom = false;
+				bCanSwitch = false;
+				bCanFire = false;
+				bCanReload = false;
 
 				// If we are zoomed in when reload starts
 				EndZoom();
@@ -717,6 +715,7 @@ void AC_PlayerCharacter::ResetCanReload()
 {
 	bCanReload = true;
 	bCanSwitch = true;
+	bCanFire = true;
 	bCanZoom = true;
 	bCanMelee = true;
 }
@@ -862,7 +861,7 @@ void AC_PlayerCharacter::Server_MeleeAttack_Implementation(AC_PlayerCharacter* H
 	else
 	{
 		// will one hit shields
-		UGameplayStatics::ApplyDamage(HitActor, HitActor->HealthComp->MaxShields, UGameplayStatics::GetPlayerController(this, 0), this, NULL);
+		UGameplayStatics::ApplyDamage(HitActor, HitActor->HealthComp->GetShields(), UGameplayStatics::GetPlayerController(this, 0), this, NULL);
 	}
 }
 
@@ -1035,9 +1034,10 @@ void AC_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 
 	DOREPLIFETIME(AC_PlayerCharacter, bIsFiring);
 	DOREPLIFETIME(AC_PlayerCharacter, bStopFiring);
-	DOREPLIFETIME(AC_PlayerCharacter, bIsSwitching);
 	DOREPLIFETIME(AC_PlayerCharacter, bIsMeleeAttacking);
 	DOREPLIFETIME(AC_PlayerCharacter, bCrouchKeyDown);
+	//DOREPLIFETIME(AC_PlayerCharacter, bCanFire);
+
 
 	/*DOREPLIFETIME(AC_PlayerCharacter, DefaultMeshHeight);
 	DOREPLIFETIME(AC_PlayerCharacter, CrouchedMeshHeight);
