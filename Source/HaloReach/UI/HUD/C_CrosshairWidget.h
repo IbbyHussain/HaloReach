@@ -7,6 +7,8 @@
 #include "C_CrosshairWidget.generated.h"
 
 class UBorder;
+class AC_PlayerCharacter;
+class UImage;
 
 UCLASS()
 class HALOREACH_API UC_CrosshairWidget : public UUserWidget
@@ -48,6 +50,23 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UBorder* leftOuter;
+
+# pragma endregion
+
+# pragma region Crosshair Outer
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UImage* CrosshairOuter;
+
+	// Chnages crosshair texture depending on team affiliation of target
+	UFUNCTION(BlueprintCallable)
+	void SwitchCrosshairOuter(AC_PlayerCharacter* Target);
+
+	UPROPERTY(EditAnywhere, Category = "Crosshair")
+	int Team;
+
+	UPROPERTY(EditAnywhere, Category = "Crosshair")
+	TArray<UTexture2D*> CrosshairOuterArray;
 
 # pragma endregion
 
