@@ -596,5 +596,19 @@ public:
 	void Server_Death(bool bDead);
 	void Server_Death_Implementation(bool bDead);
 
+	// Ragdoll
+
+	UFUNCTION(Server, Reliable)
+	void Server_Ragdoll(FTransform RagdollSpawnTransform, AC_PlayerCharacter* PlayerToHide);
+	void Server_Ragdoll_Implementation(FTransform RagdollSpawnTransform, AC_PlayerCharacter* PlayerToHide);
+
+
+	UPROPERTY(EditDefaultsOnly, Category = "Ragdoll")
+	TSubclassOf<AActor> RagdollPlayerClass;
+
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void BPDeath();
+
 # pragma endregion
 };

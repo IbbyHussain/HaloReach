@@ -94,6 +94,7 @@ void AC_PlayerHUD::UpdateWeaponReserves()
 	if(HUDWidget)
 	{
 		HUDWidget->UpdateAmmoText();
+		DestroyWidget(ZoomWidget);
 	}
 }
 

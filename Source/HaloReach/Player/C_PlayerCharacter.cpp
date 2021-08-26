@@ -20,6 +20,7 @@
 #include "Kismet/KismetArrayLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "HaloReach/UI/HUD/C_PlayerHUDWidget.h"
 
 #include "HaloReach/Libraries/C_SpawnLibrary.h"
 
@@ -231,10 +232,11 @@ void AC_PlayerCharacter::OnHealthChanged(UC_HealthComponent* HealthComponent, fl
 
 	if(bUpdateCombatState)
 	{
-		if (HealthComp->GetHealth() <= 0.0f)
+		// bIsDead so that death() is only called once
+		if (HealthComp->GetHealth() <= 0.0f && !bIsDead)
 		{
-			//UE_LOG(LogTemp, Error, TEXT("Player is DEAD"));
 			Death();
+			//BPDeath();
 		}
 
 		else
@@ -1202,7 +1204,8 @@ void AC_PlayerCharacter::Death()
 	// Disables all actions
 	UpdateMovementSettings(EMovementState::IDLE);
 
-	HUD->HideHUDWidget();
+	// temp 
+	HUD->HUDWidget->RemoveFromParent();
 
 	APlayerController* PlayerController = Cast<APlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	if(PlayerController)
@@ -1230,7 +1233,6 @@ void AC_PlayerCharacter::Death()
 
 	EquippedWeaponArray[0]->SetActorHiddenInGame(true);
 
-	// Stop spam of player death anim
 	// ragdoll and replication
 	// remove capsule collision
 
@@ -1240,7 +1242,8 @@ void AC_PlayerCharacter::Death()
 
 void AC_PlayerCharacter::Respawn()
 {
-	//Mesh3P->SetSimulatePhysics(true);
+	// physics interaction will need to spawn a physics actor, as mesh must be the root component
+	Server_Ragdoll(GetActorTransform(), this);
 
 	// spawns new player in gamemode
 	//RespawnPlayer.Broadcast();
@@ -1250,6 +1253,14 @@ void AC_PlayerCharacter::Server_Death_Implementation(bool bDead)
 {
 	bUseControllerRotationYaw = bDead;
 }
+
+void AC_PlayerCharacter::Server_Ragdoll_Implementation(FTransform RagdollSpawnTransform, AC_PlayerCharacter* PlayerToHide)
+{
+	FActorSpawnParameters SpawnParams;
+	GetWorld()->SpawnActor<AActor>(RagdollPlayerClass, RagdollSpawnTransform.GetLocation(), RagdollSpawnTransform.GetRotation().Rotator(), SpawnParams);
+	PlayerToHide->SetActorHiddenInGame(true);
+}
+
 
 
 
