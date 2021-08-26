@@ -21,6 +21,9 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	float BaseDamage;
 
+	UPROPERTY(EditDefaultsOnly)
+	float HeadShotMultiplier;
+
 	// RPM
 	UPROPERTY(EditDefaultsOnly)
 	float RateOfFire;
@@ -35,6 +38,9 @@ public:
 	// Max ammo in reserves
 	UPROPERTY(EditDefaultsOnly)
 	int32 MaxReservesAmmo;
+
+	UPROPERTY(EditDefaultsOnly)
+	float WeaponRange;
 
 	UPROPERTY(EditDefaultsOnly)
 	bool bCanZoom;
@@ -95,6 +101,7 @@ public:
 	FWeaponStats()
 	{
 		BaseDamage = 10.0f;
+		HeadShotMultiplier = 3.0f;
 		RateOfFire = 600.0f;
 
 		//ReloadSpeed = 1.0f;
@@ -103,6 +110,8 @@ public:
 
 		CurrentAmmo = MaxMagazineAmmo;
 		CurrentReservesAmmo = MaxReservesAmmo;
+
+		WeaponRange = 5000.0f;
 
 		// These values act as the range for the recoil pattern. If the camera rotation leaves this range a new return position is set (for ReturnRecoil func)
 		MaxPitchValue = 20.0f;

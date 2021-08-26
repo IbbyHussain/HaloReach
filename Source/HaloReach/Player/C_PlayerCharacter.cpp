@@ -1202,13 +1202,11 @@ void AC_PlayerCharacter::Death()
 	// Disables all actions
 	UpdateMovementSettings(EMovementState::IDLE);
 
-
 	HUD->HideHUDWidget();
 
 	APlayerController* PlayerController = Cast<APlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	if(PlayerController)
 	{
-		//DisableInput(PlayerController);
 		PlayerController->SetIgnoreMoveInput(true);
 		bCanCrouch = false;
 	}
@@ -1231,9 +1229,10 @@ void AC_PlayerCharacter::Death()
 	GetWorldTimerManager().SetTimer(RespawnHandle, this, &AC_PlayerCharacter::Respawn, 3.0f, false);
 
 	EquippedWeaponArray[0]->SetActorHiddenInGame(true);
-	// Hide HUD
-	// play animPlayer Death 
-	// ragdoll
+
+	// Stop spam of player death anim
+	// ragdoll and replication
+	// remove capsule collision
 
 	//GetWorldTimerManager().ClearAllTimersForObject(this);
 

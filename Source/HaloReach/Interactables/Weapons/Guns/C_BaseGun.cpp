@@ -489,7 +489,7 @@ void AC_BaseGun::Multi_Fire_Implementation(AActor* NewOwner, FRotator TraceRotat
 			EyeRotation = TraceRotation;
 
 			FVector ShotDirection = EyeRotation.Vector();
-			FVector TraceEnd = EyeLocation + (SpreadTrace(ShotDirection) * 5000);
+			FVector TraceEnd = EyeLocation + (SpreadTrace(ShotDirection) * WeaponStats.WeaponRange);
 
 			FCollisionQueryParams QueryParams;
 
@@ -515,7 +515,7 @@ void AC_BaseGun::Multi_Fire_Implementation(AActor* NewOwner, FRotator TraceRotat
 				float ActualDamage = WeaponStats.BaseDamage;
 				if (SurfaceType == SURFACE_FLESHVULNERABLE)
 				{
-					ActualDamage *= 3.0f;
+					ActualDamage *= WeaponStats.HeadShotMultiplier;
 				}
 
 				UGameplayStatics::ApplyPointDamage(HitActor, ActualDamage, ShotDirection, Hit, NewOwner->GetInstigatorController(), this, DamageType);
