@@ -418,6 +418,7 @@ public: // temp
 
 // JUMP
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category ="temp")
 	bool bCanJump;
 
 	void JumpStart();

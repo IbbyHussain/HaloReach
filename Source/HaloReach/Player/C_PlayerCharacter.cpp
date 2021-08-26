@@ -274,46 +274,51 @@ bool AC_PlayerCharacter::CheckIdle()
 
 void AC_PlayerCharacter::MoveForward(float Axis)
 {
-
-	if (GetCharacterMovement()->IsFalling())
+	if (!bIsDead) 
 	{
-		UpdateMovementSettings(EMovementState::JUMP);
+		if (GetCharacterMovement()->IsFalling())
+		{
+			UpdateMovementSettings(EMovementState::JUMP);
+		}
+
+		else
+		{
+			// If crouch key is pressed, player is crouching otherwise they are walking
+			bCrouchKeyDown ? UpdateMovementSettings(EMovementState::CROUCH) : UpdateMovementSettings(EMovementState::WALK);
+		}
+
+		FRotator Rotation = Controller->GetControlRotation();
+		FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
+
+		// Gets the forward vector of the player and moves in the forwrads or backwards direction
+		FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		AddMovementInput(Direction, Axis);
 	}
-
-	else
-	{
-		// If crouch key is pressed, player is crouching otherwise they are walking
-		bCrouchKeyDown ? UpdateMovementSettings(EMovementState::CROUCH) : UpdateMovementSettings(EMovementState::WALK);
-	}
-
-	FRotator Rotation = Controller->GetControlRotation();
-	FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
-
-	// Gets the forward vector of the player and moves in the forwrads or backwards direction
-	FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	AddMovementInput(Direction, Axis);
 }
 
 void AC_PlayerCharacter::MoveRight(float Axis)
 {
-	// Stops walking if we are in air
-	if (GetCharacterMovement()->IsFalling())
+	if(!bIsDead)
 	{
-		UpdateMovementSettings(EMovementState::JUMP);
+		// Stops walking if we are in air
+		if (GetCharacterMovement()->IsFalling())
+		{
+			UpdateMovementSettings(EMovementState::JUMP);
+		}
+
+		else
+		{
+			// If crouch key is pressed, player is crouching otherwise they are walking
+			bCrouchKeyDown ? UpdateMovementSettings(EMovementState::CROUCH) : UpdateMovementSettings(EMovementState::WALK);
+		}
+
+		FRotator Rotation = Controller->GetControlRotation();
+		FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
+
+		// Gets the left/right vector of the player and moves in the left or right direction
+		FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+		AddMovementInput(Direction, Axis);
 	}
-
-	else
-	{
-		// If crouch key is pressed, player is crouching otherwise they are walking
-		bCrouchKeyDown ? UpdateMovementSettings(EMovementState::CROUCH) : UpdateMovementSettings(EMovementState::WALK);
-	}
-
-	FRotator Rotation = Controller->GetControlRotation();
-	FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
-
-	// Gets the left/right vector of the player and moves in the left or right direction
-	FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-	AddMovementInput(Direction, Axis);
 }
 
 // JUMP SYSYTEM
@@ -445,29 +450,41 @@ void AC_PlayerCharacter::UpdateMovementSettings(EMovementState NewState)
 		GetPlayerMovementComponent()->SetPlayerSpeed(DefaultSpeed);
 		bCanJump = true;
 		bCanCrouch = true;
+
+		
 		break;
 
 	case EMovementState::JUMP:
 
 		bCanJump = false;
 		bCanCrouch = false;
+
+		
 		break;
 
 	case EMovementState::CROUCH:
 
-		//if(HasAuthority())
-		//{
-		//	GetPlayerMovementComponent()->SetPlayerSpeed(CrouchSpeed);
-		//}
-
-		//else
-		//{
-		//	Server_CrouchSpeed();
-		//}
 		GetPlayerMovementComponent()->SetPlayerSpeed(CrouchSpeed);
 		SetCrouchKeyDown(true);
 
 		bCanJump = false;
+
+		/*bCanFire = true;
+		bCanReload = true;
+		bCanZoom = true;
+		bCanMelee = true;
+		bCanSwitch = true;*/
+		break;
+
+	case EMovementState::IDLE:
+
+		bCanJump = false;
+		bCanCrouch = false;
+		bCanFire = false;
+		bCanReload = false;
+		bCanZoom = false;
+		bCanMelee = false;
+		bCanSwitch = false;
 		break;
 
 	default:
@@ -1144,8 +1161,11 @@ void AC_PlayerCharacter::EndZoom()
 {
 	bZoomIn = false;
 
-	HUD->ShowHUDWidget();
-	HUD->DestroyZoomWidget();
+	if(!bIsDead)
+	{
+		HUD->ShowHUDWidget();
+		HUD->DestroyZoomWidget();
+	}
 }
 
 void AC_PlayerCharacter::PlayMontage(USkeletalMeshComponent* MeshComp, UAnimMontage* Montage)
@@ -1179,10 +1199,19 @@ void AC_PlayerCharacter::Death()
 	DefaultMesh->SetVisibility(false);
 	Mesh3P->SetOwnerNoSee(false);
 
+	// Disables all actions
+	UpdateMovementSettings(EMovementState::IDLE);
+
+	bUseControllerRotationYaw = false;
+
+	HUD->HideHUDWidget();
+
 	APlayerController* PlayerController = Cast<APlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	if(PlayerController)
 	{
-		DisableInput(PlayerController);
+		//DisableInput(PlayerController);
+		PlayerController->SetIgnoreMoveInput(true);
+		bCanCrouch = false;
 	}
 
 	if(HasAuthority())
@@ -1197,9 +1226,8 @@ void AC_PlayerCharacter::Death()
 
 	GetWorldTimerManager().SetTimer(RespawnHandle, this, &AC_PlayerCharacter::Respawn, 3.0f, false);
 
-	// Disbale input, except mouse 
+	EquippedWeaponArray[0]->SetActorHiddenInGame(true);
 	// Hide HUD
-	// camera movement
 	// play animPlayer Death 
 	// ragdoll
 
@@ -1209,9 +1237,10 @@ void AC_PlayerCharacter::Death()
 
 void AC_PlayerCharacter::Respawn()
 {
-	Mesh3P->SetSimulatePhysics(true);
+	//Mesh3P->SetSimulatePhysics(true);
 
-	RespawnPlayer.Broadcast();
+	// spawns new player in gamemode
+	//RespawnPlayer.Broadcast();
 }
 
 
