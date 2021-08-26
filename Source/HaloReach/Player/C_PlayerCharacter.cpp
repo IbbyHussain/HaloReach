@@ -1202,7 +1202,6 @@ void AC_PlayerCharacter::Death()
 	// Disables all actions
 	UpdateMovementSettings(EMovementState::IDLE);
 
-	bUseControllerRotationYaw = false;
 
 	HUD->HideHUDWidget();
 
@@ -1214,6 +1213,8 @@ void AC_PlayerCharacter::Death()
 		bCanCrouch = false;
 	}
 
+	bUseControllerRotationYaw = false;
+
 	if(HasAuthority())
 	{
 		Multi_PlayMontage(Mesh3P, DeathMontageArray[UKismetMathLibrary::RandomIntegerInRange(0, DeathMontageArray.Num() - 1)]);
@@ -1222,6 +1223,9 @@ void AC_PlayerCharacter::Death()
 	else
 	{
 		Server_PlayMontage(Mesh3P, DeathMontageArray[UKismetMathLibrary::RandomIntegerInRange(0, DeathMontageArray.Num() - 1)]);
+
+		// Control rotation not updating from client to server without this
+		Server_Death(false);
 	}
 
 	GetWorldTimerManager().SetTimer(RespawnHandle, this, &AC_PlayerCharacter::Respawn, 3.0f, false);
@@ -1241,6 +1245,11 @@ void AC_PlayerCharacter::Respawn()
 
 	// spawns new player in gamemode
 	//RespawnPlayer.Broadcast();
+}
+
+void AC_PlayerCharacter::Server_Death_Implementation(bool bDead)
+{
+	bUseControllerRotationYaw = bDead;
 }
 
 

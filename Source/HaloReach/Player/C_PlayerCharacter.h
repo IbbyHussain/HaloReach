@@ -592,5 +592,9 @@ public:
 
 	bool bIsDead;
 
+	UFUNCTION(Server, Reliable)
+	void Server_Death(bool bDead);
+	void Server_Death_Implementation(bool bDead);
+
 # pragma endregion
 };
