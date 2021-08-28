@@ -235,7 +235,7 @@ void AC_PlayerCharacter::OnHealthChanged(UC_HealthComponent* HealthComponent, fl
 		if (HealthComp->GetHealth() <= 0.0f && !bIsDead)
 		{
 			Death();
-			//BPDeath();
+			BPDeath();
 		}
 
 		else
@@ -1046,18 +1046,7 @@ void AC_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	DOREPLIFETIME(AC_PlayerCharacter, CombatState);
 	DOREPLIFETIME(AC_PlayerCharacter, WeaponType);
 
-	//DOREPLIFETIME(AC_PlayerCharacter, bIsFiring);
-	//DOREPLIFETIME(AC_PlayerCharacter, bStopFiring);
 	DOREPLIFETIME(AC_PlayerCharacter, bCrouchKeyDown);
-
-	/*DOREPLIFETIME(AC_PlayerCharacter, DefaultMeshHeight);
-	DOREPLIFETIME(AC_PlayerCharacter, CrouchedMeshHeight);
-
-	DOREPLIFETIME(AC_PlayerCharacter, DefaultCameraHeight);
-	DOREPLIFETIME(AC_PlayerCharacter, CrouchedCameraHeight);
-
-	DOREPLIFETIME(AC_PlayerCharacter, DefaultCapsuleHeight);
-	DOREPLIFETIME(AC_PlayerCharacter, CrouchedCapsuleHeight);*/
 
 	DOREPLIFETIME_CONDITION(AC_PlayerCharacter, ControlRotation, COND_SkipOwner);
 }
@@ -1150,6 +1139,9 @@ void AC_PlayerCharacter::Death()
 	DefaultMesh->SetVisibility(false);
 	Mesh3P->SetOwnerNoSee(false);
 
+	//EquippedWeapon3PArray[0]->WeaponMesh3P->SetOwnerNoSee(true);
+	EquippedWeaponArray[0]->WeaponMesh->SetOwnerNoSee(true);
+
 	// Disables all actions
 	UpdateMovementSettings(EMovementState::IDLE);
 
@@ -1169,8 +1161,7 @@ void AC_PlayerCharacter::Death()
 	if(HasAuthority() && this)
 	{
 		Multi_PlayMontage(Mesh3P, DeathMontageArray[UKismetMathLibrary::RandomIntegerInRange(0, DeathMontageArray.Num() - 1)]);
-		Mesh3P->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		
+		//Multi_Collision();
 	}
 
 	else
@@ -1179,17 +1170,22 @@ void AC_PlayerCharacter::Death()
 
 		// Control rotation not updating from client to server without this, OR collision
 		Server_Death(false);
+		//Server_Collision();
 	}
 
 	GetWorldTimerManager().SetTimer(RagdollHandle, this, &AC_PlayerCharacter::StartRagdoll, 3.0f, false);
 
 	GetWorldTimerManager().SetTimer(RespawnHandle, this, &AC_PlayerCharacter::Respawn, 5.0f, false);
+
+	if(!HasAuthority())
+	{
+		Server_Collision();
+	}
 }
 
 void AC_PlayerCharacter::Server_Death_Implementation(bool bDead)
 {
-	//bUseControllerRotationYaw = bDead;
-	Mesh3P->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	bUseControllerRotationYaw = bDead;
 }
 
 void AC_PlayerCharacter::StartRagdoll()
@@ -1198,6 +1194,16 @@ void AC_PlayerCharacter::StartRagdoll()
 	Server_DestroyWeapons();
 
 	GetWorldTimerManager().ClearTimer(RagdollHandle);
+}
+
+void AC_PlayerCharacter::Multi_Collision_Implementation()
+{
+	Mesh3P->SetCollisionProfileName(FName("NoCollision"));
+}
+
+void AC_PlayerCharacter::Server_Collision_Implementation()
+{
+	Multi_Collision();
 }
 
 void AC_PlayerCharacter::Server_Ragdoll_Implementation(FTransform RagdollSpawnTransform, AC_PlayerCharacter* PlayerToHide)
@@ -1226,7 +1232,6 @@ void AC_PlayerCharacter::Respawn()
 	// spawns new player in gamemode
 	//RespawnPlayer.Broadcast();
 
-
 	// Add constraints to physics 
 	// make physics mesh heavier
 
@@ -1234,7 +1239,7 @@ void AC_PlayerCharacter::Respawn()
 
 	GetWorldTimerManager().ClearAllTimersForObject(this);
 
-	//Destroy();
+	Destroy();
 }
 
 # pragma endregion

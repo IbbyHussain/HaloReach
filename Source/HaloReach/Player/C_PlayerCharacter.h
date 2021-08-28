@@ -570,6 +570,17 @@ public:
 	void Server_Death(bool bDead);
 	void Server_Death_Implementation(bool bDead);
 
+	UFUNCTION(Server, Reliable)
+	void Multi_Collision();
+	void Multi_Collision_Implementation();
+
+	UFUNCTION(Server, Reliable)
+	void Server_Collision();
+	void Server_Collision_Implementation();
+
+	UPROPERTY(Replicated)
+	TEnumAsByte<ECollisionResponse>  MeshResponse;
+
 	// Ragdoll
 
 	UFUNCTION(Server, Reliable)
@@ -587,6 +598,7 @@ public:
 	void Server_DestroyWeapons();
 	void Server_DestroyWeapons_Implementation();
 
-
+	UFUNCTION(BlueprintImplementableEvent)
+		void BPDeath();
 # pragma endregion
 };
