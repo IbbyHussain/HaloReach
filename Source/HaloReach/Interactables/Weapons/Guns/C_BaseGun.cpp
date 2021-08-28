@@ -105,7 +105,7 @@ void AC_BaseGun::Fire()
 	AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(MyOwner);
 	if(PlayerCharacter)
 	{
-		if (MyOwner->HasAuthority())
+		if (MyOwner && MyOwner->HasAuthority())
 		{
 			Multi_Fire(MyOwner, PlayerCharacter->CameraComp->GetComponentRotation());
 		}
@@ -135,7 +135,7 @@ void AC_BaseGun::StopAutoFire()
 {
 	AActor* MyOwner = GetOwner();
 
-	if (MyOwner->HasAuthority())
+	if (MyOwner && MyOwner->HasAuthority())
 	{
 		Multi_StopFire(MyOwner);
 	}

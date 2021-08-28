@@ -96,8 +96,6 @@ AC_PlayerCharacter::AC_PlayerCharacter(const FObjectInitializer& ObjectInitializ
 	bCanReload = true;
 	bCanFire = true;
 
-	bIsFiring = false;
-
 	bCanMelee = true;
 
 	DefaultSpeed = 500.0f;
@@ -1048,8 +1046,8 @@ void AC_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	DOREPLIFETIME(AC_PlayerCharacter, CombatState);
 	DOREPLIFETIME(AC_PlayerCharacter, WeaponType);
 
-	DOREPLIFETIME(AC_PlayerCharacter, bIsFiring);
-	DOREPLIFETIME(AC_PlayerCharacter, bStopFiring);
+	//DOREPLIFETIME(AC_PlayerCharacter, bIsFiring);
+	//DOREPLIFETIME(AC_PlayerCharacter, bStopFiring);
 	DOREPLIFETIME(AC_PlayerCharacter, bCrouchKeyDown);
 
 	/*DOREPLIFETIME(AC_PlayerCharacter, DefaultMeshHeight);
@@ -1088,57 +1086,6 @@ void AC_PlayerCharacter::EndFire()
 	}
 }
 
-void AC_PlayerCharacter::OnRep_StopFire()
-{
-	//AC_BaseGun* Gun = Cast<AC_BaseGun>(EquippedWeaponArray[0]);
-	//Mesh3P->GetAnimInstance()->Montage_Stop(0.1f, Gun->GetWeapon3PFireMontage());
-}
-
-void AC_PlayerCharacter::Server_StopFire_Implementation(UAnimMontage* Montage)
-{
-	Mesh3P->GetAnimInstance()->Montage_Stop(0.1f, Montage);
-}
-
-void AC_PlayerCharacter::OnWeaponFire()
-{
-	bIsFiring = !bIsFiring;
-
-	AC_BaseGun* Gun = Cast<AC_BaseGun>(EquippedWeaponArray[0]);
-
-	if(Gun)
-	{
-		// Call Server RPC for clients 
-		if (!HasAuthority())
-		{
-			//Server_Fire(Gun->GetWeapon3PFireMontage());
-		}
-	}
-}
-
-void AC_PlayerCharacter::OnRep_Fire()
-{
-	//AC_BaseGun* Gun = Cast<AC_BaseGun>(EquippedWeaponArray[0]);
-	//Mesh3P->GetAnimInstance()->Montage_Play(Gun->GetWeapon3PFireMontage(), 1.0f);
-}
-
-void AC_PlayerCharacter::Server_Fire_Implementation(UAnimMontage* Montage)
-{
-	Mesh3P->GetAnimInstance()->Montage_Play(Montage, 1.0f);
-}
-
-void AC_PlayerCharacter::OnWeaponStopFire()
-{
-	bStopFiring = !bStopFiring;
-
-	AC_BaseGun* Gun = Cast<AC_BaseGun>(EquippedWeaponArray[0]);
-	if(Gun)
-	{
-		if (!HasAuthority())
-		{
-			//Server_StopFire(Gun->GetWeapon3PFireMontage());
-		}
-	}
-}
 
 void AC_PlayerCharacter::BeginZoom()
 {
@@ -1219,7 +1166,7 @@ void AC_PlayerCharacter::Death()
 	bUseControllerRotationYaw = false;
 
 	// Play random death montage
-	if(HasAuthority())
+	if(HasAuthority() && this)
 	{
 		Multi_PlayMontage(Mesh3P, DeathMontageArray[UKismetMathLibrary::RandomIntegerInRange(0, DeathMontageArray.Num() - 1)]);
 		Mesh3P->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
@@ -1282,7 +1229,6 @@ void AC_PlayerCharacter::Respawn()
 
 	// Add constraints to physics 
 	// make physics mesh heavier
-	// Play hud fade effect
 
 	HUD->PlayHUDFadeInAnimation();
 
