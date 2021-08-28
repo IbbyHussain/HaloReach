@@ -119,3 +119,19 @@ float AC_PlayerHUD::AddCrosshairSpreadHUD(float Amount, float DefaultSpread, flo
 
 	return 0.0f;
 }
+
+void AC_PlayerHUD::PlayHUDFadeInAnimation()
+{
+	if(HUDWidget)
+	{
+		HUDWidget->PlayFadeInAnimation();
+	}
+}
+
+void AC_PlayerHUD::PlayHUDFadeOutAnimation()
+{
+	if (HUDWidget)
+	{
+		HUDWidget->PlayFadeOutAnimation();
+	}
+}

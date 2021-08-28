@@ -62,4 +62,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float AddCrosshairSpreadHUD(float Amount, float DefaultSpread, float MaxSpread);
 
+# pragma region Widget Animation
+
+	void PlayHUDFadeInAnimation();
+
+	void PlayHUDFadeOutAnimation();
+
+
+# pragma endregion
+
 };

@@ -602,13 +602,17 @@ public:
 	void Server_Ragdoll(FTransform RagdollSpawnTransform, AC_PlayerCharacter* PlayerToHide);
 	void Server_Ragdoll_Implementation(FTransform RagdollSpawnTransform, AC_PlayerCharacter* PlayerToHide);
 
-
 	UPROPERTY(EditDefaultsOnly, Category = "Ragdoll")
 	TSubclassOf<AActor> RagdollPlayerClass;
 
-	
-	UFUNCTION(BlueprintImplementableEvent)
-	void BPDeath();
+	FTimerHandle RagdollHandle;
+
+	void StartRagdoll();
+
+	UFUNCTION(Server, Reliable)
+	void Server_DestroyWeapons();
+	void Server_DestroyWeapons_Implementation();
+
 
 # pragma endregion
 };

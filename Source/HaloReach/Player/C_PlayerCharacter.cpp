@@ -199,6 +199,7 @@ void AC_PlayerCharacter::BeginPlay()
 	}
 
 
+
 }
 
 void AC_PlayerCharacter::Tick(float DeltaTime)
@@ -1194,6 +1195,7 @@ void AC_PlayerCharacter::Death()
 {
 	bIsDead = true;
 
+	// Change to third person camera
 	CameraComp->SetActive(false);
 	DeathCameraComp->SetActive(true);
 
@@ -1205,7 +1207,7 @@ void AC_PlayerCharacter::Death()
 	UpdateMovementSettings(EMovementState::IDLE);
 
 	// temp 
-	HUD->HUDWidget->RemoveFromParent();
+	//HUD->HUDWidget->RemoveFromParent();
 
 	APlayerController* PlayerController = Cast<APlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	if(PlayerController)
@@ -1216,42 +1218,39 @@ void AC_PlayerCharacter::Death()
 
 	bUseControllerRotationYaw = false;
 
+	// Play random death montage
 	if(HasAuthority())
 	{
 		Multi_PlayMontage(Mesh3P, DeathMontageArray[UKismetMathLibrary::RandomIntegerInRange(0, DeathMontageArray.Num() - 1)]);
+		Mesh3P->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		
 	}
 
 	else
 	{
 		Server_PlayMontage(Mesh3P, DeathMontageArray[UKismetMathLibrary::RandomIntegerInRange(0, DeathMontageArray.Num() - 1)]);
 
-		// Control rotation not updating from client to server without this
+		// Control rotation not updating from client to server without this, OR collision
 		Server_Death(false);
 	}
 
-	GetWorldTimerManager().SetTimer(RespawnHandle, this, &AC_PlayerCharacter::Respawn, 3.0f, false);
+	GetWorldTimerManager().SetTimer(RagdollHandle, this, &AC_PlayerCharacter::StartRagdoll, 3.0f, false);
 
-	EquippedWeaponArray[0]->SetActorHiddenInGame(true);
-
-	// ragdoll and replication
-	// remove capsule collision
-
-	//GetWorldTimerManager().ClearAllTimersForObject(this);
-
-}
-
-void AC_PlayerCharacter::Respawn()
-{
-	// physics interaction will need to spawn a physics actor, as mesh must be the root component
-	Server_Ragdoll(GetActorTransform(), this);
-
-	// spawns new player in gamemode
-	//RespawnPlayer.Broadcast();
+	GetWorldTimerManager().SetTimer(RespawnHandle, this, &AC_PlayerCharacter::Respawn, 5.0f, false);
 }
 
 void AC_PlayerCharacter::Server_Death_Implementation(bool bDead)
 {
-	bUseControllerRotationYaw = bDead;
+	//bUseControllerRotationYaw = bDead;
+	Mesh3P->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+}
+
+void AC_PlayerCharacter::StartRagdoll()
+{
+	Server_Ragdoll(Mesh3P->GetComponentTransform(), this);
+	Server_DestroyWeapons();
+
+	GetWorldTimerManager().ClearTimer(RagdollHandle);
 }
 
 void AC_PlayerCharacter::Server_Ragdoll_Implementation(FTransform RagdollSpawnTransform, AC_PlayerCharacter* PlayerToHide)
@@ -1261,9 +1260,36 @@ void AC_PlayerCharacter::Server_Ragdoll_Implementation(FTransform RagdollSpawnTr
 	PlayerToHide->SetActorHiddenInGame(true);
 }
 
+void AC_PlayerCharacter::Server_DestroyWeapons_Implementation()
+{
+	// Weapons are spawned on server, so need to be destroyed there
+	for (auto i : EquippedWeaponArray)
+	{
+		i->Destroy();
+	}
+
+	for (auto x : EquippedWeapon3PArray)
+	{
+		x->Destroy();
+	}
+}
+
+void AC_PlayerCharacter::Respawn()
+{
+	// spawns new player in gamemode
+	//RespawnPlayer.Broadcast();
 
 
+	// Add constraints to physics 
+	// make physics mesh heavier
+	// Play hud fade effect
 
+	HUD->PlayHUDFadeInAnimation();
+
+	GetWorldTimerManager().ClearAllTimersForObject(this);
+
+	//Destroy();
+}
 
 # pragma endregion
 
