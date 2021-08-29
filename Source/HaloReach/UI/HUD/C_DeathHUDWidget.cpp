@@ -3,15 +3,35 @@
 
 #include "HaloReach/UI/HUD/C_DeathHUDWidget.h"
 #include "Components/Image.h"
-
+#include "Components/TextBlock.h"
+#include "Kismet/GameplayStatics.h"
+#include "HaloReach/GameModes/C_BaseReachGameMode.h"
 
 UC_DeathHUDWidget::UC_DeathHUDWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-
+	//MyGameMode* MyMode = Cast< MyGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
 }
 
 void UC_DeathHUDWidget::NativeConstruct()
 {
+	HUDTextColour = FSlateColor(FColor(255,0,0));
+
+	AC_BaseReachGameMode* Gamemode = Cast<AC_BaseReachGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+	if (Gamemode)
+	{
+		// Player killer text
+		PlayerKillerText->SetText(FText::FromString("PlayerName killed you"));
+		PlayerKillerText->SetColorAndOpacity(HUDTextColour);
+
+		// Respawn Data
+		RespawnTimerValue.AppendInt(Gamemode->GetMatchTime());
+		RespawnTimerText->SetText(FText::FromString("Respawn in " + RespawnTimerValue));
+		RespawnTimerText->SetColorAndOpacity(HUDTextColour);
+
+		RespawnLocationText->SetText(FText::FromString("Power House Alv"));
+		RespawnLocationText->SetColorAndOpacity(HUDTextColour);
+	}
+
 	// Black fade in
 	StoreWidgetAnimation();
 
@@ -19,6 +39,22 @@ void UC_DeathHUDWidget::NativeConstruct()
 	FadeOutAnimation = GetAnimationByName(TEXT("FadeOut"));
 
 	BlackImage->SetRenderOpacity(0.0f);
+}
+
+void UC_DeathHUDWidget::UpdateTextBlock(UTextBlock* TextBlock, FString NewText)
+{
+	TextBlock->SetText(FText::FromString(NewText));
+}
+
+void UC_DeathHUDWidget::UpdateRespawnData(float RespawnTime)
+{
+	AC_BaseReachGameMode* Gamemode = Cast<AC_BaseReachGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+	if(Gamemode)
+	{
+		RespawnTimerValue.Empty();
+		RespawnTimerValue.AppendInt(Gamemode->GetMatchTime());
+		UpdateTextBlock(RespawnTimerText, FString("Respawn in " + RespawnTimerValue));
+	}
 }
 
 # pragma region Black Fade In Animation

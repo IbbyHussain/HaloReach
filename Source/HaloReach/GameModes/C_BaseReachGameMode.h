@@ -21,9 +21,32 @@ protected:
 
 	//virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
 
+# pragma region Respawn Player
+
 	UFUNCTION(BlueprintCallable)
 	void RespawnPlayer();
 
+	UFUNCTION(BlueprintCallable)
+	void StartRespawnPlayer();
+
+	FTimerHandle RespawnHandle;
+
+	float RespawnTime;
+
 	void CheckAnyPlayersAlive();
+
+# pragma endregion
+	
+	float MatchTime;
+
+	float CurrentMatchTime;
+
+	FString GameModeName;
+
+public:
+
+	float GetMatchTime() const { return CurrentMatchTime; }
+
+	FString GetMatchName() const { return GameModeName; }
 	
 };

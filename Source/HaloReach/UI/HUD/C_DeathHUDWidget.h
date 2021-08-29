@@ -7,6 +7,7 @@
 #include "C_DeathHUDWidget.generated.h"
 
 class UImage;
+class UTextBlock;
 
 UCLASS()
 class HALOREACH_API UC_DeathHUDWidget : public UUserWidget
@@ -18,6 +19,38 @@ public:
 	UC_DeathHUDWidget(const FObjectInitializer& ObjectInitializer);
 
 	virtual void NativeConstruct() override;
+
+	// Default colour for all text
+	FSlateColor HUDTextColour;
+
+	void UpdateTextBlock(UTextBlock* TextBlock, FString NewText);
+
+# pragma region PlayerKiller
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UTextBlock* PlayerKillerText;
+
+# pragma endregion
+
+# pragma region Respawn Data
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UTextBlock* RespawnTimerText;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UTextBlock* RespawnLocationText;
+
+	FString RespawnTimerValue;
+
+	void UpdateRespawnData(float RespawnTime);
+
+# pragma endregion
+
+# pragma region WidgetTimer
+
+	
+
+# pragma endregion
 
 # pragma region Black Fade In Animation
 
@@ -39,7 +72,6 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget))
 	UImage* BlackImage;
-
 
 # pragma endregion
 	

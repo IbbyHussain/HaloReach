@@ -557,10 +557,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player | Death")
 	TArray<UAnimMontage*> DeathMontageArray;
 
-	FTimerHandle RespawnHandle;
-
-	void Respawn();
-
 	UPROPERTY(BlueprintAssignable, Category = "aaa")
 	FOnRespawnPlayer RespawnPlayer;
 

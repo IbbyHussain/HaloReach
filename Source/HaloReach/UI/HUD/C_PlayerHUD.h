@@ -62,7 +62,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float AddCrosshairSpreadHUD(float Amount, float DefaultSpread, float MaxSpread);
 
-	// Death Widget
+	
+# pragma region DeathWidget
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Widgets")
 	TSubclassOf<UC_DeathHUDWidget> DeathWidgetClass;
 
@@ -73,6 +75,11 @@ public:
 
 	void DestroyDeathWidget();
 
+	void HUDUpdateRespawnData(float RespawnTime);
+
+
+# pragma endregion
+	
 # pragma region Widget Animation
 
 	void PlayHUDFadeInAnimation();

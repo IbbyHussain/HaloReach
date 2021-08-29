@@ -3,3 +3,7 @@
 
 #include "HaloReachGameModeBase.h"
 
+AHaloReachGameModeBase::AHaloReachGameModeBase()
+{
+	//MatchTime = 10.0f;
+}
