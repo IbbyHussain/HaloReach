@@ -8,13 +8,16 @@
 
 UC_TimerWidget::UC_TimerWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-	Minutes = MaxMinutes;
-	Seconds = MaxSeconds;
+	
 }
 
 void UC_TimerWidget::NativeConstruct()
 {
 	HUDTextColour = FSlateColor(FColor(255, 0, 0));
+
+	Minutes = MaxMinutes;
+	Seconds = MaxSeconds;
+
 
 	StartTimer();
 }
