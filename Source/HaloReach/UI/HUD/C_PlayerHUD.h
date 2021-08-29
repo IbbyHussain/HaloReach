@@ -6,6 +6,8 @@
 #include "GameFramework/HUD.h"
 #include "C_PlayerHUD.generated.h"
 
+class UC_DeathHUDWidget;
+
 UCLASS()
 class HALOREACH_API AC_PlayerHUD : public AHUD
 {
@@ -55,19 +57,27 @@ public:
 
 	void DestroyZoomWidget();
 
-	// cross hair
-
 public:
 
 	UFUNCTION(BlueprintCallable)
 	float AddCrosshairSpreadHUD(float Amount, float DefaultSpread, float MaxSpread);
+
+	// Death Widget
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Widgets")
+	TSubclassOf<UC_DeathHUDWidget> DeathWidgetClass;
+
+	UPROPERTY()
+	UC_DeathHUDWidget* DeathWidget;
+
+	void CreateDeathWidget();
+
+	void DestroyDeathWidget();
 
 # pragma region Widget Animation
 
 	void PlayHUDFadeInAnimation();
 
 	void PlayHUDFadeOutAnimation();
-
 
 # pragma endregion
 

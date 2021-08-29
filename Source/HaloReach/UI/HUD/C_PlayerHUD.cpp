@@ -5,6 +5,7 @@
 #include "HaloReach/UI/HUD/C_PlayerHUDWidget.h"
 #include "Engine/World.h"
 #include "HaloReach/Player/C_PlayerCharacter.h"
+#include "HaloReach/UI/HUD/C_DeathHUDWidget.h"
 #include "HaloReach/UI/HUD/C_CrosshairWidget.h"
 
 AC_PlayerHUD::AC_PlayerHUD()
@@ -108,6 +109,26 @@ void AC_PlayerHUD::DestroyZoomWidget()
 	DestroyWidget(ZoomWidget);
 }
 
+void AC_PlayerHUD::CreateDeathWidget()
+{
+	if (DeathWidgetClass)
+	{
+		DeathWidget = CreateWidget<UC_DeathHUDWidget>(GetWorld(), DeathWidgetClass);
+		if (DeathWidget)
+		{
+			DeathWidget->AddToViewport();
+		}
+	}
+}
+
+void AC_PlayerHUD::DestroyDeathWidget()
+{
+	if(DeathWidget)
+	{
+		DeathWidget->RemoveFromParent();
+	}
+}
+
 // crosshair
 
 float AC_PlayerHUD::AddCrosshairSpreadHUD(float Amount, float DefaultSpread, float MaxSpread)
@@ -122,16 +143,16 @@ float AC_PlayerHUD::AddCrosshairSpreadHUD(float Amount, float DefaultSpread, flo
 
 void AC_PlayerHUD::PlayHUDFadeInAnimation()
 {
-	if(HUDWidget)
+	if(DeathWidget)
 	{
-		HUDWidget->PlayFadeInAnimation();
+		DeathWidget->PlayFadeInAnimation();
 	}
 }
 
 void AC_PlayerHUD::PlayHUDFadeOutAnimation()
 {
-	if (HUDWidget)
+	if (DeathWidget)
 	{
-		HUDWidget->PlayFadeOutAnimation();
+		DeathWidget->PlayFadeOutAnimation();
 	}
 }

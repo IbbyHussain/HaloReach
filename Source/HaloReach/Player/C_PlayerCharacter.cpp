@@ -108,7 +108,6 @@ AC_PlayerCharacter::AC_PlayerCharacter(const FObjectInitializer& ObjectInitializ
 
 	MeleeTrackInterpFunction.BindUFunction(this, FName("MeleeTrackTimelineFloatReturn"));
 	MeleeTrackTimelineFinished.BindUFunction(this, FName("OnMeleeTrackTimelineFinished"));
-
 }
 
 void AC_PlayerCharacter::BeginPlay()
@@ -1030,29 +1029,6 @@ void AC_PlayerCharacter::StopMeleeTrackTimeline()
 
 # pragma endregion
 
-// REPLICATION TESTING
-
-void AC_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(AC_PlayerCharacter, PrimaryWeapon);
-	DOREPLIFETIME(AC_PlayerCharacter, SecondaryWeapon);
-	DOREPLIFETIME(AC_PlayerCharacter, Primary3PWeapon);
-	DOREPLIFETIME(AC_PlayerCharacter, Secondary3PWeapon);
-
-	DOREPLIFETIME(AC_PlayerCharacter, EquippedWeaponArray);
-	DOREPLIFETIME(AC_PlayerCharacter, EquippedWeapon3PArray);
-	DOREPLIFETIME(AC_PlayerCharacter, CombatState);
-	DOREPLIFETIME(AC_PlayerCharacter, WeaponType);
-
-	DOREPLIFETIME(AC_PlayerCharacter, bCrouchKeyDown);
-
-	DOREPLIFETIME_CONDITION(AC_PlayerCharacter, ControlRotation, COND_SkipOwner);
-}
-
-///////////////////////////////////////
-
 // organise 
 FVector AC_PlayerCharacter::GetPawnViewLocation() const
 {
@@ -1146,7 +1122,8 @@ void AC_PlayerCharacter::Death()
 	UpdateMovementSettings(EMovementState::IDLE);
 
 	// temp 
-	//HUD->HUDWidget->RemoveFromParent();
+	HUD->HUDWidget->RemoveFromParent();
+	HUD->CreateDeathWidget();
 
 	APlayerController* PlayerController = Cast<APlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	if(PlayerController)
@@ -1158,10 +1135,9 @@ void AC_PlayerCharacter::Death()
 	bUseControllerRotationYaw = false;
 
 	// Play random death montage
-	if(HasAuthority() && this)
+	if(HasAuthority())
 	{
 		Multi_PlayMontage(Mesh3P, DeathMontageArray[UKismetMathLibrary::RandomIntegerInRange(0, DeathMontageArray.Num() - 1)]);
-		//Multi_Collision();
 	}
 
 	else
@@ -1170,17 +1146,11 @@ void AC_PlayerCharacter::Death()
 
 		// Control rotation not updating from client to server without this, OR collision
 		Server_Death(false);
-		//Server_Collision();
 	}
 
 	GetWorldTimerManager().SetTimer(RagdollHandle, this, &AC_PlayerCharacter::StartRagdoll, 3.0f, false);
 
 	GetWorldTimerManager().SetTimer(RespawnHandle, this, &AC_PlayerCharacter::Respawn, 5.0f, false);
-
-	if(!HasAuthority())
-	{
-		Server_Collision();
-	}
 }
 
 void AC_PlayerCharacter::Server_Death_Implementation(bool bDead)
@@ -1194,16 +1164,6 @@ void AC_PlayerCharacter::StartRagdoll()
 	Server_DestroyWeapons();
 
 	GetWorldTimerManager().ClearTimer(RagdollHandle);
-}
-
-void AC_PlayerCharacter::Multi_Collision_Implementation()
-{
-	Mesh3P->SetCollisionProfileName(FName("NoCollision"));
-}
-
-void AC_PlayerCharacter::Server_Collision_Implementation()
-{
-	Multi_Collision();
 }
 
 void AC_PlayerCharacter::Server_Ragdoll_Implementation(FTransform RagdollSpawnTransform, AC_PlayerCharacter* PlayerToHide)
@@ -1244,6 +1204,24 @@ void AC_PlayerCharacter::Respawn()
 
 # pragma endregion
 
+void AC_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AC_PlayerCharacter, PrimaryWeapon);
+	DOREPLIFETIME(AC_PlayerCharacter, SecondaryWeapon);
+	DOREPLIFETIME(AC_PlayerCharacter, Primary3PWeapon);
+	DOREPLIFETIME(AC_PlayerCharacter, Secondary3PWeapon);
+
+	DOREPLIFETIME(AC_PlayerCharacter, EquippedWeaponArray);
+	DOREPLIFETIME(AC_PlayerCharacter, EquippedWeapon3PArray);
+	DOREPLIFETIME(AC_PlayerCharacter, CombatState);
+	DOREPLIFETIME(AC_PlayerCharacter, WeaponType);
+
+	DOREPLIFETIME(AC_PlayerCharacter, bCrouchKeyDown);
+
+	DOREPLIFETIME_CONDITION(AC_PlayerCharacter, ControlRotation, COND_SkipOwner);
+}
 
 // INPUT
 
