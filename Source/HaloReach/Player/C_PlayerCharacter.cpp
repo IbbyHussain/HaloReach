@@ -1195,6 +1195,8 @@ void AC_PlayerCharacter::Respawn()
 	// Add constraints to physics 
 	// make physics mesh heavier
 
+	// Death HUD
+
 	HUD->PlayHUDFadeInAnimation();
 
 	GetWorldTimerManager().ClearAllTimersForObject(this);
