@@ -13,11 +13,13 @@ UC_TimerWidget::UC_TimerWidget(const FObjectInitializer& ObjectInitializer) : Su
 
 void UC_TimerWidget::NativeConstruct()
 {
-	HUDTextColour = FSlateColor(FColor(255, 0, 0));
+	HUDTextColour = FSlateColor(FColor(161, 209, 221));
 
 	Minutes = MaxMinutes;
 	Seconds = MaxSeconds;
 
+	SecondsTimerText->SetColorAndOpacity(HUDTextColour);
+	MinutesTimerText->SetColorAndOpacity(HUDTextColour);
 
 	StartTimer();
 }

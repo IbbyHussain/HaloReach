@@ -75,9 +75,6 @@ public:
 
 	void DestroyDeathWidget();
 
-	void HUDUpdateRespawnData(float RespawnTime);
-
-
 # pragma endregion
 	
 # pragma region Widget Animation

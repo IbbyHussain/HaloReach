@@ -20,22 +20,6 @@ protected:
 	virtual void BeginPlay() override;
 
 	//virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
-
-# pragma region Respawn Player
-
-	UFUNCTION(BlueprintCallable)
-	void RespawnPlayer();
-
-	UFUNCTION(BlueprintCallable)
-	void StartRespawnPlayer();
-
-	FTimerHandle RespawnHandle;
-
-	float RespawnTime;
-
-	void CheckAnyPlayersAlive();
-
-# pragma endregion
 	
 	float MatchTime;
 
@@ -48,5 +32,29 @@ public:
 	float GetMatchTime() const { return CurrentMatchTime; }
 
 	FString GetMatchName() const { return GameModeName; }
+
+	// Iterates over all players
+	TTuple<APlayerController* , AC_PlayerCharacter* > IterateOverPlayers();
+
+# pragma region Player Names
+
+	UPROPERTY(EditDefaultsOnly, Category = "Base Gamemode | Player Names")
+	TArray<FString> PlayerNamesArray;
+
+	// Will assign a unique name for each player
+	void SetPlayerNames();
+
+# pragma endregion
+
+# pragma region Respawn Player
+
+	UFUNCTION(Server, Reliable)
+	void Server_RespawnPlayer(AC_PlayerCharacter* PlayerToRespawn);
+	void Server_RespawnPlayer_Implementation(AC_PlayerCharacter* PlayerToRespawn);
+
+
+	void CheckAnyPlayersAlive();
+
+# pragma endregion
 	
 };

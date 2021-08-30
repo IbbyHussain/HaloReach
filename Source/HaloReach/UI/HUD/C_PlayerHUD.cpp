@@ -129,14 +129,6 @@ void AC_PlayerHUD::DestroyDeathWidget()
 	}
 }
 
-void AC_PlayerHUD::HUDUpdateRespawnData(float RespawnTime)
-{
-	if(DeathWidget)
-	{
-		DeathWidget->UpdateRespawnData(RespawnTime);
-	}
-}
-
 // crosshair
 
 float AC_PlayerHUD::AddCrosshairSpreadHUD(float Amount, float DefaultSpread, float MaxSpread)

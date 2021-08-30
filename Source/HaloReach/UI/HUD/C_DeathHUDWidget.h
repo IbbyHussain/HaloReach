@@ -40,10 +40,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* RespawnLocationText;
 
-	FString RespawnTimerValue;
-
-	void UpdateRespawnData(float RespawnTime);
-
 # pragma endregion
 
 # pragma region WidgetTimer

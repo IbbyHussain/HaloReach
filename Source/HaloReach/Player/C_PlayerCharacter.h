@@ -14,7 +14,7 @@
 #include "C_PlayerCharacter.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeaponReload);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRespawnPlayer);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRespawnPlayer, AC_PlayerCharacter*, DeadPlayer);
 
 class AC_BaseWeapon;
 class AC_Weapon3P;
@@ -97,6 +97,8 @@ class HALOREACH_API AC_PlayerCharacter : public ACharacter
 private:
 
 	AC_PlayerCharacter(const FObjectInitializer& ObjectInitializer);
+
+	FString PlayerName;
 
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	FORCEINLINE class UC_PlayerCMC* GetPlayerMovementComponent() const { return PlayerCMC; }
@@ -586,6 +588,15 @@ public:
 	// Changing collision settings in C++, is not working. Seems to only work in BP
 	UFUNCTION(BlueprintImplementableEvent)
 	void BPDeath();
+
+	void Respawn();
+
+	FTimerHandle RespawnHandle;
+
+	UFUNCTION(Server, Reliable)
+	void Server_Broadcast(AC_PlayerCharacter* Player);
+	void Server_Broadcast_Implementation(AC_PlayerCharacter* Player);
+
 
 # pragma endregion
 };

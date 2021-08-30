@@ -14,23 +14,21 @@ UC_DeathHUDWidget::UC_DeathHUDWidget(const FObjectInitializer& ObjectInitializer
 
 void UC_DeathHUDWidget::NativeConstruct()
 {
-	HUDTextColour = FSlateColor(FColor(255,0,0));
+	HUDTextColour = FSlateColor(FColor(161, 209, 221));
 
-	AC_BaseReachGameMode* Gamemode = Cast<AC_BaseReachGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
-	if (Gamemode)
-	{
-		// Player killer text
-		PlayerKillerText->SetText(FText::FromString("PlayerName killed you"));
-		PlayerKillerText->SetColorAndOpacity(HUDTextColour);
+	
+	// Player killer text
+	PlayerKillerText->SetText(FText::FromString("PlayerName killed you"));
+	PlayerKillerText->SetColorAndOpacity(HUDTextColour);
 
-		// Respawn Data
-		RespawnTimerValue.AppendInt(Gamemode->GetMatchTime());
-		RespawnTimerText->SetText(FText::FromString("Respawn in " + RespawnTimerValue));
-		RespawnTimerText->SetColorAndOpacity(HUDTextColour);
+	// Respawn Data
+		
+	RespawnTimerText->SetText(FText::FromString("Respawn in "));
+	RespawnTimerText->SetColorAndOpacity(HUDTextColour);
 
-		RespawnLocationText->SetText(FText::FromString("Power House Alv"));
-		RespawnLocationText->SetColorAndOpacity(HUDTextColour);
-	}
+	RespawnLocationText->SetText(FText::FromString("Power House Alv"));
+	RespawnLocationText->SetColorAndOpacity(HUDTextColour);
+	
 
 	// Black fade in
 	StoreWidgetAnimation();
@@ -44,17 +42,6 @@ void UC_DeathHUDWidget::NativeConstruct()
 void UC_DeathHUDWidget::UpdateTextBlock(UTextBlock* TextBlock, FString NewText)
 {
 	TextBlock->SetText(FText::FromString(NewText));
-}
-
-void UC_DeathHUDWidget::UpdateRespawnData(float RespawnTime)
-{
-	AC_BaseReachGameMode* Gamemode = Cast<AC_BaseReachGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
-	if(Gamemode)
-	{
-		RespawnTimerValue.Empty();
-		RespawnTimerValue.AppendInt(Gamemode->GetMatchTime());
-		UpdateTextBlock(RespawnTimerText, FString("Respawn in " + RespawnTimerValue));
-	}
 }
 
 # pragma region Black Fade In Animation

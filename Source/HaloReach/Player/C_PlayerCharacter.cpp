@@ -195,7 +195,16 @@ void AC_PlayerCharacter::BeginPlay()
 		MeleeTrackTimeline->SetLooping(false);
 	}
 
+	if (HasAuthority())
+	{
+		// respawn player at a player start 
+		RespawnPlayer.Broadcast(this);
+	}
 
+	else
+	{
+		Server_Broadcast(this);
+	}
 
 }
 
@@ -1150,10 +1159,7 @@ void AC_PlayerCharacter::Death()
 
 	GetWorldTimerManager().SetTimer(RagdollHandle, this, &AC_PlayerCharacter::StartRagdoll, 3.0f, false);
 
-	//GetWorldTimerManager().SetTimer(RespawnHandle, this, &AC_PlayerCharacter::Respawn, 5.0f, false);
-
-	// Gamemode starts respawn timer
-	RespawnPlayer.Broadcast();
+	GetWorldTimerManager().SetTimer(RespawnHandle, this, &AC_PlayerCharacter::Respawn, 5.0f, false);
 }
 
 void AC_PlayerCharacter::Server_Death_Implementation(bool bDead)
@@ -1188,6 +1194,24 @@ void AC_PlayerCharacter::Server_DestroyWeapons_Implementation()
 	{
 		x->Destroy();
 	}
+}
+
+void AC_PlayerCharacter::Respawn()
+{
+	HUD->PlayHUDFadeInAnimation();
+
+	// broadcast to player controller to tell gamemode to respawn player
+	RespawnPlayer.Broadcast(this);
+	
+
+	GetWorldTimerManager().ClearAllTimersForObject(this);
+
+	//Destroy();
+}
+
+void AC_PlayerCharacter::Server_Broadcast_Implementation(AC_PlayerCharacter* Player)
+{
+	RespawnPlayer.Broadcast(Player);
 }
 
 # pragma endregion

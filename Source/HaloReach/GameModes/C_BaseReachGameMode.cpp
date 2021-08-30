@@ -20,25 +20,31 @@ AC_BaseReachGameMode::AC_BaseReachGameMode()
 
 void AC_BaseReachGameMode::BeginPlay()
 {
-	// Bind delegate
-	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
-	{
-		APlayerController* PC = It->Get();
-		if (PC && PC->GetPawn())
-		{
-			AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(PC->GetPawn());
-			if(PlayerCharacter)
-			{
-				PlayerCharacter->RespawnPlayer.AddDynamic(this, &AC_BaseReachGameMode::StartRespawnPlayer);
-			}
-		}
-	}
+
 }
 
 //AActor* AC_BaseReachGameMode::ChoosePlayerStart_Implementation(AController* Player)
 //{
 //	return nullptr;
 //}
+
+TTuple<APlayerController*, AC_PlayerCharacter*> AC_BaseReachGameMode::IterateOverPlayers()
+{
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		APlayerController* PC = It->Get();
+		if (PC && PC->GetPawn())
+		{
+			AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(PC->GetPawn());
+			if (PlayerCharacter)
+			{
+				return MakeTuple(PC, PlayerCharacter);
+			}
+		}
+	}
+
+	return MakeTuple(nullptr, nullptr);
+}
 
 void AC_BaseReachGameMode::CheckAnyPlayersAlive()
 {
@@ -61,40 +67,31 @@ void AC_BaseReachGameMode::CheckAnyPlayersAlive()
 	// No players are alive
 }
 
-void AC_BaseReachGameMode::StartRespawnPlayer()
-{
-	GetWorldTimerManager().SetTimer(RespawnHandle, this, &AC_BaseReachGameMode::RespawnPlayer, 5.0f, false);
-}
-
-void AC_BaseReachGameMode::RespawnPlayer()
+void AC_BaseReachGameMode::Server_RespawnPlayer_Implementation(AC_PlayerCharacter* PlayerToRespawn)
 {
 	// Basic , temp respawn only works for server
 
-	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	/*UE_LOG(LogTemp, Error, TEXT("GAME MODE RESPAWN"));
+
+	TTuple<APlayerController*, AC_PlayerCharacter*> PlayerData = IterateOverPlayers();
+	if(PlayerData.Get<1>()->bIsDead)
 	{
-		APlayerController* PC = It->Get();
-		if (PC && PC->GetPawn())
-		{
-			AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(PC->GetPawn());
-			if (PlayerCharacter && PlayerCharacter->bIsDead)
-			{
-				AC_PlayerHUD* HUD = Cast<AC_PlayerHUD>(PC->GetHUD());
-				HUD->PlayHUDFadeInAnimation();
+		UE_LOG(LogTemp, Error, TEXT("DEAD Player name: %s"), *PlayerData.Get<1>()->GetName());
+		//PC->UnPossess();
+	//			UE_LOG(LogTemp, Error, TEXT("Player name: %s") *PlayerCharacter->GetName());
+	//			// Spawn new player and possess
+	//			//FActorSpawnParameters SpawnParams;
+	//			//AC_PlayerCharacter* NewPlayerCharacter = GetWorld()->SpawnActor<AC_PlayerCharacter>(DefaultPawnClass, FVector(0.0f, 0.0f, 200.0f), FRotator::ZeroRotator, SpawnParams);
+	//			//PC->Possess(NewPlayerCharacter);
+	}*/
 
-				PlayerCharacter->Destroy();
-				//PC->UnPossess();
-
-				// Spawn new player and possess
-				//FActorSpawnParameters SpawnParams;
-				//AC_PlayerCharacter* NewPlayerCharacter = GetWorld()->SpawnActor<AC_PlayerCharacter>(DefaultPawnClass, FVector(0.0f, 0.0f, 200.0f), FRotator::ZeroRotator, SpawnParams);
-				//PC->Possess(NewPlayerCharacter);
-			}
-		}
-	}
-
-
+	UE_LOG(LogTemp, Error, TEXT("DEAD Player name: %s"), *PlayerToRespawn->GetName());
 }
 
-// Timer should be in gamemode class
-// timer then respawns player
-// update death widget timer value using gamemode timer
+
+
+void AC_BaseReachGameMode::SetPlayerNames()
+{
+	TTuple<APlayerController*, AC_PlayerCharacter*> PlayerData = IterateOverPlayers();
+
+}
