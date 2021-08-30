@@ -7,6 +7,7 @@
 #include "C_PlayerHUD.generated.h"
 
 class UC_DeathHUDWidget;
+class UC_PlayerNameWidget;
 
 UCLASS()
 class HALOREACH_API AC_PlayerHUD : public AHUD
@@ -62,6 +63,21 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float AddCrosshairSpreadHUD(float Amount, float DefaultSpread, float MaxSpread);
 
+# pragma region PlayerName Widget
+
+	void SetPlayerNameTextHUD(FString PlayerName);
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Widgets")
+	TSubclassOf<UC_PlayerNameWidget> NameWidgetClass;
+
+	UPROPERTY()
+	UC_PlayerNameWidget* NameWidget;
+
+	void CreatePlayerNameWidget();
+
+	void DestroyPlayerNameWidget();
+
+# pragma endregion
 	
 # pragma region DeathWidget
 

@@ -25,6 +25,4 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_RequestGMRespawn(AC_PlayerCharacter* PlayerToRespawn);
 	void Server_RequestGMRespawn_Implementation(AC_PlayerCharacter* PlayerToRespawn);
-
-	
 };

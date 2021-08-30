@@ -10,7 +10,9 @@
 #include "HaloReach/Components/C_HealthComponent.h"
 
 #include "GameFramework/Actor.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "HaloReach/UI/HUD/C_PlayerHUD.h"
+#include "HaloReach/Player/PlayerExtra/C_ReachPlayerState.h"
 
 
 AC_BaseReachGameMode::AC_BaseReachGameMode()
@@ -20,6 +22,7 @@ AC_BaseReachGameMode::AC_BaseReachGameMode()
 
 void AC_BaseReachGameMode::BeginPlay()
 {
+	Super::BeginPlay();
 
 }
 
@@ -86,12 +89,4 @@ void AC_BaseReachGameMode::Server_RespawnPlayer_Implementation(AC_PlayerCharacte
 	}*/
 
 	UE_LOG(LogTemp, Error, TEXT("DEAD Player name: %s"), *PlayerToRespawn->GetName());
-}
-
-
-
-void AC_BaseReachGameMode::SetPlayerNames()
-{
-	TTuple<APlayerController*, AC_PlayerCharacter*> PlayerData = IterateOverPlayers();
-
 }

@@ -6,12 +6,22 @@
 #include "Blueprint/UserWidget.h"
 #include "C_PlayerNameWidget.generated.h"
 
-/**
- * 
- */
+class UTextBlock;
+
 UCLASS()
 class HALOREACH_API UC_PlayerNameWidget : public UUserWidget
 {
 	GENERATED_BODY()
+
+public:
+
+	UC_PlayerNameWidget(const FObjectInitializer& ObjectInitializer);
+
+	virtual void NativeConstruct() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UTextBlock* PlayerNameText;
+
+	void SetPlayerNameText(FString PlayerName);
 	
 };

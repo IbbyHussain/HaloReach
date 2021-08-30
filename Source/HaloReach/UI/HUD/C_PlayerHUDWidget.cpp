@@ -30,6 +30,7 @@ void UC_PlayerHUDWidget::NativeConstruct()
 	FLinearColor Colour = FColor(168, 235, 243, 100);
 	LeftShieldBar->SetFillColorAndOpacity(Colour);
 	RightShieldBar->SetFillColorAndOpacity(Colour);
+
 }
 
 void UC_PlayerHUDWidget::UpdateHealthImage(float Health)

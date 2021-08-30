@@ -7,6 +7,8 @@
 #include "HaloReach/Player/C_PlayerCharacter.h"
 #include "HaloReach/UI/HUD/C_DeathHUDWidget.h"
 #include "HaloReach/UI/HUD/C_CrosshairWidget.h"
+#include "HaloReach/UI/C_PlayerNameWidget.h"
+#include "GameFramework/PlayerState.h"
 
 AC_PlayerHUD::AC_PlayerHUD()
 {
@@ -54,6 +56,10 @@ void AC_PlayerHUD::BeginPlay()
 		}
 	}
 
+	CreatePlayerNameWidget();
+
+
+	//SetPlayerNameTextHUD(GetOwningPlayerController()->PlayerState->GetPlayerName());
 
 }
 
@@ -140,6 +146,38 @@ float AC_PlayerHUD::AddCrosshairSpreadHUD(float Amount, float DefaultSpread, flo
 
 	return 0.0f;
 }
+
+# pragma region PlayerName Widget
+
+void AC_PlayerHUD::SetPlayerNameTextHUD(FString PlayerName)
+{
+	if(NameWidget)
+	{
+		NameWidget->SetPlayerNameText(PlayerName);
+	}
+}
+
+void AC_PlayerHUD::CreatePlayerNameWidget()
+{
+	if (NameWidgetClass)
+	{
+		NameWidget = CreateWidget<UC_PlayerNameWidget>(GetWorld(), NameWidgetClass);
+		if (NameWidget)
+		{
+			NameWidget->AddToViewport();
+		}
+	}
+}
+
+void AC_PlayerHUD::DestroyPlayerNameWidget()
+{
+	if (NameWidget)
+	{
+		NameWidget->RemoveFromParent();
+	}
+}
+
+# pragma endregion
 
 void AC_PlayerHUD::PlayHUDFadeInAnimation()
 {

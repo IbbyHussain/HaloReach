@@ -5,6 +5,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "HaloReach/Gamemodes/C_BaseReachGameMode.h"
 #include "Haloreach/Player/C_PlayerCharacter.h"
+#include "HaloReach/UI/HUD/C_PlayerHUD.h"
+#include "GameFramework/PlayerState.h"
+
 
 AC_ReachPlayerController::AC_ReachPlayerController()
 {
@@ -13,6 +16,8 @@ AC_ReachPlayerController::AC_ReachPlayerController()
 
 void AC_ReachPlayerController::BeginPlay()
 {
+	Super::BeginPlay();
+
 	AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(GetPawn());
 	if(PlayerCharacter)
 	{

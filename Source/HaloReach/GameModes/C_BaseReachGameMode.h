@@ -36,22 +36,11 @@ public:
 	// Iterates over all players
 	TTuple<APlayerController* , AC_PlayerCharacter* > IterateOverPlayers();
 
-# pragma region Player Names
-
-	UPROPERTY(EditDefaultsOnly, Category = "Base Gamemode | Player Names")
-	TArray<FString> PlayerNamesArray;
-
-	// Will assign a unique name for each player
-	void SetPlayerNames();
-
-# pragma endregion
-
 # pragma region Respawn Player
 
 	UFUNCTION(Server, Reliable)
 	void Server_RespawnPlayer(AC_PlayerCharacter* PlayerToRespawn);
 	void Server_RespawnPlayer_Implementation(AC_PlayerCharacter* PlayerToRespawn);
-
 
 	void CheckAnyPlayersAlive();
 

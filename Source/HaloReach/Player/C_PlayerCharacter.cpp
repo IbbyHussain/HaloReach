@@ -26,6 +26,8 @@
 
 #include "GameFramework/CharacterMovementComponent.h"
 
+#include "HaloReach/Player/PlayerExtra/C_ReachPlayerState.h"
+
 
 AC_PlayerCharacter::AC_PlayerCharacter(const FObjectInitializer& ObjectInitializer) : 
 	Super(ObjectInitializer.SetDefaultSubobjectClass<UC_PlayerCMC>(ACharacter::CharacterMovementComponentName))
@@ -205,7 +207,6 @@ void AC_PlayerCharacter::BeginPlay()
 	{
 		Server_Broadcast(this);
 	}
-
 }
 
 void AC_PlayerCharacter::Tick(float DeltaTime)
