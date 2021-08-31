@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "C_ReachPlayerController.generated.h"
 
+
 class AC_PlayerCharacter;
 
 UCLASS()
@@ -25,4 +26,8 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_RequestGMRespawn(AC_PlayerCharacter* PlayerToRespawn);
 	void Server_RequestGMRespawn_Implementation(AC_PlayerCharacter* PlayerToRespawn);
+
+	UPROPERTY(BlueprintReadWrite)
+	FString AssignedName;
+
 };

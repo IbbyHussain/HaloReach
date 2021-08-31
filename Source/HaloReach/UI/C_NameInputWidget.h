@@ -27,4 +27,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UEditableTextBox* PlayerNameInputTextBox;
 
+	FString TestName();
+
 };

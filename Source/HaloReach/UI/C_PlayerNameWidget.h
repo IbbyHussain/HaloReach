@@ -19,6 +19,9 @@ public:
 
 	virtual void NativeConstruct() override;
 
+	UPROPERTY(BlueprintReadWrite, Category = "Name")
+	FString DisplayedPlayerName;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* PlayerNameText;
 

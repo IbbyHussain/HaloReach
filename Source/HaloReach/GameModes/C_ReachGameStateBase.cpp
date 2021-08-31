@@ -10,10 +10,3 @@
 AC_ReachGameStateBase::AC_ReachGameStateBase()
 {
 }
-
-FString AC_ReachGameStateBase::GetPlayersName()
-{
-	int RandomIndex = UKismetMathLibrary::RandomInteger(PlayerNamesArray.Num());
-	FString NewPlayerName = PlayerNamesArray[RandomIndex];
-	return NewPlayerName;
-}

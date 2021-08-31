@@ -3,6 +3,7 @@
 
 #include "HaloReach/UI/HUD/C_PlayerHUD.h"
 #include "HaloReach/UI/HUD/C_PlayerHUDWidget.h"
+#include "HaloReach/Player/PlayerExtra/C_ReachPlayerController.h"
 #include "Engine/World.h"
 #include "HaloReach/Player/C_PlayerCharacter.h"
 #include "HaloReach/UI/HUD/C_DeathHUDWidget.h"
@@ -51,6 +52,7 @@ void AC_PlayerHUD::BeginPlay()
 
 	CreateNameInputWidget();
 
+	//CreateHUDWidget();
 
 	//SetPlayerNameTextHUD(GetOwningPlayerController()->PlayerState->GetPlayerName());
 
@@ -159,8 +161,12 @@ void AC_PlayerHUD::DestroyNameInputWidget()
 		NameInputWidget->RemoveFromParent();
 		CreateHUDWidget();
 		CreatePlayerNameWidget();
-		APlayerController* PC = (UGameplayStatics::GetPlayerController(GetWorld(), 0));
-		SetPlayerNameTextHUD(PC->PlayerState->GetPlayerName());
+
+		//APlayerController* PC = (UGameplayStatics::GetPlayerController(GetWorld(), 0));
+		//AC_ReachPlayerController* RPC = Cast<AC_ReachPlayerController>(PC);
+
+		//RPC->AssignedName = ("HUD ASSIGNED");
+		//SetPlayerNameTextHUD(RPC->AssignedName);
 	}
 }
 
@@ -222,4 +228,14 @@ void AC_PlayerHUD::PlayHUDFadeOutAnimation()
 	{
 		DeathWidget->PlayFadeOutAnimation();
 	}
+}
+
+FString AC_PlayerHUD::HUDTestname()
+{
+	if(NameInputWidget)
+	{
+		return NameInputWidget->TestName();
+	}
+
+	return("FAIL");
 }

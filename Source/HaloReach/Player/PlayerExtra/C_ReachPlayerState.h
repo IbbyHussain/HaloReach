@@ -6,9 +6,6 @@
 #include "GameFramework/PlayerState.h"
 #include "C_ReachPlayerState.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class HALOREACH_API AC_ReachPlayerState : public APlayerState
 {
@@ -19,4 +16,7 @@ public:
 	AC_ReachPlayerState();
 
 	virtual void BeginPlay() override;
+
+	virtual void Tick(float Delta) override;
+
 };

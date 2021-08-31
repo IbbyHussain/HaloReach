@@ -600,6 +600,23 @@ public:
 	void Server_Broadcast(AC_PlayerCharacter* Player);
 	void Server_Broadcast_Implementation(AC_PlayerCharacter* Player);
 
+# pragma region Player Name
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player | PlayerComponents")
+	class UWidgetComponent* PlayerNameWidgetComp;
+
+	UFUNCTION(Server, Reliable)
+	void Server_SetPlayerName(const FString& NewPlayerName);
+	void Server_SetPlayerName_Implementation(const FString& NewPlayerName);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_SetPlayerName(const FString& NewPlayerName);
+	void Multi_SetPlayerName_Implementation(const FString& NewPlayerName);
+
+
+# pragma endregion
+
+	
 
 # pragma endregion
 };

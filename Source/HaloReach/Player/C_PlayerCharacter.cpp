@@ -27,6 +27,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 
 #include "HaloReach/Player/PlayerExtra/C_ReachPlayerState.h"
+#include "Components/WidgetComponent.h"
+#include "HaloReach/UI/C_PlayerNameWidget.h"
 
 
 AC_PlayerCharacter::AC_PlayerCharacter(const FObjectInitializer& ObjectInitializer) : 
@@ -75,6 +77,9 @@ AC_PlayerCharacter::AC_PlayerCharacter(const FObjectInitializer& ObjectInitializ
 
 	DeathCameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("Death Camera"));
 	DeathCameraComp->SetupAttachment(DeathSpringArmComp, USpringArmComponent::SocketName);
+
+	PlayerNameWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("Player Name Widget Comp"));
+	PlayerNameWidgetComp->SetupAttachment(RootComponent);
 
 	bCanCrouch = true;
 	bCrouchKeyDown = false;
@@ -207,6 +212,8 @@ void AC_PlayerCharacter::BeginPlay()
 	{
 		Server_Broadcast(this);
 	}
+
+
 }
 
 void AC_PlayerCharacter::Tick(float DeltaTime)
@@ -1119,6 +1126,24 @@ void AC_PlayerCharacter::SetControlRotation()
 		ControlRotation = GetController()->GetControlRotation();
 	}
 }
+
+# pragma region Player Name
+
+void AC_PlayerCharacter::Server_SetPlayerName_Implementation(const FString& NewPlayerName)
+{
+	Multi_SetPlayerName(NewPlayerName);
+}
+
+void AC_PlayerCharacter::Multi_SetPlayerName_Implementation(const FString& NewPlayerName)
+{
+	UC_PlayerNameWidget* PlayerNameWidget = Cast<UC_PlayerNameWidget>(PlayerNameWidgetComp->GetUserWidgetObject());
+	if(PlayerNameWidget)
+	{
+		PlayerNameWidget->DisplayedPlayerName = NewPlayerName;
+	}
+}
+
+# pragma endregion
 
 # pragma region PlayerDeath
 

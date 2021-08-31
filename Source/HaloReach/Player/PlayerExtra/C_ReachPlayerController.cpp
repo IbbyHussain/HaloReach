@@ -11,7 +11,7 @@
 
 AC_ReachPlayerController::AC_ReachPlayerController()
 {
-
+	AssignedName = ("Not PC assigned");
 }
 
 void AC_ReachPlayerController::BeginPlay()

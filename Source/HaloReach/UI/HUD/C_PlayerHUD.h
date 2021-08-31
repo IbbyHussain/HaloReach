@@ -118,4 +118,9 @@ public:
 
 # pragma endregion
 
+public:
+
+	UFUNCTION(BlueprintCallable)
+	FString HUDTestname();
+
 };

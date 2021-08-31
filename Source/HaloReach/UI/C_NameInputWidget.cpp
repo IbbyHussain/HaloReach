@@ -4,6 +4,7 @@
 #include "HaloReach/UI/C_NameInputWidget.h"
 #include "C_NameInputWidget.h"
 #include "Kismet/GameplayStatics.h"
+#include "HaloReach/Player/PlayerExtra/C_ReachPlayerController.h"
 #include "InputCoreTypes.h"
 #include "GameFramework/PlayerState.h"
 #include "HaloReach/Player/C_PlayerCharacter.h"
@@ -47,7 +48,14 @@ void UC_NameInputWidget::NativeTick(const FGeometry& MyGeometry, float DeltaTime
 		PlayerCharacter->UpdateMovementSettings(EMovementState::NOTIDLE);
 		PC->SetIgnoreMoveInput(false);
 
-		PC->PlayerState->SetPlayerName(PlayerNameInputTextBox->GetText().ToString());
+		PlayerCharacter->Server_SetPlayerName(PlayerNameInputTextBox->GetText().ToString());
+
+		//AC_ReachPlayerController* RPC = Cast<AC_ReachPlayerController>(PC);
+		//RPC->AssignedName = PlayerNameInputTextBox->GetText().ToString();
+		//RPC->AssignedName = PlayerNameInputTextBox->GetText().ToString();
+		//PC->PlayerState->SetPlayerName(PlayerNameInputTextBox->GetText().ToString());
+
+		
 
 		PC->SetInputMode(FInputModeGameOnly());
 		PC->SetShowMouseCursor(false);
@@ -57,4 +65,10 @@ void UC_NameInputWidget::NativeTick(const FGeometry& MyGeometry, float DeltaTime
 }
 
 
-
+FString UC_NameInputWidget::TestName()
+{
+	// fails , passes string succeeds
+	FString x = PlayerNameInputTextBox->GetText().ToString();
+	UE_LOG(LogTemp, Error, TEXT("X IS: %s"), *x);
+	return x; //PlayerNameInputTextBox->GetText().ToString()
+}
