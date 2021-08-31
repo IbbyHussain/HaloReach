@@ -19,8 +19,4 @@ public:
 	AC_ReachPlayerState();
 
 	virtual void BeginPlay() override;
-
-	UFUNCTION(Server, Reliable)
-	void Server_RequestGMName();
-	void Server_RequestGMName_Implementation();
 };

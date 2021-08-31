@@ -497,6 +497,15 @@ void AC_PlayerCharacter::UpdateMovementSettings(EMovementState NewState)
 		bCanSwitch = false;
 		break;
 
+	case EMovementState::NOTIDLE:
+		bCanJump = true;
+		bCanCrouch = true;
+		bCanFire = true;
+		bCanReload = true;
+		bCanZoom = true;
+		bCanMelee = true;
+		bCanSwitch = true;
+
 	default:
 		break;
 	}
@@ -1131,16 +1140,16 @@ void AC_PlayerCharacter::Death()
 	// Disables all actions
 	UpdateMovementSettings(EMovementState::IDLE);
 
-	// temp 
-	HUD->HUDWidget->RemoveFromParent();
-	HUD->CreateDeathWidget();
-
 	APlayerController* PlayerController = Cast<APlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	if(PlayerController)
 	{
 		PlayerController->SetIgnoreMoveInput(true);
 		bCanCrouch = false;
 	}
+
+	// temp 
+	HUD->HUDWidget->RemoveFromParent();
+	HUD->CreateDeathWidget();
 
 	bUseControllerRotationYaw = false;
 

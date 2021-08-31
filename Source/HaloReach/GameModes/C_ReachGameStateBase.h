@@ -19,5 +19,8 @@ public:
 	AC_ReachGameStateBase();
 
 	UPROPERTY(EditDefaultsOnly, Category = "Base Gamemode | Player Names")
-		TArray<FString> Names;
+	TArray<FString> PlayerNamesArray;
+
+	FString GetPlayersName();
+
 };

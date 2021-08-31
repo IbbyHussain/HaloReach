@@ -9,6 +9,8 @@
 #include "HaloReach/UI/HUD/C_CrosshairWidget.h"
 #include "HaloReach/UI/C_PlayerNameWidget.h"
 #include "GameFramework/PlayerState.h"
+#include "HaloReach/UI/C_NameInputWidget.h"
+
 
 AC_PlayerHUD::AC_PlayerHUD()
 {
@@ -44,9 +46,17 @@ void AC_PlayerHUD::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//CreatePlayerNameWidget();
 
-	//AddWidgetToViewport(HUDWidget, HUDWidgetClass);
+	CreateNameInputWidget();
 
+
+	//SetPlayerNameTextHUD(GetOwningPlayerController()->PlayerState->GetPlayerName());
+
+}
+
+void AC_PlayerHUD::CreateHUDWidget()
+{
 	if (HUDWidgetClass)
 	{
 		HUDWidget = CreateWidget<UC_PlayerHUDWidget>(GetWorld(), HUDWidgetClass);
@@ -55,12 +65,6 @@ void AC_PlayerHUD::BeginPlay()
 			HUDWidget->AddToViewport();
 		}
 	}
-
-	CreatePlayerNameWidget();
-
-
-	//SetPlayerNameTextHUD(GetOwningPlayerController()->PlayerState->GetPlayerName());
-
 }
 
 void AC_PlayerHUD::HideHUDWidget()
@@ -132,6 +136,28 @@ void AC_PlayerHUD::DestroyDeathWidget()
 	if(DeathWidget)
 	{
 		DeathWidget->RemoveFromParent();
+	}
+}
+
+void AC_PlayerHUD::CreateNameInputWidget()
+{
+	if (NameInputWidgetClass)
+	{
+		NameInputWidget = CreateWidget<UC_NameInputWidget>(GetWorld(), NameInputWidgetClass);
+		if (NameInputWidget)
+		{
+			NameInputWidget->AddToViewport();
+		}
+	}
+}
+
+void AC_PlayerHUD::DestroyNameInputWidget()
+{
+	if(NameInputWidget)
+	{
+		NameInputWidget->RemoveFromParent();
+		CreateHUDWidget();
+		CreatePlayerNameWidget();
 	}
 }
 

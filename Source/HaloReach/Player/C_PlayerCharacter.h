@@ -23,6 +23,7 @@ UENUM()
 enum class EMovementState : uint8
 {
 	IDLE,
+	NOTIDLE,
 	WALK,
 	SPRINT,
 	CROUCH,
@@ -139,7 +140,7 @@ private:
 
 // MOVEMENT METHODS
 
-	void UpdateMovementSettings(EMovementState NewState);
+
 
 	UFUNCTION()
 	void UpdateCombatState(ECombatState NewState);
@@ -158,6 +159,8 @@ private:
 	void Multi_Interact_Implementation(FHitResult Hit);
 
 public:
+
+	void UpdateMovementSettings(EMovementState NewState);
 
 // COMBAT SYSTEM
 

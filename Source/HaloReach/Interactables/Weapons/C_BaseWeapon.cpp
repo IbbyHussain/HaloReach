@@ -93,7 +93,7 @@ void AC_BaseWeapon::StopAttack()
 void AC_BaseWeapon::SpreadTimelineFloatReturn(float Value)
 {
 	AC_PlayerHUD* HUD = Cast<AC_PlayerHUD>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetHUD());
-	if(HUD)
+	if(HUD && HUD->HUDWidget)
 	{
 		HUD->HUDWidget->Crosshair->crosshair_spread = FMath::Lerp(CurrentSpread, DefaultWeaponSpread, Value);
 	}

@@ -8,6 +8,7 @@
 
 class UC_DeathHUDWidget;
 class UC_PlayerNameWidget;
+class UC_NameInputWidget;
 
 UCLASS()
 class HALOREACH_API AC_PlayerHUD : public AHUD
@@ -31,6 +32,8 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 	TSubclassOf<class UC_PlayerHUDWidget> HUDWidgetClass;
+
+	void CreateHUDWidget();
 
 	void HideHUDWidget();
 
@@ -90,6 +93,20 @@ public:
 	void CreateDeathWidget();
 
 	void DestroyDeathWidget();
+
+# pragma endregion
+
+# pragma region Player Input Name Widget
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Widgets")
+	TSubclassOf<UC_NameInputWidget> NameInputWidgetClass;
+
+	UPROPERTY()
+	UC_NameInputWidget* NameInputWidget;
+
+	void CreateNameInputWidget();
+
+	void DestroyNameInputWidget();
 
 # pragma endregion
 	
