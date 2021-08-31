@@ -24,9 +24,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* PlayerNameHintText;
 
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	//UEditableTextBox* PlayerNameInputTextBox;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UEditableTextBox* PlayerNameInputTextBox;
+	class UEditableTextBox* PlayerNameInputTextBox;
 
 	FString TestName();
+
+
+	UFUNCTION()
+	void OnPlayerNameComitted(const FText& InText, ETextCommit::Type InCommitType);
 
 };

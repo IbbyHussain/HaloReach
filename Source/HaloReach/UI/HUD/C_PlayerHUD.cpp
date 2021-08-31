@@ -50,7 +50,7 @@ void AC_PlayerHUD::BeginPlay()
 
 	//CreatePlayerNameWidget();
 
-	CreateNameInputWidget();
+	//CreateNameInputWidget();
 
 	//CreateHUDWidget();
 
