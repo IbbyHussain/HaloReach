@@ -24,8 +24,8 @@ void AC_ReachPlayerState::BeginPlay()
 	if(GS)
 	{
 		
-		AC_PlayerHUD* HUD = Cast<AC_PlayerHUD>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetHUD());
-		HUD->SetPlayerNameTextHUD(GS->GetPlayersName()); //GS->PlayerNamesArray[UKismetMathLibrary::RandomIntegerInRange(0, GS->PlayerNamesArray.Num() - 1)]
+		//AC_PlayerHUD* HUD = Cast<AC_PlayerHUD>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetHUD());
+		//HUD->SetPlayerNameTextHUD(GetPlayerName()); //GS->PlayerNamesArray[UKismetMathLibrary::RandomIntegerInRange(0, GS->PlayerNamesArray.Num() - 1)]
 	}
 }
 

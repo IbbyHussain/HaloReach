@@ -10,6 +10,7 @@
 #include "HaloReach/UI/C_PlayerNameWidget.h"
 #include "GameFramework/PlayerState.h"
 #include "HaloReach/UI/C_NameInputWidget.h"
+#include "Kismet/GameplayStatics.h"
 
 
 AC_PlayerHUD::AC_PlayerHUD()
@@ -158,6 +159,8 @@ void AC_PlayerHUD::DestroyNameInputWidget()
 		NameInputWidget->RemoveFromParent();
 		CreateHUDWidget();
 		CreatePlayerNameWidget();
+		APlayerController* PC = (UGameplayStatics::GetPlayerController(GetWorld(), 0));
+		SetPlayerNameTextHUD(PC->PlayerState->GetPlayerName());
 	}
 }
 
