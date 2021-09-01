@@ -10,6 +10,7 @@
 #include "Components/TimelineComponent.h"
 
 #include "HaloReach/Player/PlayerExtra/C_PlayerCMC.h"
+#include "Components/TimelineComponent.h"
 
 #include "C_PlayerCharacter.generated.h"
 
@@ -612,6 +613,35 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_SetPlayerName(const FString& NewPlayerName);
 	void Multi_SetPlayerName_Implementation(const FString& NewPlayerName);
+
+	// Player Name scale - Overlap checks
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player | PlayerComponents")
+	class UBoxComponent* PlayerNameBoxComp;
+
+	UFUNCTION()
+	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	// Player Name scale - Timeline Comp
+
+	UPROPERTY(EditAnywhere, Category = "Timeline")
+	UCurveFloat* FNameWidgetCurve;
+
+	// The timeline component
+	UTimelineComponent* NameWidgetTimeline;
+
+	// delegates for the timeline (update and finish)
+	FOnTimelineFloat NameWidgetInterpFunction{};
+
+	// The function to be binded to interp (update)
+	UFUNCTION()
+	void NameWidgetTimelineFloatReturn(float Value);
+
+	float NewX;
+	float NewY;
 
 
 # pragma endregion

@@ -50,8 +50,10 @@ void AC_BaseGun::Tick(float Delta)
 	//UE_LOG(LogTemp, Error, TEXT("Status: %s "), (RecoilTimeline->IsPlaying() ? TEXT("TIMER IS PLAYING") : TEXT("TIMER IS NOT PLAYING")));
 
 	AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(GetOwner());
-	bool bHasTimerPaused = PlayerCharacter->GetMesh3P()->GetAnimInstance()->Montage_IsPlaying(GetWeapon3PFireMontage());
-
+	if(PlayerCharacter)
+	{
+		bool bHasTimerPaused = PlayerCharacter->GetMesh3P()->GetAnimInstance()->Montage_IsPlaying(GetWeapon3PFireMontage());
+	}
 }
 
 void AC_BaseGun::BeginPlay()

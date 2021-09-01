@@ -6,6 +6,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PlayerExtra/C_PlayerCameraManager.h"
+#include "Components/BoxComponent.h"
 #include "HaloReach/Components/C_HealthComponent.h"
 #include "HaloReach/UI/HUD/C_PlayerHUD.h"
 #include "DrawDebugHelpers.h"
@@ -115,6 +116,12 @@ AC_PlayerCharacter::AC_PlayerCharacter(const FObjectInitializer& ObjectInitializ
 
 	MeleeTrackInterpFunction.BindUFunction(this, FName("MeleeTrackTimelineFloatReturn"));
 	MeleeTrackTimelineFinished.BindUFunction(this, FName("OnMeleeTrackTimelineFinished"));
+
+	NameWidgetTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("NameWidgetTimeline"));
+	NameWidgetInterpFunction.BindUFunction(this, FName("NameWidgetTimelineFloatReturn"));
+
+	PlayerNameBoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("Box Comp"));
+	PlayerNameBoxComp->SetupAttachment(RootComponent);
 }
 
 void AC_PlayerCharacter::BeginPlay()
@@ -213,6 +220,17 @@ void AC_PlayerCharacter::BeginPlay()
 		Server_Broadcast(this);
 	}
 
+	PlayerNameBoxComp->OnComponentBeginOverlap.AddDynamic(this, &AC_PlayerCharacter::OnOverlapBegin);
+	PlayerNameBoxComp->OnComponentEndOverlap.AddDynamic(this, &AC_PlayerCharacter::OnOverlapEnd);
+
+	if (FNameWidgetCurve)
+	{
+		// Now we set the functions and some values.
+		NameWidgetTimeline->AddInterpFloat(FNameWidgetCurve, NameWidgetInterpFunction, FName("Charlie"));
+		NameWidgetTimeline->SetLooping(false);
+	}
+
+	PlayerNameWidgetComp->GetUserWidgetObject()->SetRenderScale(FVector2D(1.0f, 1.0f));
 
 }
 
@@ -1142,6 +1160,47 @@ void AC_PlayerCharacter::Multi_SetPlayerName_Implementation(const FString& NewPl
 		PlayerNameWidget->DisplayedPlayerName = NewPlayerName;
 	}
 }
+
+void AC_PlayerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(OtherActor);
+	if(PlayerCharacter && OtherActor != this)
+	{
+		if(PlayerCharacter->IsLocallyControlled())
+		{
+			NewX = 3.0f;
+			NewY = 3.0f;
+
+			NameWidgetTimeline->PlayFromStart();
+		}
+	}
+}
+
+void AC_PlayerCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(OtherActor);
+	if (PlayerCharacter && OtherActor != this)
+	{
+		if (PlayerCharacter->IsLocallyControlled())
+		{
+			NewX = 1.0f;
+			NewY = 1.0f;
+
+			NameWidgetTimeline->PlayFromStart();
+		}
+	}
+}
+
+void AC_PlayerCharacter::NameWidgetTimelineFloatReturn(float Value)
+{
+	float x = PlayerNameWidgetComp->GetUserWidgetObject()->RenderTransform.Scale.X;
+	float y = PlayerNameWidgetComp->GetUserWidgetObject()->RenderTransform.Scale.Y;
+
+	PlayerNameWidgetComp->GetUserWidgetObject()->SetRenderScale(FVector2D(UKismetMathLibrary::Lerp(x, NewX, Value)));
+	PlayerNameWidgetComp->GetUserWidgetObject()->SetRenderScale(FVector2D(UKismetMathLibrary::Lerp(y, NewY, Value)));
+}
+
+
 
 # pragma endregion
 

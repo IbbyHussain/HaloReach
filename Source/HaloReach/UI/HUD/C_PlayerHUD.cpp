@@ -50,7 +50,7 @@ void AC_PlayerHUD::BeginPlay()
 
 	//CreatePlayerNameWidget();
 
-	//CreateNameInputWidget();
+	CreateNameInputWidget();
 
 	//CreateHUDWidget();
 
@@ -160,7 +160,6 @@ void AC_PlayerHUD::DestroyNameInputWidget()
 	{
 		NameInputWidget->RemoveFromParent();
 		CreateHUDWidget();
-		CreatePlayerNameWidget();
 
 		//APlayerController* PC = (UGameplayStatics::GetPlayerController(GetWorld(), 0));
 		//AC_ReachPlayerController* RPC = Cast<AC_ReachPlayerController>(PC);

@@ -40,31 +40,6 @@ void UC_NameInputWidget::NativeTick(const FGeometry& MyGeometry, float DeltaTime
 {
 	Super::NativeTick(MyGeometry, DeltaTime);
 
-	//APlayerController* PC = (UGameplayStatics::GetPlayerController(GetWorld(), 0));
-	//AC_PlayerHUD* HUD = Cast<AC_PlayerHUD>(PC->GetHUD());
-
-	//if(PC->IsInputKeyDown(EKeys::Enter))
-	//{
-	//	AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(PC->GetPawn());
-
-	//	PlayerCharacter->bIsDead = false;
-	//	PlayerCharacter->UpdateMovementSettings(EMovementState::NOTIDLE);
-	//	PC->SetIgnoreMoveInput(false);
-
-	//	PlayerCharacter->Server_SetPlayerName(PlayerNameInputTextBox->GetText().ToString());
-
-	//	//AC_ReachPlayerController* RPC = Cast<AC_ReachPlayerController>(PC);
-	//	//RPC->AssignedName = PlayerNameInputTextBox->GetText().ToString();
-	//	//RPC->AssignedName = PlayerNameInputTextBox->GetText().ToString();
-	//	//PC->PlayerState->SetPlayerName(PlayerNameInputTextBox->GetText().ToString());
-
-	//	
-
-	//	PC->SetInputMode(FInputModeGameOnly());
-	//	PC->SetShowMouseCursor(false);
-	//	HUD->DestroyNameInputWidget();
-	//}
-
 }
 
 
