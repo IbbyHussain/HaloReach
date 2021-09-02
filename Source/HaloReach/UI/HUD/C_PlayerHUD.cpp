@@ -142,14 +142,6 @@ void AC_PlayerHUD::DestroyDeathWidget()
 	}
 }
 
-void AC_PlayerHUD::HUDSetPlayerKillerName(FString Name)
-{
-	if(DeathWidget)
-	{
-		DeathWidget->SetPlayerKillerName(Name);
-	}
-}
-
 void AC_PlayerHUD::CreateNameInputWidget()
 {
 	if (NameInputWidgetClass)
@@ -168,12 +160,6 @@ void AC_PlayerHUD::DestroyNameInputWidget()
 	{
 		NameInputWidget->RemoveFromParent();
 		CreateHUDWidget();
-
-		//APlayerController* PC = (UGameplayStatics::GetPlayerController(GetWorld(), 0));
-		//AC_ReachPlayerController* RPC = Cast<AC_ReachPlayerController>(PC);
-
-		//RPC->AssignedName = ("HUD ASSIGNED");
-		//SetPlayerNameTextHUD(RPC->AssignedName);
 	}
 }
 

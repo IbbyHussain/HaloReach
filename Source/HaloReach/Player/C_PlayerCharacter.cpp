@@ -273,7 +273,7 @@ void AC_PlayerCharacter::OnHealthChanged(UC_HealthComponent* HealthComponent, fl
 		if (HealthComp->GetHealth() <= 0.0f && !bIsDead)
 		{
 			Death(PlayerKiller);
-			//BPDeath(PlayerKiller);
+			BPDeath(PlayerKiller);
 		}
 
 		else
@@ -1206,8 +1206,6 @@ void AC_PlayerCharacter::NameWidgetTimelineFloatReturn(float Value)
 	PlayerNameWidgetComp->GetUserWidgetObject()->SetRenderScale(FVector2D(UKismetMathLibrary::Lerp(y, NewY, Value)));
 }
 
-
-
 # pragma endregion
 
 # pragma region PlayerDeath
@@ -1238,8 +1236,8 @@ void AC_PlayerCharacter::Death(AActor* PlayerKiller)
 	}
 
 	// temp 
-	// HUD->HUDWidget->RemoveFromParent();
-	//HUD->CreateDeathWidget();
+	HUD->HUDWidget->RemoveFromParent();
+	HUD->CreateDeathWidget();
 
 	bUseControllerRotationYaw = false;
 
@@ -1340,6 +1338,28 @@ void AC_PlayerCharacter::Client_Broadcast_Implementation(AActor* Player)
 		BPDeath(Player);
 	}
 }
+
+# pragma region Killer Name region
+
+void AC_PlayerCharacter::Client_SetKillerName_Implementation(const FString& KillerActorName)
+{
+	PlayerKillerName = KillerActorName;
+}
+
+void AC_PlayerCharacter::Server_SetKillerName_Implementation(const FString& KillerActorName)
+{
+	Client_SetKillerName(KillerActorName);
+}
+
+void AC_PlayerCharacter::Client_CheckKillerName_Implementation(const FString& KillerActorName)
+{
+	if (HealthComp->GetHealth() <= HealthComp->MaxHealth)
+	{
+		Server_SetKillerName(KillerActorName);
+	}
+}
+
+# pragma endregion
 
 # pragma endregion
 

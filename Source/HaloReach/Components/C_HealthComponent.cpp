@@ -84,21 +84,19 @@ void UC_HealthComponent::Client_Test_Implementation(float Damage, AActor* Killer
 	//PlayerCharacter->KillerName = Killer->GetName();
 
 	// These delegates will call HUD updates and update the combat state in the player class
-	OnHealthChanged.Broadcast(this, Health, true, Killer);
+	OnHealthChanged.Broadcast(this, Health, true, Killer); // killer 
 	OnShieldsChanged.Broadcast(this, Shields);
 }
 
 void UC_HealthComponent::Server_Test_Implementation(float Damage, AActor* Killer)
 {
 	// gives correct data
-	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("DED: %s"), *Killer->GetName()));
-	//AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(GetOwner());
-	//PlayerCharacter->KillerName = Killer->GetName();
-	//GlobalKillerName = Killer->GetName();
-
-	AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(GetOwner());
-	PlayerCharacter->KillerName = Killer->GetName();
-	Client_Name(Killer);
+	if(Killer)
+	{
+		AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(GetOwner());
+		PlayerCharacter->KillerName = Killer->GetName();
+		Client_Name(Killer);
+	}
 }
 
 void UC_HealthComponent::Client_Name_Implementation(AActor* Killer)

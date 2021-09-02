@@ -566,6 +566,7 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "aaa")
 	FOnRespawnPlayer RespawnPlayer;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bIsDead;
 
 	UFUNCTION(Server, Reliable)
@@ -589,7 +590,7 @@ public:
 	void Server_DestroyWeapons();
 	void Server_DestroyWeapons_Implementation();
 
-	// Changing collision settings in C++, is not working. Seems to only work in BP
+	// Changing collision settings in C++ is not working. Seems to only work in BP
 	UFUNCTION(BlueprintImplementableEvent)
 	void BPDeath(AActor* PlayerKiller);
 
@@ -608,9 +609,30 @@ public:
 	void Client_Broadcast(AActor* Player);
 	void Client_Broadcast_Implementation(AActor* Player);
 
+
+
+// Player Killer
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player | Death")
+	FString PlayerKillerName;
+
+	UFUNCTION(Client, UnReliable)
+	void Client_SetKillerName(const FString& KillerActorName);
+	void Client_SetKillerName_Implementation(const FString& KillerActorName);
+
+	UFUNCTION(Server, UnReliable)
+	void Server_SetKillerName(const FString& KillerActorName);
+	void Server_SetKillerName_Implementation(const FString& KillerActorName);
+
+	UFUNCTION(Client, UnReliable, BlueprintCallable)
+	void Client_CheckKillerName(const FString& KillerActorName);
+	void Client_CheckKillerName_Implementation(const FString& KillerActorName);
+
 # pragma region Player Name
 
-	UPROPERTY(EditDefaultsOnly, Category = "Player | PlayerComponents")
+public:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player | PlayerComponents")
 	class UWidgetComponent* PlayerNameWidgetComp;
 
 	UFUNCTION(Server, Reliable)

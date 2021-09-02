@@ -18,7 +18,7 @@ void UC_DeathHUDWidget::NativeConstruct()
 
 	
 	// Player killer text
-	PlayerKillerText->SetText(FText::FromString("PlayerName killed you"));
+	//PlayerKillerText->SetText(FText::FromString("PlayerName killed you"));
 	PlayerKillerText->SetColorAndOpacity(HUDTextColour);
 
 	// Respawn Data
@@ -38,17 +38,11 @@ void UC_DeathHUDWidget::NativeConstruct()
 
 	BlackImage->SetRenderOpacity(0.0f);
 
-	SetPlayerKillerName("harry");
 }
 
 void UC_DeathHUDWidget::UpdateTextBlock(UTextBlock* TextBlock, FString NewText)
 {
 	TextBlock->SetText(FText::FromString(NewText));
-}
-
-void UC_DeathHUDWidget::SetPlayerKillerName(FString Name)
-{
-	PlayerKillerName = (Name);
 }
 
 # pragma region Black Fade In Animation
