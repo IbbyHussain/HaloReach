@@ -37,11 +37,18 @@ void UC_DeathHUDWidget::NativeConstruct()
 	FadeOutAnimation = GetAnimationByName(TEXT("FadeOut"));
 
 	BlackImage->SetRenderOpacity(0.0f);
+
+	SetPlayerKillerName("harry");
 }
 
 void UC_DeathHUDWidget::UpdateTextBlock(UTextBlock* TextBlock, FString NewText)
 {
 	TextBlock->SetText(FText::FromString(NewText));
+}
+
+void UC_DeathHUDWidget::SetPlayerKillerName(FString Name)
+{
+	PlayerKillerName = (Name);
 }
 
 # pragma region Black Fade In Animation

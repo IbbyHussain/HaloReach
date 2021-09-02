@@ -5,10 +5,13 @@
 #include "HaloReach/UI/HUD/C_PlayerHUD.h"
 #include "HaloReach/Player/PlayerExtra/C_ReachPlayerController.h"
 #include "Kismet/GameplayStatics.h"
+#include "HaloReach/UI/C_PlayerNameWidget.h"
 #include "HaloReach/Gamemodes/C_BaseReachGameMode.h"
 #include "Kismet/KismetMathLibrary.h"
-
+#include "HaloReach/Player/C_PlayerCharacter.h"
 #include "HaloReach/GameModes/C_ReachGameStateBase.h"
+#include "Components/WidgetComponent.h"
+
 
 
 AC_ReachPlayerState::AC_ReachPlayerState()
@@ -19,28 +22,25 @@ AC_ReachPlayerState::AC_ReachPlayerState()
 void AC_ReachPlayerState::BeginPlay()
 {
 	Super::BeginPlay();
-
-	AC_ReachGameStateBase* GS = Cast<AC_ReachGameStateBase>(UGameplayStatics::GetGameState(GetWorld()));
-
-	if(GS)
-	{
-		
-		//AC_PlayerHUD* HUD = Cast<AC_PlayerHUD>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetHUD());
-		//HUD->SetPlayerNameTextHUD(GetPlayerName()); //GS->PlayerNamesArray[UKismetMathLibrary::RandomIntegerInRange(0, GS->PlayerNamesArray.Num() - 1)]
-		//	AC_ReachPlayerController* PC = Cast<AC_ReachPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
-		//SetPlayerName(PC->AssignedName);
-	}
 }
 
 void AC_ReachPlayerState::Tick(float Delta)
 {
 	Super::Tick(Delta);
 
-	AC_PlayerHUD* HUD = Cast<AC_PlayerHUD>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetHUD());
-	AC_ReachPlayerController* PC = Cast<AC_ReachPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
-	SetPlayerName(HUD->HUDTestname());
-
-
+	AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn());
+	if(PlayerCharacter && PlayerCharacter->IsLocallyControlled())
+	{
+		UC_PlayerNameWidget* PlayerNameWidget = Cast<UC_PlayerNameWidget>(PlayerCharacter->PlayerNameWidgetComp->GetUserWidgetObject());
+		if(PlayerNameWidget)
+		{
+			SetPlayerName(PlayerNameWidget->DisplayedPlayerName);
+		}
+	}
+	
+	
 }
+
+
 
 

@@ -30,6 +30,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* PlayerKillerText;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "hell")
+	FString PlayerKillerName;
+
+	void SetPlayerKillerName(FString Name);
+
 # pragma endregion
 
 # pragma region Respawn Data

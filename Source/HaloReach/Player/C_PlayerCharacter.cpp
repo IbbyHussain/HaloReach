@@ -232,6 +232,10 @@ void AC_PlayerCharacter::BeginPlay()
 
 	PlayerNameWidgetComp->GetUserWidgetObject()->SetRenderScale(FVector2D(1.0f, 1.0f));
 
+	// Tests
+
+	OnTakeAnyDamage.AddDynamic(this, &AC_PlayerCharacter::HandleTakeAnyDamage);
+
 }
 
 void AC_PlayerCharacter::Tick(float DeltaTime)
@@ -259,7 +263,7 @@ void AC_PlayerCharacter::PostInitializeComponents()
 
 // HEALTH SYSTEM
 
-void AC_PlayerCharacter::OnHealthChanged(UC_HealthComponent* HealthComponent, float Health, bool bUpdateCombatState)
+void AC_PlayerCharacter::OnHealthChanged(UC_HealthComponent* HealthComponent, float Health, bool bUpdateCombatState, AActor* PlayerKiller)
 {
 	HUD->HUDUpdateHealthImage(HealthComp->GetHealth());
 
@@ -268,8 +272,8 @@ void AC_PlayerCharacter::OnHealthChanged(UC_HealthComponent* HealthComponent, fl
 		// bIsDead so that death() is only called once
 		if (HealthComp->GetHealth() <= 0.0f && !bIsDead)
 		{
-			Death();
-			BPDeath();
+			Death(PlayerKiller);
+			//BPDeath(PlayerKiller);
 		}
 
 		else
@@ -1157,7 +1161,9 @@ void AC_PlayerCharacter::Multi_SetPlayerName_Implementation(const FString& NewPl
 	UC_PlayerNameWidget* PlayerNameWidget = Cast<UC_PlayerNameWidget>(PlayerNameWidgetComp->GetUserWidgetObject());
 	if(PlayerNameWidget)
 	{
+		APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 		PlayerNameWidget->DisplayedPlayerName = NewPlayerName;
+
 	}
 }
 
@@ -1206,7 +1212,7 @@ void AC_PlayerCharacter::NameWidgetTimelineFloatReturn(float Value)
 
 # pragma region PlayerDeath
 
-void AC_PlayerCharacter::Death()
+void AC_PlayerCharacter::Death(AActor* PlayerKiller)
 {
 	bIsDead = true;
 
@@ -1232,8 +1238,8 @@ void AC_PlayerCharacter::Death()
 	}
 
 	// temp 
-	HUD->HUDWidget->RemoveFromParent();
-	HUD->CreateDeathWidget();
+	// HUD->HUDWidget->RemoveFromParent();
+	//HUD->CreateDeathWidget();
 
 	bUseControllerRotationYaw = false;
 
@@ -1250,6 +1256,8 @@ void AC_PlayerCharacter::Death()
 		// Control rotation not updating from client to server without this, OR collision
 		Server_Death(false);
 	}
+
+	UE_LOG(LogTemp, Error, TEXT("PLAYER WAS KILLED BY: %s"), *PlayerKiller->GetName());
 
 	GetWorldTimerManager().SetTimer(RagdollHandle, this, &AC_PlayerCharacter::StartRagdoll, 3.0f, false);
 
@@ -1306,6 +1314,31 @@ void AC_PlayerCharacter::Respawn()
 void AC_PlayerCharacter::Server_Broadcast_Implementation(AC_PlayerCharacter* Player)
 {
 	RespawnPlayer.Broadcast(Player);
+}
+
+// Only runs on server
+void AC_PlayerCharacter::HandleTakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
+{
+	//Client_Broadcast(DamageCauser);
+
+
+	if (HealthComp->GetHealth() <= 0.0f )
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("DED: %s"), *DamageCauser->GetName()));
+		BPDeath(DamageCauser);
+	}
+
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("HEALTH IS : %f"), HealthComp->GetHealth()));
+}
+
+void AC_PlayerCharacter::Client_Broadcast_Implementation(AActor* Player)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("HEALTH IS : %f"), HealthComp->GetHealth()));
+	if (HealthComp->GetHealth() <= 0.0f)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("DED: %s"), *Player->GetName()));
+		BPDeath(Player);
+	}
 }
 
 # pragma endregion

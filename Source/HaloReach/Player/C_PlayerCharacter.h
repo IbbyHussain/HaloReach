@@ -497,7 +497,7 @@ public: // temp
 	class AC_PlayerCameraManager* CameraManager;
 
 	UFUNCTION()
-	void OnHealthChanged(UC_HealthComponent* HealthComponent, float Health, bool bUpdateCombatState);
+	void OnHealthChanged(UC_HealthComponent* HealthComponent, float Health, bool bUpdateCombatState, AActor* PlayerKiller);
 
 	UFUNCTION()
 	void OnSheildsChanged(UC_HealthComponent* HealthComponent, float Shields);
@@ -558,7 +558,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player | PlayerComponents")
 	class USpringArmComponent* DeathSpringArmComp;
 
-	void Death();
+	void Death(AActor* PlayerKiller);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player | Death")
 	TArray<UAnimMontage*> DeathMontageArray;
@@ -591,7 +591,7 @@ public:
 
 	// Changing collision settings in C++, is not working. Seems to only work in BP
 	UFUNCTION(BlueprintImplementableEvent)
-	void BPDeath();
+	void BPDeath(AActor* PlayerKiller);
 
 	void Respawn();
 
@@ -600,6 +600,13 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_Broadcast(AC_PlayerCharacter* Player);
 	void Server_Broadcast_Implementation(AC_PlayerCharacter* Player);
+
+	UFUNCTION()
+	void HandleTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+
+	UFUNCTION(Client, Reliable)
+	void Client_Broadcast(AActor* Player);
+	void Client_Broadcast_Implementation(AActor* Player);
 
 # pragma region Player Name
 
@@ -642,6 +649,8 @@ public:
 
 	float NewX;
 	float NewY;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Timeline")
+	FString KillerName;
 
 
 # pragma endregion

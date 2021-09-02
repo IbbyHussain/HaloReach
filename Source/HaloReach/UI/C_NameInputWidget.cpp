@@ -9,6 +9,8 @@
 #include "GameFramework/PlayerState.h"
 #include "HaloReach/Player/C_PlayerCharacter.h"
 #include "HaloReach/UI/HUD/C_PlayerHUD.h"
+#include "HaloReach/Player/PlayerExtra/C_ReachPlayerState.h"
+
 #include "Components/EditableTextBox.h"
 #include "Components/MultiLineEditableTextBox.h"
 
@@ -75,13 +77,6 @@ void UC_NameInputWidget::OnPlayerNameComitted(const FText& InText, ETextCommit::
 				PC->SetIgnoreMoveInput(false);
 
 				PlayerCharacter->Server_SetPlayerName(PlayerInput);
-
-				//AC_ReachPlayerController* RPC = Cast<AC_ReachPlayerController>(PC);
-				//RPC->AssignedName = PlayerNameInputTextBox->GetText().ToString();
-				//RPC->AssignedName = PlayerNameInputTextBox->GetText().ToString();
-				//PC->PlayerState->SetPlayerName(PlayerNameInputTextBox->GetText().ToString());
-
-
 
 				PC->SetInputMode(FInputModeGameOnly());
 				PC->SetShowMouseCursor(false);

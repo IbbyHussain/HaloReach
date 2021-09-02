@@ -6,7 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "C_HealthComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnHealthChangedSignature, UC_HealthComponent*, HealthComponent, float, Health, bool, bUpdateCombatState);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHealthChangedSignature, UC_HealthComponent*, HealthComponent, float, Health, bool, bUpdateCombatState, AActor*, PlayerKiller);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnShieldsChangedSignature, UC_HealthComponent*, HealthComponent, float, Shields);
 
 UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -83,11 +83,23 @@ private:
 
 	// A client RPC used to replicate the HandleTakeAnyDamage bidning of OnTakeAnyDamage, to the client as the function is server only
 	UFUNCTION(Client, Reliable)
-	void Client_Test(float Damage);
-	void Client_Test_Implementation(float Damage);
+	void Client_Test(float Damage, AActor* Killer);
+	void Client_Test_Implementation(float Damage, AActor* Killer);
 
 
+	// fffafa
 
+	UFUNCTION(Server, Reliable)
+	void Server_Test(float Damage, AActor* Killer);
+	void Server_Test_Implementation(float Damage, AActor* Killer);
 
+	UPROPERTY()
+	FString GlobalKillerName;
+
+	UFUNCTION(Client, Reliable)
+	void Client_Name(AActor* Killer);
+	void Client_Name_Implementation(AActor* Killer);
+
+	AActor* LocalKiller;
 };
 

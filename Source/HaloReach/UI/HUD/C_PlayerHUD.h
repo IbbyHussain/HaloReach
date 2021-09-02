@@ -93,6 +93,8 @@ public:
 	void CreateDeathWidget();
 
 	void DestroyDeathWidget();
+	
+	void HUDSetPlayerKillerName(FString Name);
 
 # pragma endregion
 

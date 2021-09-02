@@ -142,6 +142,14 @@ void AC_PlayerHUD::DestroyDeathWidget()
 	}
 }
 
+void AC_PlayerHUD::HUDSetPlayerKillerName(FString Name)
+{
+	if(DeathWidget)
+	{
+		DeathWidget->SetPlayerKillerName(Name);
+	}
+}
+
 void AC_PlayerHUD::CreateNameInputWidget()
 {
 	if (NameInputWidgetClass)

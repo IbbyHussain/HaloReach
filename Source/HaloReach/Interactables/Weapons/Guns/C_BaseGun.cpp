@@ -520,7 +520,7 @@ void AC_BaseGun::Multi_Fire_Implementation(AActor* NewOwner, FRotator TraceRotat
 					ActualDamage *= WeaponStats.HeadShotMultiplier;
 				}
 
-				UGameplayStatics::ApplyPointDamage(HitActor, ActualDamage, ShotDirection, Hit, NewOwner->GetInstigatorController(), this, DamageType);
+				UGameplayStatics::ApplyPointDamage(HitActor, ActualDamage, ShotDirection, Hit, NewOwner->GetInstigatorController(), NewOwner, DamageType);
 
 				// Plays particle effect (Impact Effect) depending on physical material hit
 				UParticleSystem* SelectedEffect = nullptr;

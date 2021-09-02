@@ -3,6 +3,10 @@
 #include "C_HealthComponent.h"
 #include "TimerManager.h"
 #include "Net/UnrealNetwork.h"
+#include "HaloReach/UI/HUD/C_PlayerHUD.h"
+#include "Kismet/GameplayStatics.h"
+#include "HaloReach/Player/C_PlayerCharacter.h"
+
 
 UC_HealthComponent::UC_HealthComponent()
 {
@@ -39,11 +43,12 @@ void UC_HealthComponent::BeginPlay()
 void UC_HealthComponent::HandleTakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
 	// calls client RPC so code is EXECUTED on SERVER but CALLED on CLIENT --> As this function only executes on server
-	Client_Test(Damage); // An OnRep would not work in this case as if logic for being damaged is inside OnRep function, the HandleAnyDamage function does not work(no logic exeuted in it)and Apply damage would not damage player
+	Client_Test(Damage, DamageCauser); // An OnRep would not work in this case as if logic for being damaged is inside OnRep function, the HandleAnyDamage function does not work(no logic exeuted in it)and Apply damage would not damage player
+
 }
 
 // Works on both client and server
-void UC_HealthComponent::Client_Test_Implementation(float Damage)
+void UC_HealthComponent::Client_Test_Implementation(float Damage, AActor* Killer)
 {
 	if (Shields != 0.0f)
 	{
@@ -64,9 +69,42 @@ void UC_HealthComponent::Client_Test_Implementation(float Damage)
 		Health = FMath::Clamp(Health - Damage, 0.0f, MaxHealth);
 	}
 
+	// Successfully tells game when player has died and sends correct killer name
+	if (Health <= 0.0f)
+	{
+		//Server_Test(10.0f, Killer);
+	}
+
+	Server_Test(10.0f, Killer);
+
+	//AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(GetOwner());
+	//PlayerCharacter->KillerName = LocalKiller->GetName();
+
+	//AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(GetOwner());
+	//PlayerCharacter->KillerName = Killer->GetName();
+
 	// These delegates will call HUD updates and update the combat state in the player class
-	OnHealthChanged.Broadcast(this, Health, true);
+	OnHealthChanged.Broadcast(this, Health, true, Killer);
 	OnShieldsChanged.Broadcast(this, Shields);
+}
+
+void UC_HealthComponent::Server_Test_Implementation(float Damage, AActor* Killer)
+{
+	// gives correct data
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("DED: %s"), *Killer->GetName()));
+	//AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(GetOwner());
+	//PlayerCharacter->KillerName = Killer->GetName();
+	//GlobalKillerName = Killer->GetName();
+
+	AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(GetOwner());
+	PlayerCharacter->KillerName = Killer->GetName();
+	Client_Name(Killer);
+}
+
+void UC_HealthComponent::Client_Name_Implementation(AActor* Killer)
+{
+	AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(GetOwner());
+	PlayerCharacter->KillerName = Killer->GetName();
 }
 
 // SHIELD REGENERATION
@@ -165,7 +203,7 @@ void UC_HealthComponent::RechargeHealth()
 		Health = FMath::Clamp(Health + 5.0f, 0.0f, 10.0f);
 	}
 
-	OnHealthChanged.Broadcast(this, Health, false);
+	OnHealthChanged.Broadcast(this, Health, false, nullptr);
 }
 
 void UC_HealthComponent::StopHealthRegeneration()
