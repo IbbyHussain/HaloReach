@@ -12,6 +12,8 @@
 #include "GameFramework/PlayerState.h"
 #include "HaloReach/UI/C_NameInputWidget.h"
 #include "Kismet/GameplayStatics.h"
+#include "HaloReach/Libraries/C_SpawnLibrary.h"
+#include "HaloReach/UI/Names/C_DeathUpdateWidget.h"
 
 
 AC_PlayerHUD::AC_PlayerHUD()
@@ -52,6 +54,8 @@ void AC_PlayerHUD::BeginPlay()
 
 	// this is for testing only
 	CreateHUDWidget();
+
+	CreateDeathUpdateWidget();
 }
 
 void AC_PlayerHUD::CreateHUDWidget()
@@ -158,6 +162,18 @@ void AC_PlayerHUD::DestroyNameInputWidget()
 		CreateHUDWidget();
 	}
 }
+
+
+
+
+void AC_PlayerHUD::CreateDeathUpdateWidget()
+{
+	UC_SpawnLibrary::SpawnWidget(GetWorld(), DeathUpdateWidgetClass, DeathUpdateWidget);
+}
+
+
+
+
 
 // crosshair
 

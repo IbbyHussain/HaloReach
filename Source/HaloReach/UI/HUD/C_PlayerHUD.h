@@ -9,6 +9,7 @@
 class UC_DeathHUDWidget;
 class UC_PlayerNameWidget;
 class UC_NameInputWidget;
+class UC_DeathUpdateWidget;
 
 UCLASS()
 class HALOREACH_API AC_PlayerHUD : public AHUD
@@ -107,6 +108,19 @@ public:
 	void CreateNameInputWidget();
 
 	void DestroyNameInputWidget();
+
+# pragma endregion
+
+# pragma region Global Death Updates
+
+	void CreateDeathUpdateWidget();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Widgets")
+	TSubclassOf<UC_DeathUpdateWidget> DeathUpdateWidgetClass;
+		
+	UPROPERTY()
+	UC_DeathUpdateWidget* DeathUpdateWidget;
+
 
 # pragma endregion
 	

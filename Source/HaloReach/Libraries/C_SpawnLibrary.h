@@ -6,9 +6,8 @@
 #include "UObject/NoExportTypes.h"
 #include "C_SpawnLibrary.generated.h"
 
-/**
- * 
- */
+
+
 UCLASS()
 class HALOREACH_API UC_SpawnLibrary : public UObject
 {
@@ -26,6 +25,13 @@ public:
 	static ClassName* SpawnActorAtLocation(UWorld* World, TSubclassOf<ClassName> ObjectClass, ClassName* ObjectPointer, FVector Location, FRotator Rotation);
 
 	static void DestroyActor(AActor* ActorToDestroy);
+
+# pragma region Widget Spawning
+
+	template<typename ClassName>
+	static ClassName* SpawnWidget(UWorld* World, TSubclassOf<ClassName> ObjectClass, ClassName* ObjectPointer);
+
+# pragma endregion
 };
 
 template<typename ClassName>
@@ -60,3 +66,22 @@ ClassName* UC_SpawnLibrary::SpawnActorAtLocation(UWorld* World, TSubclassOf<Clas
 
 	return ObjectPointer;
 }
+
+template<typename ClassName>
+ClassName* UC_SpawnLibrary::SpawnWidget(UWorld* World, TSubclassOf<ClassName> ObjectClass, ClassName* ObjectPointer)
+{
+	auto NewWorld = static_cast<UWorld*>(World);
+	if (ObjectClass)
+	{
+		ObjectPointer = CreateWidget<ClassName>(World, ObjectClass);
+		if (ObjectPointer)
+		{
+			ObjectPointer->AddToViewport();
+			return ObjectPointer;
+		}
+	}
+
+	return ObjectPointer;
+}
+
+
