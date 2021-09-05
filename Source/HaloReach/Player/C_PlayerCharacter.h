@@ -16,6 +16,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeaponReload);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRespawnPlayer, AC_PlayerCharacter*, DeadPlayer);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerKilled);
 
 class AC_BaseWeapon;
 class AC_Weapon3P;
@@ -99,8 +100,6 @@ class HALOREACH_API AC_PlayerCharacter : public ACharacter
 private:
 
 	AC_PlayerCharacter(const FObjectInitializer& ObjectInitializer);
-
-	FString PlayerName;
 
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	FORCEINLINE class UC_PlayerCMC* GetPlayerMovementComponent() const { return PlayerCMC; }
@@ -671,9 +670,14 @@ public:
 
 	float NewX;
 	float NewY;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Timeline")
 	FString KillerName;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Timeline")
+	FString PlayerName;
+
+	FOnPlayerKilled PlayerKilled;
 
 # pragma endregion
 

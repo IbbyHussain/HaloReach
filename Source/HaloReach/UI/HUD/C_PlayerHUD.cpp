@@ -56,6 +56,11 @@ void AC_PlayerHUD::BeginPlay()
 	CreateHUDWidget();
 
 	CreateDeathUpdateWidget();
+
+	AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	
+	PlayerCharacter->PlayerKilled.AddDynamic(this, &AC_PlayerHUD::UpdateDeathWidget);
+	
 }
 
 void AC_PlayerHUD::CreateHUDWidget()
@@ -243,4 +248,10 @@ FString AC_PlayerHUD::HUDTestname()
 	}
 
 	return("FAIL");
+}
+
+
+void AC_PlayerHUD::UpdateDeathWidget()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("HUD CALLED DELEGATE")));
 }

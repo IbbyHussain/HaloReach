@@ -121,6 +121,9 @@ public:
 	UPROPERTY()
 	UC_DeathUpdateWidget* DeathUpdateWidget;
 
+	UFUNCTION()
+	void UpdateDeathWidget();
+
 
 # pragma endregion
 	

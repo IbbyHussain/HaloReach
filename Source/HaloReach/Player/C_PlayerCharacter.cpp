@@ -1322,7 +1322,7 @@ void AC_PlayerCharacter::HandleTakeAnyDamage(AActor* DamagedActor, float Damage,
 
 	if (HealthComp->GetHealth() <= 0.0f )
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("DED: %s"), *DamageCauser->GetName()));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("DED: %s"), *DamageCauser->GetName()));
 		BPDeath(DamageCauser);
 	}
 
@@ -1331,10 +1331,10 @@ void AC_PlayerCharacter::HandleTakeAnyDamage(AActor* DamagedActor, float Damage,
 
 void AC_PlayerCharacter::Client_Broadcast_Implementation(AActor* Player)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("HEALTH IS : %f"), HealthComp->GetHealth()));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("HEALTH IS : %f"), HealthComp->GetHealth()));
 	if (HealthComp->GetHealth() <= 0.0f)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("DED: %s"), *Player->GetName()));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("DED: %s"), *Player->GetName()));
 		BPDeath(Player);
 	}
 }
@@ -1356,6 +1356,8 @@ void AC_PlayerCharacter::Client_CheckKillerName_Implementation(const FString& Ki
 	if (HealthComp->GetHealth() <= HealthComp->MaxHealth)
 	{
 		Server_SetKillerName(KillerActorName);
+
+		PlayerKilled.Broadcast();
 	}
 }
 
