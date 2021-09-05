@@ -122,7 +122,7 @@ public:
 	UC_DeathUpdateWidget* DeathUpdateWidget;
 
 	UFUNCTION()
-	void UpdateDeathWidget();
+	void UpdateDeathWidget(FString A, FString B);
 
 
 # pragma endregion

@@ -1257,6 +1257,8 @@ void AC_PlayerCharacter::Death(AActor* PlayerKiller)
 
 	UE_LOG(LogTemp, Error, TEXT("PLAYER WAS KILLED BY: %s"), *PlayerKiller->GetName());
 
+	Client_SendDeath(PlayerKillerName, ("Me"));
+
 	GetWorldTimerManager().SetTimer(RagdollHandle, this, &AC_PlayerCharacter::StartRagdoll, 3.0f, false);
 
 	GetWorldTimerManager().SetTimer(RespawnHandle, this, &AC_PlayerCharacter::Respawn, 5.0f, false);
@@ -1356,14 +1358,17 @@ void AC_PlayerCharacter::Client_CheckKillerName_Implementation(const FString& Ki
 	if (HealthComp->GetHealth() <= HealthComp->MaxHealth)
 	{
 		Server_SetKillerName(KillerActorName);
-
-		PlayerKilled.Broadcast();
 	}
 }
 
 # pragma endregion
 
 # pragma endregion
+
+void AC_PlayerCharacter::Client_SendDeath_Implementation(const FString& KillerActorName, const FString& KilledName)
+{
+	PlayerKilled.Broadcast(KillerActorName, KilledName);
+}
 
 void AC_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {

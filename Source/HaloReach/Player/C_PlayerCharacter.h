@@ -16,7 +16,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeaponReload);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRespawnPlayer, AC_PlayerCharacter*, DeadPlayer);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerKilled);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPlayerKilled, FString, Player, FString, DeadPlayer);
 
 class AC_BaseWeapon;
 class AC_Weapon3P;
@@ -678,6 +678,11 @@ public:
 	FString PlayerName;
 
 	FOnPlayerKilled PlayerKilled;
+
+	UFUNCTION(Client, Reliable)
+	void Client_SendDeath(const FString& KillerActorName, const FString& KilledName);
+	void Client_SendDeath_Implementation(const FString& KillerActorName, const FString& KilledName);
+
 
 # pragma endregion
 

@@ -50,10 +50,10 @@ void AC_PlayerHUD::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//CreateNameInputWidget();
+	CreateNameInputWidget();
 
 	// this is for testing only
-	CreateHUDWidget();
+	//CreateHUDWidget();
 
 	CreateDeathUpdateWidget();
 
@@ -251,7 +251,8 @@ FString AC_PlayerHUD::HUDTestname()
 }
 
 
-void AC_PlayerHUD::UpdateDeathWidget()
+void AC_PlayerHUD::UpdateDeathWidget(FString A, FString B)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("HUD CALLED DELEGATE")));
+	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("HUD CALLED DELEGATE, Killer: %s"), *A));
+	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, FString::Printf(TEXT("HUD CALLED DELEGATE, Dead: %s"), *B));
 }
