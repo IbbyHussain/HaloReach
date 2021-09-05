@@ -48,14 +48,10 @@ void AC_PlayerHUD::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//CreatePlayerNameWidget();
+	//CreateNameInputWidget();
 
-	CreateNameInputWidget();
-
-	//CreateHUDWidget();
-
-	//SetPlayerNameTextHUD(GetOwningPlayerController()->PlayerState->GetPlayerName());
-
+	// this is for testing only
+	CreateHUDWidget();
 }
 
 void AC_PlayerHUD::CreateHUDWidget()
