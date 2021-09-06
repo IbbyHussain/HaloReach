@@ -18,4 +18,10 @@ public:
 
 	AC_ReachGameStateBase();
 
+	virtual void BeginPlay() override;
+
+	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION()
+	void UpdateGlobalDeaths(FString A, FString B);
 };

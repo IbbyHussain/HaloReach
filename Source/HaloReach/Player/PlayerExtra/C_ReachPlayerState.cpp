@@ -14,6 +14,7 @@
 
 
 
+
 AC_ReachPlayerState::AC_ReachPlayerState()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -37,8 +38,6 @@ void AC_ReachPlayerState::Tick(float Delta)
 			SetPlayerName(PlayerNameWidget->DisplayedPlayerName);
 		}
 	}
-	
-	
 }
 
 

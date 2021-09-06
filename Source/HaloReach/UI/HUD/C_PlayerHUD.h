@@ -121,7 +121,7 @@ public:
 	UPROPERTY()
 	UC_DeathUpdateWidget* DeathUpdateWidget;
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void UpdateDeathWidget(FString A, FString B);
 
 
@@ -139,5 +139,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	FString HUDTestname();
+
+	UPROPERTY(BlueprintReadWrite)
+	FString DeathText;
 
 };

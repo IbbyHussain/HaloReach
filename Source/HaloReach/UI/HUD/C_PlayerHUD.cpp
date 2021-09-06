@@ -54,13 +54,10 @@ void AC_PlayerHUD::BeginPlay()
 
 	// this is for testing only
 	//CreateHUDWidget();
-
 	CreateDeathUpdateWidget();
 
-	AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	
-	PlayerCharacter->PlayerKilled.AddDynamic(this, &AC_PlayerHUD::UpdateDeathWidget);
-	
+	//AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	//PlayerCharacter->PlayerKilled.AddDynamic(this, &AC_PlayerHUD::UpdateDeathWidget);
 }
 
 void AC_PlayerHUD::CreateHUDWidget()
@@ -173,7 +170,7 @@ void AC_PlayerHUD::DestroyNameInputWidget()
 
 void AC_PlayerHUD::CreateDeathUpdateWidget()
 {
-	UC_SpawnLibrary::SpawnWidget(GetWorld(), DeathUpdateWidgetClass, DeathUpdateWidget);
+	DeathUpdateWidget = UC_SpawnLibrary::SpawnWidget(GetWorld(), DeathUpdateWidgetClass, DeathUpdateWidget);
 }
 
 
@@ -253,6 +250,11 @@ FString AC_PlayerHUD::HUDTestname()
 
 void AC_PlayerHUD::UpdateDeathWidget(FString A, FString B)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("HUD CALLED DELEGATE, Killer: %s"), *A));
-	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, FString::Printf(TEXT("HUD CALLED DELEGATE, Dead: %s"), *B));
+	//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("%s Killed %s"), *A, *B));
+	
+	if(DeathUpdateWidget)
+	{
+		DeathUpdateWidget->UpdateDeathText(FString::Printf(TEXT("%s Killed %s"), *A, *B));
+	}
+	//DeathText = (FString::Printf(TEXT("%s Killed %s"), *A, *B));
 }

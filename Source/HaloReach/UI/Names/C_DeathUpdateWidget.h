@@ -16,7 +16,11 @@ public:
 
 	UC_DeathUpdateWidget(const FObjectInitializer& ObjectInitializer);
 
+	virtual void NativeConstruct() override;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* DeathUpdateText;
+
+	void UpdateDeathText(FString NewText);
 	
 };

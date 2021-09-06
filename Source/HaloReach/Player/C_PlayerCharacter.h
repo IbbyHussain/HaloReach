@@ -683,10 +683,18 @@ public:
 	void Client_SendDeath(const FString& KillerActorName, const FString& KilledName);
 	void Client_SendDeath_Implementation(const FString& KillerActorName, const FString& KilledName);
 
+	// Global death alerts
+
+	UFUNCTION(NetMultiCast, Reliable)
+	void Multi_IteratePlayers(const FString& A, const FString& B);
+	void Multi_IteratePlayers_Implementation(const FString& A, const FString& B);
+
+	UFUNCTION(Server, Reliable)
+	void Server_IteratePlayers(const FString& A, const FString& B);
+	void Server_IteratePlayers_Implementation(const FString& A, const FString& B);
+
 
 # pragma endregion
-
-	
 
 # pragma endregion
 };

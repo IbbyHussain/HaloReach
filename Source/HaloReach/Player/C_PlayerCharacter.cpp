@@ -31,6 +31,7 @@
 #include "Components/WidgetComponent.h"
 #include "HaloReach/UI/C_PlayerNameWidget.h"
 
+#include "HaloReach/GameModes/C_ReachGameStateBase.h"
 
 AC_PlayerCharacter::AC_PlayerCharacter(const FObjectInitializer& ObjectInitializer) : 
 	Super(ObjectInitializer.SetDefaultSubobjectClass<UC_PlayerCMC>(ACharacter::CharacterMovementComponentName))
@@ -1163,6 +1164,7 @@ void AC_PlayerCharacter::Multi_SetPlayerName_Implementation(const FString& NewPl
 	{
 		APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 		PlayerNameWidget->DisplayedPlayerName = NewPlayerName;
+		
 
 	}
 }
@@ -1255,9 +1257,24 @@ void AC_PlayerCharacter::Death(AActor* PlayerKiller)
 		Server_Death(false);
 	}
 
-	UE_LOG(LogTemp, Error, TEXT("PLAYER WAS KILLED BY: %s"), *PlayerKiller->GetName());
+	UC_PlayerNameWidget* PlayerNameWidget = Cast<UC_PlayerNameWidget>(PlayerNameWidgetComp->GetUserWidgetObject());
+	Client_SendDeath(PlayerKillerName, PlayerNameWidget->DisplayedPlayerName);
 
-	Client_SendDeath(PlayerKillerName, ("Me"));
+
+	if(HasAuthority())
+	{
+		Multi_IteratePlayers(PlayerKillerName, PlayerNameWidget->DisplayedPlayerName);
+	}
+
+	else
+	{
+		Server_IteratePlayers(PlayerKillerName, PlayerNameWidget->DisplayedPlayerName);
+	}
+
+
+
+
+
 
 	GetWorldTimerManager().SetTimer(RagdollHandle, this, &AC_PlayerCharacter::StartRagdoll, 3.0f, false);
 
@@ -1368,6 +1385,20 @@ void AC_PlayerCharacter::Client_CheckKillerName_Implementation(const FString& Ki
 void AC_PlayerCharacter::Client_SendDeath_Implementation(const FString& KillerActorName, const FString& KilledName)
 {
 	PlayerKilled.Broadcast(KillerActorName, KilledName);
+}
+
+void AC_PlayerCharacter::Multi_IteratePlayers_Implementation(const FString& A, const FString& B)
+{
+	AC_ReachGameStateBase* RGS = Cast<AC_ReachGameStateBase>(UGameplayStatics::GetGameState(GetWorld()));
+	if(RGS)
+	{
+		RGS->UpdateGlobalDeaths(A, B);
+	}
+}
+
+void AC_PlayerCharacter::Server_IteratePlayers_Implementation(const FString& A, const FString& B)
+{
+	Multi_IteratePlayers(A, B);
 }
 
 void AC_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

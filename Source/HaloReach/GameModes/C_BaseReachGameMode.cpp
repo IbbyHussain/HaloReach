@@ -24,7 +24,22 @@ void AC_BaseReachGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		APlayerController* PC = It->Get();
+		if (PC && PC->GetPawn())
+		{
+			AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(PC->GetPawn());
+			if (PlayerCharacter)
+			{
+				
+			}
+		}
+	}
+
 }
+
+
 
 
 
