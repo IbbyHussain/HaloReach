@@ -6,6 +6,7 @@
 #include "C_DeathUpdateWidget.generated.h"
 
 class UTextBlock;
+class UVerticalBox;
 
 UCLASS()
 class HALOREACH_API UC_DeathUpdateWidget : public UUserWidget
@@ -21,6 +22,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* DeathUpdateText;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UVerticalBox* AlertBox;
+
 	void UpdateDeathText(FString NewText);
+
+	void UpdateAlertBox(UWidget* AlertWidget);
 	
 };

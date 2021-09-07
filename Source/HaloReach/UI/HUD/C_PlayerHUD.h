@@ -10,6 +10,7 @@ class UC_DeathHUDWidget;
 class UC_PlayerNameWidget;
 class UC_NameInputWidget;
 class UC_DeathUpdateWidget;
+class UC_GlobalAlertWidget;
 
 UCLASS()
 class HALOREACH_API AC_PlayerHUD : public AHUD
@@ -124,6 +125,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpdateDeathWidget(FString A, FString B);
 
+	void CreateGlobalAlertWidget();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Widgets")
+	TSubclassOf<UC_GlobalAlertWidget> GlobalAlertWidgetClass;
+
+	UPROPERTY()
+	UC_GlobalAlertWidget* GlobalAlertWidget;
 
 # pragma endregion
 	

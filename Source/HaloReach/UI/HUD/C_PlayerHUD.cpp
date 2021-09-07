@@ -14,6 +14,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "HaloReach/Libraries/C_SpawnLibrary.h"
 #include "HaloReach/UI/Names/C_DeathUpdateWidget.h"
+#include "HaloReach/UI/Names/C_GlobalAlertWidget.h"
 
 
 AC_PlayerHUD::AC_PlayerHUD()
@@ -55,9 +56,6 @@ void AC_PlayerHUD::BeginPlay()
 	// this is for testing only
 	//CreateHUDWidget();
 	CreateDeathUpdateWidget();
-
-	//AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	//PlayerCharacter->PlayerKilled.AddDynamic(this, &AC_PlayerHUD::UpdateDeathWidget);
 }
 
 void AC_PlayerHUD::CreateHUDWidget()
@@ -250,11 +248,16 @@ FString AC_PlayerHUD::HUDTestname()
 
 void AC_PlayerHUD::UpdateDeathWidget(FString A, FString B)
 {
-	//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("%s Killed %s"), *A, *B));
-	
 	if(DeathUpdateWidget)
 	{
-		DeathUpdateWidget->UpdateDeathText(FString::Printf(TEXT("%s Killed %s"), *A, *B));
+		//DeathUpdateWidget->UpdateDeathText(FString::Printf(TEXT("%s Killed %s"), *A, *B));
+		CreateGlobalAlertWidget();
+		DeathUpdateWidget->UpdateAlertBox(GlobalAlertWidget);
+		GlobalAlertWidget->SetAlertText(FString::Printf(TEXT("%s Killed %s"), *A, *B));
 	}
-	//DeathText = (FString::Printf(TEXT("%s Killed %s"), *A, *B));
+}
+
+void AC_PlayerHUD::CreateGlobalAlertWidget()
+{
+	GlobalAlertWidget = UC_SpawnLibrary::SpawnWidgetNoViewport(GetWorld(), GlobalAlertWidgetClass, GlobalAlertWidget);
 }

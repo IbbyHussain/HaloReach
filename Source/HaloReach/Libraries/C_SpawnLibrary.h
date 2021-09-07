@@ -31,6 +31,9 @@ public:
 	template<typename ClassName>
 	static ClassName* SpawnWidget(UWorld* World, TSubclassOf<ClassName> ObjectClass, ClassName* ObjectPointer);
 
+	template<typename ClassName>
+	static ClassName* SpawnWidgetNoViewport(UWorld* World, TSubclassOf<ClassName> ObjectClass, ClassName* ObjectPointer);
+
 # pragma endregion
 };
 
@@ -77,6 +80,22 @@ ClassName* UC_SpawnLibrary::SpawnWidget(UWorld* World, TSubclassOf<ClassName> Ob
 		if (ObjectPointer)
 		{
 			ObjectPointer->AddToViewport();
+			return ObjectPointer;
+		}
+	}
+
+	return ObjectPointer;
+}
+
+template<typename ClassName>
+ClassName* UC_SpawnLibrary::SpawnWidgetNoViewport(UWorld* World, TSubclassOf<ClassName> ObjectClass, ClassName* ObjectPointer)
+{
+	auto NewWorld = static_cast<UWorld*>(World);
+	if (ObjectClass)
+	{
+		ObjectPointer = CreateWidget<ClassName>(World, ObjectClass);
+		if (ObjectPointer)
+		{
 			return ObjectPointer;
 		}
 	}

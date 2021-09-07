@@ -1271,11 +1271,6 @@ void AC_PlayerCharacter::Death(AActor* PlayerKiller)
 		Server_IteratePlayers(PlayerKillerName, PlayerNameWidget->DisplayedPlayerName);
 	}
 
-
-
-
-
-
 	GetWorldTimerManager().SetTimer(RagdollHandle, this, &AC_PlayerCharacter::StartRagdoll, 3.0f, false);
 
 	GetWorldTimerManager().SetTimer(RespawnHandle, this, &AC_PlayerCharacter::Respawn, 5.0f, false);
