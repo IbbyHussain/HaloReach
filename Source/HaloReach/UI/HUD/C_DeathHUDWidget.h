@@ -42,12 +42,6 @@ public:
 
 # pragma endregion
 
-# pragma region WidgetTimer
-
-	
-
-# pragma endregion
-
 # pragma region Black Fade In Animation
 
 	void StoreWidgetAnimation();

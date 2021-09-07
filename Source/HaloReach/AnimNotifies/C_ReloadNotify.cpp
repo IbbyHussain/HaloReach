@@ -9,8 +9,6 @@ void UC_ReloadNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase
 {
 	//Super::Notify(MeshComp, Animation);
 
-	GEngine->AddOnScreenDebugMessage(-1, 4.5f, FColor::Purple, __FUNCTION__);
-
 	// Expensive replace will delegate
 	AC_PlayerCharacter* Player = Cast<AC_PlayerCharacter>(MeshComp->GetAnimInstance()->TryGetPawnOwner());
 	if(Player)

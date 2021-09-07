@@ -13,14 +13,6 @@ UC_DeathUpdateWidget::UC_DeathUpdateWidget(const FObjectInitializer& ObjectIniti
 void UC_DeathUpdateWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-
-	//UpdateDeathText("begin");
-
-}
-
-void UC_DeathUpdateWidget::UpdateDeathText(FString NewText)
-{
-	DeathUpdateText->SetText(FText::FromString(NewText));
 }
 
 void UC_DeathUpdateWidget::UpdateAlertBox(UWidget* AlertWidget)

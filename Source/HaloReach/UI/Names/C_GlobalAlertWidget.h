@@ -24,4 +24,33 @@ public:
 
 	void SetAlertText(const FString UpdatedAlertText);
 
+# pragma region Widget Animation
+
+	void StoreWidgetAnimation();
+
+	UWidgetAnimation* GetAnimationByName(FName AnimationName) const;
+
+	TMap<FName, UWidgetAnimation*> AnimationsMap;
+
+	UWidgetAnimation* FadeInAnimation;
+
+	UWidgetAnimation* FadeOutAnimation;
+
+	UFUNCTION()
+	void PlayFadeInAnimation();
+
+	UFUNCTION()
+	void PlayFadeOutAnimation();
+
+# pragma endregion
+
+	FTimerHandle DestroyHandle;
+
+	void DestroyWidget();
+
+	FWidgetAnimationDynamicEvent EndDelegate;
+
+	UFUNCTION()
+	void AnimationFinished();
+
 };

@@ -250,7 +250,6 @@ void AC_PlayerHUD::UpdateDeathWidget(FString A, FString B)
 {
 	if(DeathUpdateWidget)
 	{
-		//DeathUpdateWidget->UpdateDeathText(FString::Printf(TEXT("%s Killed %s"), *A, *B));
 		CreateGlobalAlertWidget();
 		DeathUpdateWidget->UpdateAlertBox(GlobalAlertWidget);
 		GlobalAlertWidget->SetAlertText(FString::Printf(TEXT("%s Killed %s"), *A, *B));

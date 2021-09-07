@@ -20,12 +20,7 @@ public:
 	virtual void NativeConstruct() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	UTextBlock* DeathUpdateText;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UVerticalBox* AlertBox;
-
-	void UpdateDeathText(FString NewText);
 
 	void UpdateAlertBox(UWidget* AlertWidget);
 	
