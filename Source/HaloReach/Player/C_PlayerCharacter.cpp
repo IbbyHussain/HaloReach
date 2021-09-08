@@ -210,16 +210,16 @@ void AC_PlayerCharacter::BeginPlay()
 		MeleeTrackTimeline->SetLooping(false);
 	}
 
-	if (HasAuthority())
-	{
-		// respawn player at a player start 
-		RespawnPlayer.Broadcast(this);
-	}
+	//if (HasAuthority())
+	//{
+	//	// respawn player at a player start 
+	//	RespawnPlayer.Broadcast(this);
+	//}
 
-	else
-	{
-		Server_Broadcast(this);
-	}
+	//else
+	//{
+	//	Server_Broadcast(this);
+	//}
 
 	PlayerNameBoxComp->OnComponentBeginOverlap.AddDynamic(this, &AC_PlayerCharacter::OnOverlapBegin);
 	PlayerNameBoxComp->OnComponentEndOverlap.AddDynamic(this, &AC_PlayerCharacter::OnOverlapEnd);
@@ -1144,7 +1144,7 @@ void AC_PlayerCharacter::StopMontage(USkeletalMeshComponent* MeshComp, UAnimMont
 
 void AC_PlayerCharacter::SetControlRotation()
 {
-	if(HasAuthority() || IsLocallyControlled())
+	if((HasAuthority() || IsLocallyControlled()) && GetController())
 	{
 		ControlRotation = GetController()->GetControlRotation();
 	}
@@ -1164,8 +1164,6 @@ void AC_PlayerCharacter::Multi_SetPlayerName_Implementation(const FString& NewPl
 	{
 		APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 		PlayerNameWidget->DisplayedPlayerName = NewPlayerName;
-		
-
 	}
 }
 
@@ -1258,8 +1256,6 @@ void AC_PlayerCharacter::Death(AActor* PlayerKiller)
 	}
 
 	UC_PlayerNameWidget* PlayerNameWidget = Cast<UC_PlayerNameWidget>(PlayerNameWidgetComp->GetUserWidgetObject());
-	Client_SendDeath(PlayerKillerName, PlayerNameWidget->DisplayedPlayerName);
-
 
 	if(HasAuthority())
 	{
@@ -1273,9 +1269,10 @@ void AC_PlayerCharacter::Death(AActor* PlayerKiller)
 
 	GetWorldTimerManager().SetTimer(RagdollHandle, this, &AC_PlayerCharacter::StartRagdoll, 3.0f, false);
 
-	GetWorldTimerManager().SetTimer(RespawnHandle, this, &AC_PlayerCharacter::Respawn, 5.0f, false);
+	GetWorldTimerManager().SetTimer(FadeOutEndHandle, this, &AC_PlayerCharacter::PlayFadeOut, 5.0f, false);
 }
 
+// Updates the Rotation Yaw settings for clients 
 void AC_PlayerCharacter::Server_Death_Implementation(bool bDead)
 {
 	bUseControllerRotationYaw = bDead;
@@ -1310,17 +1307,32 @@ void AC_PlayerCharacter::Server_DestroyWeapons_Implementation()
 	}
 }
 
+void  AC_PlayerCharacter::PlayFadeOut()
+{
+	//HUD->PlayHUDFadeInAnimation();
+	GetWorldTimerManager().SetTimer(RespawnHandle, this, &AC_PlayerCharacter::Respawn, 1.0f, false);
+}
+
 void AC_PlayerCharacter::Respawn()
 {
-	HUD->PlayHUDFadeInAnimation();
-
 	// broadcast to player controller to tell gamemode to respawn player
+	//if (HasAuthority())
+	//{
+	//	// respawn player at a player start 
+	//	RespawnPlayer.Broadcast(this);
+	//}
+
+	//else
+	//{
+	//	Server_Broadcast(this);
+	//}
+
 	RespawnPlayer.Broadcast(this);
-	
 
 	GetWorldTimerManager().ClearAllTimersForObject(this);
 
 	//Destroy();
+
 }
 
 void AC_PlayerCharacter::Server_Broadcast_Implementation(AC_PlayerCharacter* Player)
@@ -1353,6 +1365,8 @@ void AC_PlayerCharacter::Client_Broadcast_Implementation(AActor* Player)
 	}
 }
 
+# pragma endregion
+
 # pragma region Killer Name region
 
 void AC_PlayerCharacter::Client_SetKillerName_Implementation(const FString& KillerActorName)
@@ -1375,12 +1389,7 @@ void AC_PlayerCharacter::Client_CheckKillerName_Implementation(const FString& Ki
 
 # pragma endregion
 
-# pragma endregion
 
-void AC_PlayerCharacter::Client_SendDeath_Implementation(const FString& KillerActorName, const FString& KilledName)
-{
-	PlayerKilled.Broadcast(KillerActorName, KilledName);
-}
 
 void AC_PlayerCharacter::Multi_IteratePlayers_Implementation(const FString& A, const FString& B)
 {
@@ -1395,6 +1404,22 @@ void AC_PlayerCharacter::Server_IteratePlayers_Implementation(const FString& A, 
 {
 	Multi_IteratePlayers(A, B);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void AC_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {

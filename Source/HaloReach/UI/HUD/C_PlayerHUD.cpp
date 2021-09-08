@@ -57,6 +57,7 @@ void AC_PlayerHUD::BeginPlay()
 	// this is for testing only
 	//CreateHUDWidget();
 	CreateDeathUpdateWidget();
+	
 }
 
 void AC_PlayerHUD::CreateHUDWidget()

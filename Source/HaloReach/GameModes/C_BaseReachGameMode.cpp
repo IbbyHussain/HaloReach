@@ -23,25 +23,7 @@ AC_BaseReachGameMode::AC_BaseReachGameMode()
 void AC_BaseReachGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-
-	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
-	{
-		APlayerController* PC = It->Get();
-		if (PC && PC->GetPawn())
-		{
-			AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(PC->GetPawn());
-			if (PlayerCharacter)
-			{
-				
-			}
-		}
-	}
-
 }
-
-
-
-
 
 //AActor* AC_BaseReachGameMode::ChoosePlayerStart_Implementation(AController* Player)
 //{
@@ -91,19 +73,45 @@ void AC_BaseReachGameMode::Server_RespawnPlayer_Implementation(AC_PlayerCharacte
 {
 	// Basic , temp respawn only works for server
 
-	/*UE_LOG(LogTemp, Error, TEXT("GAME MODE RESPAWN"));
+	//APlayerController* PC = Cast<APlayerController>(PlayerToRespawn->GetController());
+	//if(PC)
+	//{
+	//	AC_PlayerHUD* HUD = Cast<AC_PlayerHUD>(PC->GetHUD());
+	//	if(HUD)
+	//	{
+	//		//HUD->PlayHUDFadeOutAnimation();
+	//		HUD->DestroyDeathWidget();
+	//		HUD->CreateHUDWidget();
+	//	}
 
-	TTuple<APlayerController*, AC_PlayerCharacter*> PlayerData = IterateOverPlayers();
+	//	//
+
+	//	//Spawn new player and possess
+	//	FActorSpawnParameters SpawnParams;
+	//	AC_PlayerCharacter* NewPlayerCharacter = GetWorld()->SpawnActor<AC_PlayerCharacter>(DefaultPawnClass, FVector(0.0f, 0.0f, 200.0f), FRotator::ZeroRotator, SpawnParams);
+	//	PC->UnPossess();
+	//	PC->Possess(NewPlayerCharacter);
+
+	//	
+
+	//}
+	
+	
+
+	//UE_LOG(LogTemp, Error, TEXT("GAME MODE RESPAWN"));
+
+	/*TTuple<APlayerController*, AC_PlayerCharacter*> PlayerData = IterateOverPlayers();
 	if(PlayerData.Get<1>()->bIsDead)
 	{
 		UE_LOG(LogTemp, Error, TEXT("DEAD Player name: %s"), *PlayerData.Get<1>()->GetName());
-		//PC->UnPossess();
-	//			UE_LOG(LogTemp, Error, TEXT("Player name: %s") *PlayerCharacter->GetName());
-	//			// Spawn new player and possess
-	//			//FActorSpawnParameters SpawnParams;
-	//			//AC_PlayerCharacter* NewPlayerCharacter = GetWorld()->SpawnActor<AC_PlayerCharacter>(DefaultPawnClass, FVector(0.0f, 0.0f, 200.0f), FRotator::ZeroRotator, SpawnParams);
-	//			//PC->Possess(NewPlayerCharacter);
+
+		PlayerData.Get<0>()->UnPossess();
+
+		//Spawn new player and possess
+		FActorSpawnParameters SpawnParams;
+		AC_PlayerCharacter* NewPlayerCharacter = GetWorld()->SpawnActor<AC_PlayerCharacter>(DefaultPawnClass, FVector(0.0f, 0.0f, 200.0f), FRotator::ZeroRotator, SpawnParams);
+		PlayerData.Get<0>()->Possess(NewPlayerCharacter);
 	}*/
 
-	UE_LOG(LogTemp, Error, TEXT("DEAD Player name: %s"), *PlayerToRespawn->GetName());
+	
 }
