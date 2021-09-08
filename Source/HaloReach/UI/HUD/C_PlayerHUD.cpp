@@ -15,6 +15,7 @@
 #include "HaloReach/Libraries/C_SpawnLibrary.h"
 #include "HaloReach/UI/Names/C_DeathUpdateWidget.h"
 #include "HaloReach/UI/Names/C_GlobalAlertWidget.h"
+#include "Components/VerticalBox.h"
 
 
 AC_PlayerHUD::AC_PlayerHUD()
@@ -250,13 +251,8 @@ void AC_PlayerHUD::UpdateDeathWidget(FString A, FString B)
 {
 	if(DeathUpdateWidget)
 	{
-		CreateGlobalAlertWidget();
-		DeathUpdateWidget->UpdateAlertBox(GlobalAlertWidget);
-		GlobalAlertWidget->SetAlertText(FString::Printf(TEXT("%s Killed %s"), *A, *B));
+		DeathUpdateWidget->UpdateAlertBox(A, B);
 	}
 }
 
-void AC_PlayerHUD::CreateGlobalAlertWidget()
-{
-	GlobalAlertWidget = UC_SpawnLibrary::SpawnWidgetNoViewport(GetWorld(), GlobalAlertWidgetClass, GlobalAlertWidget);
-}
+

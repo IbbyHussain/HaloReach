@@ -125,14 +125,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpdateDeathWidget(FString A, FString B);
 
-	void CreateGlobalAlertWidget();
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Widgets")
-	TSubclassOf<UC_GlobalAlertWidget> GlobalAlertWidgetClass;
-
-	UPROPERTY()
-	UC_GlobalAlertWidget* GlobalAlertWidget;
-
 # pragma endregion
 	
 # pragma region Widget Animation

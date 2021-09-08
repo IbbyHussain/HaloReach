@@ -7,6 +7,7 @@
 
 class UTextBlock;
 class UVerticalBox;
+class UC_GlobalAlertWidget;
 
 UCLASS()
 class HALOREACH_API UC_DeathUpdateWidget : public UUserWidget
@@ -22,6 +23,21 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UVerticalBox* AlertBox;
 
-	void UpdateAlertBox(UWidget* AlertWidget);
+	void UpdateAlertBox(FString A, FString B);
+
+# pragma region Global Alert Widget
+
+	void CreateGlobalAlertWidget();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Widgets")
+	TSubclassOf<UC_GlobalAlertWidget> GlobalAlertWidgetClass;
+
+	UPROPERTY()
+	UC_GlobalAlertWidget* GlobalAlertWidget;
+
+	UPROPERTY()
+	TArray<UWidget*> CurrentChildrenArray;
+
+# pragma endregion
 	
 };
