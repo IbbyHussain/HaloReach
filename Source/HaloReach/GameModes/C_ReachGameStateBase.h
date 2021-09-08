@@ -6,9 +6,8 @@
 #include "GameFramework/GameStateBase.h"
 #include "C_ReachGameStateBase.generated.h"
 
-/**
- * 
- */
+class AC_PlayerCharacter;
+ 
 UCLASS()
 class HALOREACH_API AC_ReachGameStateBase : public AGameStateBase
 {

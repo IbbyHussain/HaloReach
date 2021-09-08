@@ -73,6 +73,11 @@ void AC_BaseReachGameMode::Server_RespawnPlayer_Implementation(AC_PlayerCharacte
 {
 	// Basic , temp respawn only works for server
 
+
+
+	GEngine->AddOnScreenDebugMessage(-1, 4.5f, FColor::Magenta, FString::Printf(TEXT("DEAD PLAYER IS: %s"), *PlayerToRespawn->GetName()));
+
+
 	//APlayerController* PC = Cast<APlayerController>(PlayerToRespawn->GetController());
 	//if(PC)
 	//{
@@ -84,17 +89,34 @@ void AC_BaseReachGameMode::Server_RespawnPlayer_Implementation(AC_PlayerCharacte
 	//		HUD->CreateHUDWidget();
 	//	}
 
-	//	//
 
-	//	//Spawn new player and possess
-	//	FActorSpawnParameters SpawnParams;
-	//	AC_PlayerCharacter* NewPlayerCharacter = GetWorld()->SpawnActor<AC_PlayerCharacter>(DefaultPawnClass, FVector(0.0f, 0.0f, 200.0f), FRotator::ZeroRotator, SpawnParams);
-	//	PC->UnPossess();
-	//	PC->Possess(NewPlayerCharacter);
+	//	//PlayerToRespawn->Destroy();
+	//	//PC->UnPossess();
 
-	//	
-
+	//	////Spawn new player and possess
+	//	//FActorSpawnParameters SpawnParams;
+	//	//AC_PlayerCharacter* NewPlayerCharacter = GetWorld()->SpawnActor<AC_PlayerCharacter>(DefaultPawnClass, FVector(0.0f, 0.0f, 200.0f), FRotator::ZeroRotator, SpawnParams);
+	//	//PC->Possess(NewPlayerCharacter);
 	//}
+
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		APlayerController* PC = It->Get();
+		if (PC && PC->GetPawn())
+		{
+			AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(PC->GetPawn());
+			if (PlayerCharacter && PlayerCharacter->bIsDead)
+			{
+				PlayerCharacter->Destroy();
+				PC->UnPossess();
+
+				// Spawn new player and possess
+				FActorSpawnParameters SpawnParams;
+				AC_PlayerCharacter* NewPlayerCharacter = GetWorld()->SpawnActor<AC_PlayerCharacter>(DefaultPawnClass, FVector(0.0f, 0.0f, 200.0f), FRotator::ZeroRotator, SpawnParams);
+				PC->Possess(NewPlayerCharacter);
+			}
+		}
+	}
 	
 	
 
@@ -115,3 +137,27 @@ void AC_BaseReachGameMode::Server_RespawnPlayer_Implementation(AC_PlayerCharacte
 
 	
 }
+
+//void AC_BaseReachGameMode::RespawnPlayer()
+//{
+//	// Basic , temp respawn only works for server
+//
+//	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+//	{
+//		APlayerController* PC = It->Get();
+//		if (PC && PC->GetPawn())
+//		{
+//			AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(PC->GetPawn());
+//			if (PlayerCharacter && PlayerCharacter->bIsDead)
+//			{
+//				PlayerCharacter->Destroy();
+//				PC->UnPossess();
+//
+//				// Spawn new player and possess
+//				FActorSpawnParameters SpawnParams;
+//				AC_PlayerCharacter* NewPlayerCharacter = GetWorld()->SpawnActor<AC_PlayerCharacter>(DefaultPawnClass, FVector(0.0f, 0.0f, 200.0f), FRotator::ZeroRotator, SpawnParams);
+//				PC->Possess(NewPlayerCharacter);
+//			}
+//		}
+//	}
+//}

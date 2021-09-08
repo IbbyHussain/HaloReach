@@ -129,10 +129,15 @@ void AC_PlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// General pointer definitions 
+
 	CameraManager = Cast<AC_PlayerCameraManager>(UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0));
 
 	HUD = Cast<AC_PlayerHUD>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetHUD());
-	//HUD = Cast<AC_PlayerHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+
+	PlayerNameWidget = Cast<UC_PlayerNameWidget>(PlayerNameWidgetComp->GetUserWidgetObject());
+
+	PC = Cast<APlayerController>(GetController());
 
 	GetPlayerMovementComponent()->SetPlayerSpeed(DefaultSpeed);
 
@@ -235,7 +240,7 @@ void AC_PlayerCharacter::BeginPlay()
 
 	// Tests
 
-	OnTakeAnyDamage.AddDynamic(this, &AC_PlayerCharacter::HandleTakeAnyDamage);
+	
 
 }
 
@@ -1036,7 +1041,6 @@ void AC_PlayerCharacter::MeleeTrackTimelineFloatReturn(float Value)
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, FString::Printf(TEXT("COLLIDED")));
 	}
 
-	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	if (PC)
 	{
 		PC->SetControlRotation(FMath::Lerp(GetActorRotation(), UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), EnemyLocation), Value));
@@ -1159,23 +1163,22 @@ void AC_PlayerCharacter::Server_SetPlayerName_Implementation(const FString& NewP
 
 void AC_PlayerCharacter::Multi_SetPlayerName_Implementation(const FString& NewPlayerName)
 {
-	UC_PlayerNameWidget* PlayerNameWidget = Cast<UC_PlayerNameWidget>(PlayerNameWidgetComp->GetUserWidgetObject());
 	if(PlayerNameWidget)
 	{
-		APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 		PlayerNameWidget->DisplayedPlayerName = NewPlayerName;
 	}
 }
 
 void AC_PlayerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	// Makes the render scale for the name widget 3x
 	AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(OtherActor);
 	if(PlayerCharacter && OtherActor != this)
 	{
 		if(PlayerCharacter->IsLocallyControlled())
 		{
-			NewX = 3.0f;
-			NewY = 3.0f;
+			NameWidgetScaleX = 3.0f;
+			NameWidgetScaleY = 3.0f;
 
 			NameWidgetTimeline->PlayFromStart();
 		}
@@ -1184,13 +1187,14 @@ void AC_PlayerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAc
 
 void AC_PlayerCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	// Makes the render scale for the name widget default
 	AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(OtherActor);
 	if (PlayerCharacter && OtherActor != this)
 	{
 		if (PlayerCharacter->IsLocallyControlled())
 		{
-			NewX = 1.0f;
-			NewY = 1.0f;
+			NameWidgetScaleX = 1.0f;
+			NameWidgetScaleY = 1.0f;
 
 			NameWidgetTimeline->PlayFromStart();
 		}
@@ -1199,16 +1203,59 @@ void AC_PlayerCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActo
 
 void AC_PlayerCharacter::NameWidgetTimelineFloatReturn(float Value)
 {
-	float x = PlayerNameWidgetComp->GetUserWidgetObject()->RenderTransform.Scale.X;
-	float y = PlayerNameWidgetComp->GetUserWidgetObject()->RenderTransform.Scale.Y;
+	if(PlayerNameWidgetComp->GetUserWidgetObject())
+	{
+		CurrentNameWidgetScaleX = PlayerNameWidgetComp->GetUserWidgetObject()->RenderTransform.Scale.X;
+		CurrentNameWidgetScaleY = PlayerNameWidgetComp->GetUserWidgetObject()->RenderTransform.Scale.Y;
 
-	PlayerNameWidgetComp->GetUserWidgetObject()->SetRenderScale(FVector2D(UKismetMathLibrary::Lerp(x, NewX, Value)));
-	PlayerNameWidgetComp->GetUserWidgetObject()->SetRenderScale(FVector2D(UKismetMathLibrary::Lerp(y, NewY, Value)));
+		// Lerps between current render scale and a new render scale
+		PlayerNameWidgetComp->GetUserWidgetObject()->SetRenderScale(FVector2D(UKismetMathLibrary::Lerp(CurrentNameWidgetScaleX, NameWidgetScaleX, Value)));
+		PlayerNameWidgetComp->GetUserWidgetObject()->SetRenderScale(FVector2D(UKismetMathLibrary::Lerp(CurrentNameWidgetScaleY, NameWidgetScaleY, Value)));
+	}
 }
 
 # pragma endregion
 
-# pragma region PlayerDeath
+# pragma region Player Killer Name
+
+void AC_PlayerCharacter::Client_SetKillerName_Implementation(const FString& KillerActorName)
+{
+	// Set using Client RPC as Killer name exists locally
+	PlayerKillerName = KillerActorName;
+}
+
+void AC_PlayerCharacter::Server_SetKillerName_Implementation(const FString& KillerActorName)
+{
+	Client_SetKillerName(KillerActorName);
+}
+
+void AC_PlayerCharacter::Client_CheckKillerName_Implementation(const FString& KillerActorName)
+{
+	// Checking Health needs to be done Client side
+	if (HealthComp->GetHealth() <= HealthComp->MaxHealth)
+	{
+		Server_SetKillerName(KillerActorName);
+	}
+}
+
+void AC_PlayerCharacter::Multi_UpdateAllPlayerDeathWidgets_Implementation(const FString& PlayerKiller, const FString& DeadPlayer)
+{
+	// Update all players 'Death Widgets' to show Player killer and the killed player
+	AC_ReachGameStateBase* RGS = Cast<AC_ReachGameStateBase>(UGameplayStatics::GetGameState(GetWorld()));
+	if (RGS)
+	{
+		RGS->UpdateGlobalDeaths(PlayerKiller, DeadPlayer);
+	}
+}
+
+void AC_PlayerCharacter::Server_UpdateAllPlayerDeathWidgets_Implementation(const FString& PlayerKiller, const FString& DeadPlayer)
+{
+	Multi_UpdateAllPlayerDeathWidgets(PlayerKiller, DeadPlayer);
+}
+
+# pragma endregion
+
+# pragma region Player Death
 
 void AC_PlayerCharacter::Death(AActor* PlayerKiller)
 {
@@ -1222,54 +1269,39 @@ void AC_PlayerCharacter::Death(AActor* PlayerKiller)
 	DefaultMesh->SetVisibility(false);
 	Mesh3P->SetOwnerNoSee(false);
 
-	//EquippedWeapon3PArray[0]->WeaponMesh3P->SetOwnerNoSee(true);
 	EquippedWeaponArray[0]->WeaponMesh->SetOwnerNoSee(true);
 
-	// Disables all actions
+	// Disable player actions 
 	UpdateMovementSettings(EMovementState::IDLE);
 
-	APlayerController* PlayerController = Cast<APlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
-	if(PlayerController)
-	{
-		PlayerController->SetIgnoreMoveInput(true);
-		bCanCrouch = false;
-	}
-
-	// temp 
+	// HUD Updates 
 	HUD->HUDWidget->RemoveFromParent();
 	HUD->CreateDeathWidget();
 
+	// Stops player mesh from moving with camera, as player will move 3P camera
 	bUseControllerRotationYaw = false;
 
-	// Play random death montage
-	if(HasAuthority())
+	// Play random death montage and Update the global alert widget
+	if (HasAuthority())
 	{
 		Multi_PlayMontage(Mesh3P, DeathMontageArray[UKismetMathLibrary::RandomIntegerInRange(0, DeathMontageArray.Num() - 1)]);
+
+		Multi_UpdateAllPlayerDeathWidgets(PlayerKillerName, PlayerNameWidget->DisplayedPlayerName);
 	}
 
 	else
 	{
 		Server_PlayMontage(Mesh3P, DeathMontageArray[UKismetMathLibrary::RandomIntegerInRange(0, DeathMontageArray.Num() - 1)]);
 
+		Server_UpdateAllPlayerDeathWidgets(PlayerKillerName, PlayerNameWidget->DisplayedPlayerName);
+
 		// Control rotation not updating from client to server without this, OR collision
 		Server_Death(false);
 	}
 
-	UC_PlayerNameWidget* PlayerNameWidget = Cast<UC_PlayerNameWidget>(PlayerNameWidgetComp->GetUserWidgetObject());
+	//GetWorldTimerManager().SetTimer(RagdollHandle, this, &AC_PlayerCharacter::StartRagdoll, 3.0f, false);
 
-	if(HasAuthority())
-	{
-		Multi_IteratePlayers(PlayerKillerName, PlayerNameWidget->DisplayedPlayerName);
-	}
-
-	else
-	{
-		Server_IteratePlayers(PlayerKillerName, PlayerNameWidget->DisplayedPlayerName);
-	}
-
-	GetWorldTimerManager().SetTimer(RagdollHandle, this, &AC_PlayerCharacter::StartRagdoll, 3.0f, false);
-
-	GetWorldTimerManager().SetTimer(FadeOutEndHandle, this, &AC_PlayerCharacter::PlayFadeOut, 5.0f, false);
+	GetWorldTimerManager().SetTimer(FadeOutEndHandle, this, &AC_PlayerCharacter::StartRespawn, 4.0f, false);
 }
 
 // Updates the Rotation Yaw settings for clients 
@@ -1277,6 +1309,8 @@ void AC_PlayerCharacter::Server_Death_Implementation(bool bDead)
 {
 	bUseControllerRotationYaw = bDead;
 }
+
+# pragma region Rgadoll
 
 void AC_PlayerCharacter::StartRagdoll()
 {
@@ -1293,29 +1327,23 @@ void AC_PlayerCharacter::Server_Ragdoll_Implementation(FTransform RagdollSpawnTr
 	PlayerToHide->SetActorHiddenInGame(true);
 }
 
-void AC_PlayerCharacter::Server_DestroyWeapons_Implementation()
-{
-	// Weapons are spawned on server, so need to be destroyed there
-	for (auto i : EquippedWeaponArray)
-	{
-		i->Destroy();
-	}
+# pragma endregion
 
-	for (auto x : EquippedWeapon3PArray)
-	{
-		x->Destroy();
-	}
-}
+# pragma region Respawn
 
-void  AC_PlayerCharacter::PlayFadeOut()
+void  AC_PlayerCharacter::StartRespawn()
 {
-	//HUD->PlayHUDFadeInAnimation();
+	HUD->PlayHUDFadeInAnimation();
+	Server_DestroyWeapons();
+	SetActorHiddenInGame(true);
+
 	GetWorldTimerManager().SetTimer(RespawnHandle, this, &AC_PlayerCharacter::Respawn, 1.0f, false);
 }
 
 void AC_PlayerCharacter::Respawn()
 {
-	// broadcast to player controller to tell gamemode to respawn player
+	// Broadcast to player controller to tell the gamemode to respawn the player
+
 	//if (HasAuthority())
 	//{
 	//	// respawn player at a player start 
@@ -1340,86 +1368,23 @@ void AC_PlayerCharacter::Server_Broadcast_Implementation(AC_PlayerCharacter* Pla
 	RespawnPlayer.Broadcast(Player);
 }
 
-// Only runs on server
-void AC_PlayerCharacter::HandleTakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
+void AC_PlayerCharacter::Server_DestroyWeapons_Implementation()
 {
-	//Client_Broadcast(DamageCauser);
-
-
-	if (HealthComp->GetHealth() <= 0.0f )
+	// Weapons are spawned on server, so need to be destroyed there
+	for (auto i : EquippedWeaponArray)
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("DED: %s"), *DamageCauser->GetName()));
-		BPDeath(DamageCauser);
+		i->Destroy();
 	}
 
-	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("HEALTH IS : %f"), HealthComp->GetHealth()));
-}
-
-void AC_PlayerCharacter::Client_Broadcast_Implementation(AActor* Player)
-{
-	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("HEALTH IS : %f"), HealthComp->GetHealth()));
-	if (HealthComp->GetHealth() <= 0.0f)
+	for (auto x : EquippedWeapon3PArray)
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("DED: %s"), *Player->GetName()));
-		BPDeath(Player);
+		x->Destroy();
 	}
 }
 
 # pragma endregion
 
-# pragma region Killer Name region
-
-void AC_PlayerCharacter::Client_SetKillerName_Implementation(const FString& KillerActorName)
-{
-	PlayerKillerName = KillerActorName;
-}
-
-void AC_PlayerCharacter::Server_SetKillerName_Implementation(const FString& KillerActorName)
-{
-	Client_SetKillerName(KillerActorName);
-}
-
-void AC_PlayerCharacter::Client_CheckKillerName_Implementation(const FString& KillerActorName)
-{
-	if (HealthComp->GetHealth() <= HealthComp->MaxHealth)
-	{
-		Server_SetKillerName(KillerActorName);
-	}
-}
-
 # pragma endregion
-
-
-
-void AC_PlayerCharacter::Multi_IteratePlayers_Implementation(const FString& A, const FString& B)
-{
-	AC_ReachGameStateBase* RGS = Cast<AC_ReachGameStateBase>(UGameplayStatics::GetGameState(GetWorld()));
-	if(RGS)
-	{
-		RGS->UpdateGlobalDeaths(A, B);
-	}
-}
-
-void AC_PlayerCharacter::Server_IteratePlayers_Implementation(const FString& A, const FString& B)
-{
-	Multi_IteratePlayers(A, B);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 void AC_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -1441,7 +1406,6 @@ void AC_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 }
 
 // INPUT
-
 void AC_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);

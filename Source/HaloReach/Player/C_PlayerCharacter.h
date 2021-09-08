@@ -137,14 +137,15 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Player | PlayerComponents")
 	USkeletalMeshComponent* Mesh3P;
 
+	class UC_PlayerNameWidget* PlayerNameWidget;
+
+	APlayerController* PC;
+
 // MOVEMENT METHODS
-
-
 
 	UFUNCTION()
 	void UpdateCombatState(ECombatState NewState);
 
-	
 // INTERACT SYSTEM
 
 	void Interact();
@@ -598,20 +599,11 @@ public:
 
 	FTimerHandle FadeOutEndHandle;
 
-	void PlayFadeOut();
+	void StartRespawn();
 
 	UFUNCTION(Server, Reliable)
 	void Server_Broadcast(AC_PlayerCharacter* Player);
 	void Server_Broadcast_Implementation(AC_PlayerCharacter* Player);
-
-	UFUNCTION()
-	void HandleTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
-
-	UFUNCTION(Client, Reliable)
-	void Client_Broadcast(AActor* Player);
-	void Client_Broadcast_Implementation(AActor* Player);
-
-
 
 // Player Killer
 
@@ -629,6 +621,8 @@ public:
 	UFUNCTION(Client, UnReliable, BlueprintCallable)
 	void Client_CheckKillerName(const FString& KillerActorName);
 	void Client_CheckKillerName_Implementation(const FString& KillerActorName);
+
+# pragma endregion
 
 # pragma region Player Name
 
@@ -671,9 +665,10 @@ public:
 	UFUNCTION()
 	void NameWidgetTimelineFloatReturn(float Value);
 
-	float NewX;
-	float NewY;
+	float NameWidgetScaleX, NameWidgetScaleY;
 
+	float CurrentNameWidgetScaleX, CurrentNameWidgetScaleY;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Timeline")
 	FString KillerName;
 
@@ -682,16 +677,15 @@ public:
 
 	// Global death alerts
 
+	// Will update all player 'DeathWidgets' , Used for death updates
 	UFUNCTION(NetMultiCast, Reliable)
-	void Multi_IteratePlayers(const FString& A, const FString& B);
-	void Multi_IteratePlayers_Implementation(const FString& A, const FString& B);
+	void Multi_UpdateAllPlayerDeathWidgets(const FString& PlayerKiller, const FString& DeadPlayer);
+	void Multi_UpdateAllPlayerDeathWidgets_Implementation(const FString& PlayerKiller, const FString& DeadPlayer);
 
+	// Will update all player 'DeathWidgets' , Used for death updates
 	UFUNCTION(Server, Reliable)
-	void Server_IteratePlayers(const FString& A, const FString& B);
-	void Server_IteratePlayers_Implementation(const FString& A, const FString& B);
-
-
-# pragma endregion
+	void Server_UpdateAllPlayerDeathWidgets(const FString& PlayerKiller, const FString& DeadPlayer);
+	void Server_UpdateAllPlayerDeathWidgets_Implementation(const FString& PlayerKiller, const FString& DeadPlayer);
 
 # pragma endregion
 };

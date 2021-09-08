@@ -30,4 +30,11 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	FString AssignedName;
 
+	UPROPERTY(EditDefaultsOnly, Category = "S")
+	TSubclassOf<AC_PlayerCharacter> PlayerClass;
+
+	UFUNCTION(Server, Reliable)
+	void Server_PossessPlayer(AC_PlayerCharacter* PlayerToRespawn);
+	void Server_PossessPlayer_Implementation(AC_PlayerCharacter* PlayerToRespawn);
+
 };
