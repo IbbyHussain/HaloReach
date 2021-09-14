@@ -23,7 +23,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "PlayerStart | Components")
 	class USpringArmComponent* SpringArmComp;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "PlayerStart | Components")
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "PlayerStart | Components")
 	FName LocationName;
 
 
