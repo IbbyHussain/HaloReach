@@ -9,6 +9,8 @@
 #include "GameFramework/PlayerState.h"
 #include "HaloReach/GameModes/C_ReachGameStateBase.h"
 #include "HaloReach/Player/C_PlayerCharacter.h"
+#include "HaloReach/GameModes/C_ReachPlayerStart.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("texthere: %f), x));
 
@@ -83,7 +85,35 @@ void AC_ReachPlayerController::Server_PossessPlayer_Implementation(AC_PlayerChar
 	Possess(NewPlayerCharacter);
 }
 
-void AC_ReachPlayerController::Client_Bind_Implementation()
+void AC_ReachPlayerController::SetPlayerSpawnLocation()
 {
-	BindRespawnDelegate();
+	AC_ReachGameStateBase* ReachGameState = Cast<AC_ReachGameStateBase>(UGameplayStatics::GetGameState(GetWorld()));
+
+	if(ReachGameState)
+	{
+		int Num = UKismetMathLibrary::RandomIntegerInRange(0, ReachGameState->PlayerStartArray.Num() - 1);
+		FVector PlayerSpawnLocation = ReachGameState->PlayerStartArray[Num]->GetActorLocation();
+
+		if (HasAuthority())
+		{
+			GetPawn()->SetActorLocation(PlayerSpawnLocation);
+		}
+
+		else
+		{
+			Server_SetPlayerSpawnLocation(GetPawn(), PlayerSpawnLocation);
+		}
+	}
+}
+void AC_ReachPlayerController::Server_SetPlayerSpawnLocation_Implementation(AActor* PlayerCharacter, FVector NewLocation)
+{
+	PlayerCharacter->SetActorLocation(NewLocation);
+}
+
+void AC_ReachPlayerController::SetupInputComponent()
+{
+	Super::SetupInputComponent();
+
+	// MOVING
+	InputComponent->BindAction("Test", IE_Pressed, this, &AC_ReachPlayerController::SetPlayerSpawnLocation);
 }

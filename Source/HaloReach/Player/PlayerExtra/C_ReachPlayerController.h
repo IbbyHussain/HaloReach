@@ -35,12 +35,18 @@ public:
 
 	void BindRespawnDelegate();
 
-	UFUNCTION(Client, Reliable)
-	void Client_Bind();
-	void Client_Bind_Implementation();
-
 	UPROPERTY()
 	class AC_PlayerHUD* HUD;
+
+	// Input
+
+	virtual void SetupInputComponent() override;
+
+	void SetPlayerSpawnLocation();
+
+	UFUNCTION(Server, Reliable)
+	void Server_SetPlayerSpawnLocation(AActor* PlayerCharacter, FVector NewLocation);
+	void Server_SetPlayerSpawnLocation_Implementation(AActor* PlayerCharacter, FVector NewLocation);
 
 
 };

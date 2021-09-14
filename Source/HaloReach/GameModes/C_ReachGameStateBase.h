@@ -7,6 +7,7 @@
 #include "C_ReachGameStateBase.generated.h"
 
 class AC_PlayerCharacter;
+class AC_ReachPlayerStart;
  
 UCLASS()
 class HALOREACH_API AC_ReachGameStateBase : public AGameStateBase
@@ -23,4 +24,6 @@ public:
 
 	UFUNCTION()
 	void UpdateGlobalDeaths(FString A, FString B);
+
+	TArray<AC_ReachPlayerStart*> PlayerStartArray;
 };
