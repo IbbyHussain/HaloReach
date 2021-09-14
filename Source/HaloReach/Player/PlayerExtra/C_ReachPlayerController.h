@@ -23,10 +23,6 @@ public:
 	UFUNCTION()
 	void RespawnPlayer(AC_PlayerCharacter* PlayerToRespawn);
 
-	UFUNCTION(Server, Reliable)
-	void Server_RequestGMRespawn(AC_PlayerCharacter* PlayerToRespawn);
-	void Server_RequestGMRespawn_Implementation(AC_PlayerCharacter* PlayerToRespawn);
-
 	UPROPERTY(BlueprintReadWrite)
 	FString AssignedName;
 
@@ -36,5 +32,15 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_PossessPlayer(AC_PlayerCharacter* PlayerToRespawn);
 	void Server_PossessPlayer_Implementation(AC_PlayerCharacter* PlayerToRespawn);
+
+	void BindRespawnDelegate();
+
+	UFUNCTION(Client, Reliable)
+	void Client_Bind();
+	void Client_Bind_Implementation();
+
+	UPROPERTY()
+	class AC_PlayerHUD* HUD;
+
 
 };
