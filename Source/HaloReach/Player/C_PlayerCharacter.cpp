@@ -1356,7 +1356,7 @@ void AC_PlayerCharacter::Respawn()
 	else
 	{
 		AC_ReachPlayerController* RPC = Cast<AC_ReachPlayerController>(PC);
-		if (PC && RPC)
+		if (RPC)
 		{
 			RPC->RespawnPlayer(this);
 

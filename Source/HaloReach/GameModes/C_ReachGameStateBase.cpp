@@ -33,12 +33,6 @@ void AC_ReachGameStateBase::BeginPlay()
 			PlayerStartArray.AddUnique(PlayerStart);
 		}
 	}
-
-	for (auto I : PlayerStartArray)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Start was %s"), *I->GetName()));
-	}
-
 }
 
 void AC_ReachGameStateBase::Tick(float DeltaTime)

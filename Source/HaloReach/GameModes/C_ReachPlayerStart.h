@@ -26,6 +26,13 @@ public:
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "PlayerStart | Components")
 	FName LocationName;
 
+	// Will return true if the player start is unoccupied
+	bool bIsSuitable();
+
+	// The radius of the sphere trace which checks if this player start is vacant
+	UPROPERTY(EditDefaultsOnly, Category = "PlayerStart | Attributes")
+	float SphereRadius;
+
 
 	
 };

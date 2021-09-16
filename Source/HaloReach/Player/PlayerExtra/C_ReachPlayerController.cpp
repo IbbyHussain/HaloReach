@@ -54,6 +54,8 @@ void AC_ReachPlayerController::RespawnPlayer(AC_PlayerCharacter* PlayerToRespawn
 			HUD->CreateHUDWidget();
 		}
 
+		// if player starts are occuppied wont spawn
+
 		if (HasAuthority())
 		{
 			UnPossess();
@@ -89,12 +91,34 @@ FVector AC_ReachPlayerController::GetPlayerSpawnLocation()
 {
 	AC_ReachGameStateBase* ReachGameState = Cast<AC_ReachGameStateBase>(UGameplayStatics::GetGameState(GetWorld()));
 
-	if(ReachGameState)
-	{
-		int Num = UKismetMathLibrary::RandomIntegerInRange(0, ReachGameState->PlayerStartArray.Num() - 1);
-		FVector PlayerSpawnLocation = ReachGameState->PlayerStartArray[Num]->GetActorLocation();
+	TArray<AC_ReachPlayerStart*> SuitablePlayerStartArray;
 
-		return PlayerSpawnLocation;
+	if (ReachGameState)
+	{
+		for (auto x : ReachGameState->PlayerStartArray)
+		{
+			if(x->bIsSuitable())
+			{
+				SuitablePlayerStartArray.AddUnique(x);
+			}
+		}
+
+		if(SuitablePlayerStartArray.Num() != 0)
+		{
+			for (auto i : SuitablePlayerStartArray)
+			{
+				int Num = UKismetMathLibrary::RandomIntegerInRange(0, SuitablePlayerStartArray.Num() - 1);
+				FVector PlayerSpawnLocation = SuitablePlayerStartArray[Num]->GetActorLocation();
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("SUITABLE RESPAWN CLIENT")));
+				return PlayerSpawnLocation;
+			}
+		}
+
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("NOT SUITABLE RESPAWN CLIENT")));
+			return FVector(0, 0, 0);
+		}
 	}
 
 	return FVector(0, 0, 0);
