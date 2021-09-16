@@ -61,7 +61,7 @@ void AC_ReachPlayerController::RespawnPlayer(AC_PlayerCharacter* PlayerToRespawn
 
 			//Spawn new player and possess
 			FActorSpawnParameters SpawnParams;
-			AC_PlayerCharacter* NewPlayerCharacter = GetWorld()->SpawnActor<AC_PlayerCharacter>(PlayerClass, FVector(0.0f, 0.0f, 200.0f), FRotator::ZeroRotator, SpawnParams);
+			AC_PlayerCharacter* NewPlayerCharacter = GetWorld()->SpawnActor<AC_PlayerCharacter>(PlayerClass, GetPlayerSpawnLocation(), FRotator::ZeroRotator, SpawnParams);
 			Possess(NewPlayerCharacter);
 
 			BindRespawnDelegate();
@@ -81,11 +81,11 @@ void AC_ReachPlayerController::Server_PossessPlayer_Implementation(AC_PlayerChar
 
 	//Spawn new player and possess
 	FActorSpawnParameters SpawnParams;
-	AC_PlayerCharacter* NewPlayerCharacter = GetWorld()->SpawnActor<AC_PlayerCharacter>(PlayerClass, FVector(0.0f, 0.0f, 200.0f), FRotator::ZeroRotator, SpawnParams);
+	AC_PlayerCharacter* NewPlayerCharacter = GetWorld()->SpawnActor<AC_PlayerCharacter>(PlayerClass, GetPlayerSpawnLocation(), FRotator::ZeroRotator, SpawnParams);
 	Possess(NewPlayerCharacter);
 }
 
-void AC_ReachPlayerController::SetPlayerSpawnLocation()
+FVector AC_ReachPlayerController::GetPlayerSpawnLocation()
 {
 	AC_ReachGameStateBase* ReachGameState = Cast<AC_ReachGameStateBase>(UGameplayStatics::GetGameState(GetWorld()));
 
@@ -94,20 +94,10 @@ void AC_ReachPlayerController::SetPlayerSpawnLocation()
 		int Num = UKismetMathLibrary::RandomIntegerInRange(0, ReachGameState->PlayerStartArray.Num() - 1);
 		FVector PlayerSpawnLocation = ReachGameState->PlayerStartArray[Num]->GetActorLocation();
 
-		if (HasAuthority())
-		{
-			GetPawn()->SetActorLocation(PlayerSpawnLocation);
-		}
-
-		else
-		{
-			Server_SetPlayerSpawnLocation(GetPawn(), PlayerSpawnLocation);
-		}
+		return PlayerSpawnLocation;
 	}
-}
-void AC_ReachPlayerController::Server_SetPlayerSpawnLocation_Implementation(AActor* PlayerCharacter, FVector NewLocation)
-{
-	PlayerCharacter->SetActorLocation(NewLocation);
+
+	return FVector(0, 0, 0);
 }
 
 void AC_ReachPlayerController::SetupInputComponent()
@@ -115,5 +105,5 @@ void AC_ReachPlayerController::SetupInputComponent()
 	Super::SetupInputComponent();
 
 	// MOVING
-	InputComponent->BindAction("Test", IE_Pressed, this, &AC_ReachPlayerController::SetPlayerSpawnLocation);
+	//InputComponent->BindAction("Test", IE_Pressed, this, &AC_ReachPlayerController::SetPlayerSpawnLocation);
 }

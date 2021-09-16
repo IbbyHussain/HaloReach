@@ -42,11 +42,13 @@ public:
 
 	virtual void SetupInputComponent() override;
 
-	void SetPlayerSpawnLocation();
+# pragma region Player Spawn
 
-	UFUNCTION(Server, Reliable)
-	void Server_SetPlayerSpawnLocation(AActor* PlayerCharacter, FVector NewLocation);
-	void Server_SetPlayerSpawnLocation_Implementation(AActor* PlayerCharacter, FVector NewLocation);
+	FVector GetPlayerSpawnLocation();
+
+# pragma endregion
+
+
 
 
 };
