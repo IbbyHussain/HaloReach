@@ -1167,6 +1167,12 @@ void AC_PlayerCharacter::Multi_SetPlayerName_Implementation(const FString& NewPl
 	if(PlayerNameWidget)
 	{
 		PlayerNameWidget->DisplayedPlayerName = NewPlayerName;
+
+		AC_ReachPlayerController* RPC = Cast<AC_ReachPlayerController>(PC);
+		if(RPC)
+		{
+			RPC->AssignedName = NewPlayerName;
+		}
 	}
 }
 

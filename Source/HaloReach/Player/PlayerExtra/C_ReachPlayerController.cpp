@@ -66,17 +66,21 @@ void AC_ReachPlayerController::RespawnPlayer(AC_PlayerCharacter* PlayerToRespawn
 			AC_PlayerCharacter* NewPlayerCharacter = GetWorld()->SpawnActor<AC_PlayerCharacter>(PlayerClass, GetPlayerSpawnLocation(), FRotator::ZeroRotator, SpawnParams);
 			Possess(NewPlayerCharacter);
 
+			NewPlayerCharacter->Server_SetPlayerName(AssignedName);
+
 			BindRespawnDelegate();
 		}
 
 		else
 		{
-			Server_PossessPlayer(PlayerToRespawn);
+			Server_PossessPlayer(PlayerToRespawn, AssignedName);
 		}
+
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("NAME: %s"), *AssignedName));
 	}
 }
 
-void AC_ReachPlayerController::Server_PossessPlayer_Implementation(AC_PlayerCharacter* PlayerToRespawn)
+void AC_ReachPlayerController::Server_PossessPlayer_Implementation(AC_PlayerCharacter* PlayerToRespawn, const FString& PlayerName)
 {
 	UnPossess();
 	PlayerToRespawn->Destroy();
@@ -85,6 +89,7 @@ void AC_ReachPlayerController::Server_PossessPlayer_Implementation(AC_PlayerChar
 	FActorSpawnParameters SpawnParams;
 	AC_PlayerCharacter* NewPlayerCharacter = GetWorld()->SpawnActor<AC_PlayerCharacter>(PlayerClass, GetPlayerSpawnLocation(), FRotator::ZeroRotator, SpawnParams);
 	Possess(NewPlayerCharacter);
+	NewPlayerCharacter->Server_SetPlayerName(PlayerName);
 }
 
 FVector AC_ReachPlayerController::GetPlayerSpawnLocation()
@@ -109,14 +114,14 @@ FVector AC_ReachPlayerController::GetPlayerSpawnLocation()
 			{
 				int Num = UKismetMathLibrary::RandomIntegerInRange(0, SuitablePlayerStartArray.Num() - 1);
 				FVector PlayerSpawnLocation = SuitablePlayerStartArray[Num]->GetActorLocation();
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("SUITABLE RESPAWN CLIENT")));
+				//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("SUITABLE RESPAWN CLIENT")));
 				return PlayerSpawnLocation;
 			}
 		}
 
 		else
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("NOT SUITABLE RESPAWN CLIENT")));
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("NOT SUITABLE RESPAWN CLIENT")));
 			return FVector(0, 0, 0);
 		}
 	}

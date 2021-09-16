@@ -30,8 +30,8 @@ public:
 	TSubclassOf<AC_PlayerCharacter> PlayerClass;
 
 	UFUNCTION(Server, Reliable)
-	void Server_PossessPlayer(AC_PlayerCharacter* PlayerToRespawn);
-	void Server_PossessPlayer_Implementation(AC_PlayerCharacter* PlayerToRespawn);
+	void Server_PossessPlayer(AC_PlayerCharacter* PlayerToRespawn, const FString& PlayerName);
+	void Server_PossessPlayer_Implementation(AC_PlayerCharacter* PlayerToRespawn, const FString& PlayerName);
 
 	void BindRespawnDelegate();
 
