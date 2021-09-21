@@ -11,6 +11,7 @@
 #include "HaloReach/UI/HUD/C_PlayerHUD.h"
 #include "DrawDebugHelpers.h"
 #include "HaloReach/Interactables/C_BasePickup.h"
+#include "HaloReach/Player/PlayerExtra/C_ReachPlayerController.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Engine/CollisionProfile.h"
 #include <HaloReach/HaloReach.h>
@@ -1166,6 +1167,12 @@ void AC_PlayerCharacter::Multi_SetPlayerName_Implementation(const FString& NewPl
 	if(PlayerNameWidget)
 	{
 		PlayerNameWidget->DisplayedPlayerName = NewPlayerName;
+
+		AC_ReachPlayerController* RPC = Cast<AC_ReachPlayerController>(PC);
+		if(RPC)
+		{
+			RPC->AssignedName = NewPlayerName;
+		}
 	}
 }
 
@@ -1343,21 +1350,24 @@ void  AC_PlayerCharacter::StartRespawn()
 void AC_PlayerCharacter::Respawn()
 {
 	// Broadcast to player controller to tell the gamemode to respawn the player
+	//RespawnPlayer.Broadcast(this);
 
-	//if (HasAuthority())
-	//{
-	//	// respawn player at a player start 
-	//	RespawnPlayer.Broadcast(this);
-	//}
+	//GetWorldTimerManager().ClearAllTimersForObject(this);
 
-	//else
-	//{
-	//	Server_Broadcast(this);
-	//}
+	if(HasAuthority())
+	{
+		RespawnPlayer.Broadcast(this);
+	}
 
-	RespawnPlayer.Broadcast(this);
+	else
+	{
+		AC_ReachPlayerController* RPC = Cast<AC_ReachPlayerController>(PC);
+		if (RPC)
+		{
+			RPC->RespawnPlayer(this);
 
-	GetWorldTimerManager().ClearAllTimersForObject(this);
+		}
+	}
 
 	//Destroy();
 

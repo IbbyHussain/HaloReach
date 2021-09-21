@@ -8,6 +8,9 @@
 #include "HaloReach/Player/C_PlayerCharacter.h"
 #include "HaloReach/Player/PlayerExtra/C_ReachPlayerState.h"
 #include "HaloReach/Player/PlayerExtra/C_ReachPlayerController.h"
+#include "Kismet/GameplayStatics.h"
+#include "HaloReach/GameModes/C_ReachPlayerStart.h"
+#include "EngineUtils.h"
 
 
 AC_ReachGameStateBase::AC_ReachGameStateBase()
@@ -18,6 +21,18 @@ AC_ReachGameStateBase::AC_ReachGameStateBase()
 void AC_ReachGameStateBase::BeginPlay()
 {
 	Super::BeginPlay();
+
+	AC_ReachPlayerStart* PlayerStart;
+
+	UWorld* World = GetWorld();
+	for (TActorIterator<AC_ReachPlayerStart> It(World, AC_ReachPlayerStart::StaticClass()); It; ++It)
+	{
+		PlayerStart = *It;
+		if (PlayerStart != NULL)
+		{
+			PlayerStartArray.AddUnique(PlayerStart);
+		}
+	}
 }
 
 void AC_ReachGameStateBase::Tick(float DeltaTime)

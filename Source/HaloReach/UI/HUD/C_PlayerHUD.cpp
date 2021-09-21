@@ -52,10 +52,11 @@ void AC_PlayerHUD::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//CreateNameInputWidget();
+	CreateNameInputWidget();
 
 	// this is for testing only
-	CreateHUDWidget();
+	//CreateHUDWidget();
+
 	CreateDeathUpdateWidget();
 	
 }

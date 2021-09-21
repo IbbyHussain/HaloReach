@@ -23,10 +23,6 @@ public:
 	UFUNCTION()
 	void RespawnPlayer(AC_PlayerCharacter* PlayerToRespawn);
 
-	UFUNCTION(Server, Reliable)
-	void Server_RequestGMRespawn(AC_PlayerCharacter* PlayerToRespawn);
-	void Server_RequestGMRespawn_Implementation(AC_PlayerCharacter* PlayerToRespawn);
-
 	UPROPERTY(BlueprintReadWrite)
 	FString AssignedName;
 
@@ -34,7 +30,25 @@ public:
 	TSubclassOf<AC_PlayerCharacter> PlayerClass;
 
 	UFUNCTION(Server, Reliable)
-	void Server_PossessPlayer(AC_PlayerCharacter* PlayerToRespawn);
-	void Server_PossessPlayer_Implementation(AC_PlayerCharacter* PlayerToRespawn);
+	void Server_PossessPlayer(AC_PlayerCharacter* PlayerToRespawn, const FString& PlayerName);
+	void Server_PossessPlayer_Implementation(AC_PlayerCharacter* PlayerToRespawn, const FString& PlayerName);
+
+	void BindRespawnDelegate();
+
+	UPROPERTY()
+	class AC_PlayerHUD* HUD;
+
+	// Input
+
+	virtual void SetupInputComponent() override;
+
+# pragma region Player Spawn
+
+	FVector GetPlayerSpawnLocation();
+
+# pragma endregion
+
+
+
 
 };
