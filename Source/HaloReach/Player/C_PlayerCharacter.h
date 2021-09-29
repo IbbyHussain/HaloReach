@@ -279,7 +279,9 @@ public:
 	UFUNCTION()
 		void OnMeleeTrackTimelineFinished();
 
-	bool bIsOverlappingEnemy(AC_PlayerCharacter* Enemy);
+	//bool bIsOverlappingEnemy(AC_PlayerCharacter* Enemy);
+
+	bool bIsOverlappingEnemy(UCapsuleComponent* Enemy);
 
 	FVector EnemyLocation;
 	FVector PlayerLoc;
