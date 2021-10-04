@@ -1061,19 +1061,6 @@ void AC_PlayerCharacter::Server_StartMelee_Implementation(FVector StartLocation,
 	SetActorLocation(FMath::Lerp(StartLocation, EndLocation, Alpha));
 }
 
-//bool AC_PlayerCharacter::bIsOverlappingEnemy(AC_PlayerCharacter* Enemy)
-//{
-//	if(GetCapsuleComponent()->IsOverlappingActor(Enemy))
-//	{
-//		return true;
-//	}
-//
-//	else
-//	{
-//		return false;
-//	}
-//}
-
 bool AC_PlayerCharacter::bIsOverlappingEnemy(UCapsuleComponent* Enemy)
 {
 	if (GetCapsuleComponent()->IsOverlappingComponent(Enemy))
