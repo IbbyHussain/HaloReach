@@ -31,6 +31,14 @@ void UC_PlayerHUDWidget::NativeConstruct()
 	LeftShieldBar->SetFillColorAndOpacity(Colour);
 	RightShieldBar->SetFillColorAndOpacity(Colour);
 
+	// Black fade in
+	StoreWidgetAnimation();
+
+	FadeInAnimation = GetAnimationByName(TEXT("FadeIn"));
+	BlackImage->SetRenderOpacity(0.0f);
+	
+
+
 }
 
 void UC_PlayerHUDWidget::UpdateHealthImage(float Health)
@@ -217,3 +225,59 @@ void UC_PlayerHUDWidget::UpdateAmmoImage()
 		}
 	}
 }
+
+# pragma region Black Fade In Animation
+
+void UC_PlayerHUDWidget::StoreWidgetAnimation()
+{
+	AnimationsMap.Empty();
+
+	UProperty* Prop = GetClass()->PropertyLink;
+
+	while (Prop)
+	{
+		// only evaluate object properties, skip rest
+		if (Prop->GetClass() == UObjectProperty::StaticClass())
+		{
+			UObjectProperty* ObjProp = Cast<UObjectProperty>(Prop);
+
+			// only get back properties that are of type widget animation
+			if (ObjProp->PropertyClass == UWidgetAnimation::StaticClass())
+			{
+				UObject* Obj = ObjProp->GetObjectPropertyValue_InContainer(this);
+				// only get back properties that are of type widget animation
+				UWidgetAnimation* WidgetAnimation = Cast<UWidgetAnimation>(Obj);
+				// if casting worked update map with new animation
+				if (WidgetAnimation && WidgetAnimation->MovieScene)
+				{
+					FName AnimName = WidgetAnimation->MovieScene->GetFName();
+					//GEngine->AddOnScreenDebugMessage(-1, 4.5f, FColor::Magenta, AnimName.ToString());
+					AnimationsMap.Add(AnimName, WidgetAnimation);
+				}
+			}
+		}
+		Prop = Prop->PropertyLinkNext;
+	}
+}
+
+UWidgetAnimation* UC_PlayerHUDWidget::GetAnimationByName(FName AnimationName) const
+{
+	UWidgetAnimation* const* WidgetAnimation = AnimationsMap.Find(AnimationName);
+
+	if (WidgetAnimation)
+	{
+		return *WidgetAnimation;
+	}
+
+	return nullptr;
+}
+
+void UC_PlayerHUDWidget::PlayFadeInAnimation()
+{
+	BlackImage->SetRenderOpacity(1.0f);
+	PlayAnimation(FadeInAnimation, 0.0f, 1, EUMGSequencePlayMode::Forward, 1.0f);
+}
+
+# pragma endregion
+
+

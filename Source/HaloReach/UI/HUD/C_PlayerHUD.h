@@ -41,6 +41,8 @@ public:
 
 	void ShowHUDWidget();
 
+	void PlaySpawnFadeIn();
+
 	// Health System
 
 	UFUNCTION(BlueprintCallable)

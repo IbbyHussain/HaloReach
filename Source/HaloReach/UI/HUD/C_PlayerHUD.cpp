@@ -89,6 +89,14 @@ void AC_PlayerHUD::ShowHUDWidget()
 	}
 }
 
+void AC_PlayerHUD::PlaySpawnFadeIn()
+{
+	if(HUDWidget)
+	{
+		HUDWidget->PlayFadeInAnimation();
+	}
+}
+
 void AC_PlayerHUD::HUDUpdateHealthImage(float Health)
 {
 	if(HUDWidget)

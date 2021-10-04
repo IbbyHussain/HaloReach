@@ -110,4 +110,24 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UC_CrosshairWidget* Crosshair;
+
+# pragma region Black Fade In Animation
+
+	void StoreWidgetAnimation();
+
+	UWidgetAnimation* GetAnimationByName(FName AnimationName) const;
+
+	TMap<FName, UWidgetAnimation*> AnimationsMap;
+
+	UWidgetAnimation* FadeInAnimation;
+
+	UWidgetAnimation* FadeOutAnimation;
+
+	UFUNCTION()
+	void PlayFadeInAnimation();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget))
+	UImage* BlackImage;
+
+# pragma endregion
 };

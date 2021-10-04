@@ -52,6 +52,7 @@ void AC_ReachPlayerController::RespawnPlayer(AC_PlayerCharacter* PlayerToRespawn
 			//HUD->PlayHUDFadeOutAnimation();
 			HUD->DestroyDeathWidget();
 			HUD->CreateHUDWidget();
+			HUD->PlaySpawnFadeIn();
 		}
 
 		// if player starts are occuppied wont spawn
