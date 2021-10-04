@@ -509,7 +509,7 @@ protected:
 
 public:
 
-	UPROPERTY(EditDefaultsOnly, Category = "Player | PlayerComponents")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player | PlayerComponents")
 	class UCameraComponent* CameraComp;
 
 	UPROPERTY(Replicated, EditDefaultsOnly, Category = "Player | Combat")
