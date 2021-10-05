@@ -59,7 +59,7 @@ ClassName* UC_SpawnLibrary::SpawnActorAtSocket(UWorld* World, TSubclassOf<ClassN
 template<typename ClassName>
 ClassName* UC_SpawnLibrary::SpawnActorAtLocation(UWorld* World, TSubclassOf<ClassName> ObjectClass, ClassName* ObjectPointer, FVector Location, FRotator Rotation)
 {
-	//Simple spawn actor attached to a socket
+	//Simple spawn actor 
 	FActorSpawnParameters SpawnParams;
 
 	// Static cast to get world and call non-static functions

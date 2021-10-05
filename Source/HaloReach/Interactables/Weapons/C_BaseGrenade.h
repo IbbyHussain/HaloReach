@@ -24,12 +24,12 @@ public:
 	class URadialForceComponent* RadialForceComp;
 
 	// Enables physics on object after it has been thrown
+	UFUNCTION(BlueprintCallable)
 	void Thrown();
 
+	UPROPERTY(BlueprintReadWrite, Category = "a")
 	class AC_PlayerCharacter* Player;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Grenade")
 	float ThrowForce;
-
-	float Alpha;
-
 };

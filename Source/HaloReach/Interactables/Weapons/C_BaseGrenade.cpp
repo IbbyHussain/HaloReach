@@ -13,6 +13,8 @@ AC_BaseGrenade::AC_BaseGrenade()
 
 	RadialForceComp = CreateDefaultSubobject<URadialForceComponent>(TEXT("Radial Force Comp"));
 	RadialForceComp->SetupAttachment(RootComponent);
+
+	ThrowForce = 2000.0f;
 }
 
 void AC_BaseGrenade::BeginPlay()
@@ -26,10 +28,11 @@ void AC_BaseGrenade::BeginPlay()
 void AC_BaseGrenade::Thrown()
 {
 	MeshComp->SetSimulatePhysics(true);
-	MeshComp->SetPhysicsLinearVelocity(FVector(0.0f));
+	MeshComp->SetPhysicsLinearVelocity(FVector(0.0f, 0.0f, 0.0f), false, NAME_None);
 
-	FVector CameraUpVector = Player->CameraComp->GetComponentRotation().Vector().UpVector;
-	FVector CameraForwardVector = Player->CameraComp->GetComponentRotation().Vector().ForwardVector;
+
+	FVector CameraUpVector = Player->CameraComp->GetUpVector();
+	FVector CameraForwardVector = Player->CameraComp->GetForwardVector();
 
 	FVector LaunchForce = (FMath::Lerp(CameraUpVector, CameraForwardVector, 1.0f)) * ThrowForce;
 

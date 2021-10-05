@@ -31,6 +31,7 @@
 #include "HaloReach/Player/PlayerExtra/C_ReachPlayerState.h"
 #include "Components/WidgetComponent.h"
 #include "HaloReach/UI/C_PlayerNameWidget.h"
+#include "HaloReach/Interactables/Weapons/C_BaseGrenade.h"
 
 #include "HaloReach/GameModes/C_ReachGameStateBase.h"
 
@@ -1076,6 +1077,41 @@ bool AC_PlayerCharacter::bIsOverlappingEnemy(UCapsuleComponent* Enemy)
 
 # pragma endregion
 
+# pragma region Grenade
+
+// when grenade input is held or pressed
+void AC_PlayerCharacter::ThrowGrenade()
+{
+	bIsHoldingGrenade = true;
+
+	EquippedGrenade = UC_SpawnLibrary::SpawnActorAtLocation(GetWorld(), EquippedGrenadeClass, EquippedGrenade, GetActorLocation(), GetActorRotation());
+
+	EquippedGrenade->Player = this;
+
+
+	EquippedGrenade->AttachToComponent(DefaultMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepRelative, true),
+		GrenadeSocket);
+}
+
+// when grenade input is released
+void AC_PlayerCharacter::ReleaseGrenade()
+{
+	bIsHoldingGrenade = false;
+}
+
+// used in anim montage to launch grenade from players hand
+void AC_PlayerCharacter::LaunchGrenade()
+{
+	if(EquippedGrenade)
+	{
+		EquippedGrenade->DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepRelative, false));
+		EquippedGrenade->Thrown(); // errors 
+		EquippedGrenade = nullptr;
+	}
+}
+
+# pragma endregion
+
 // organise 
 FVector AC_PlayerCharacter::GetPawnViewLocation() const
 {
@@ -1445,4 +1481,7 @@ void AC_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAction("Reload", IE_Pressed,  this, &AC_PlayerCharacter::Reload);
 
 	PlayerInputComponent->BindAction("Melee", IE_Pressed, this, &AC_PlayerCharacter::MeleeTracking);
+
+	PlayerInputComponent->BindAction("Grenade", IE_Pressed, this, &AC_PlayerCharacter::ThrowGrenade);
+	PlayerInputComponent->BindAction("Grenade", IE_Released, this, &AC_PlayerCharacter::ReleaseGrenade);
 }

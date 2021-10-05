@@ -18,6 +18,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeaponReload);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRespawnPlayer, AC_PlayerCharacter*, DeadPlayer);
 
 class AC_BaseWeapon;
+class AC_BaseGrenade;
 class AC_Weapon3P;
 
 UENUM()
@@ -208,6 +209,31 @@ public:
 	FTimerHandle SwitchResetHandle;
 
 	void ResetCanSwitch();
+
+# pragma endregion
+
+# pragma region Grenades
+
+	UPROPERTY(BlueprintReadWrite, Category = "Player | Grenades")
+	bool bIsHoldingGrenade;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Player | Grenades")
+	AC_BaseGrenade* EquippedGrenade;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player | Grenades")
+	TSubclassOf<AC_BaseGrenade> EquippedGrenadeClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player | Grenades")
+	FName GrenadeSocket;
+
+	UFUNCTION(BlueprintCallable)
+	void ThrowGrenade();
+
+	UFUNCTION(BlueprintCallable)
+	void ReleaseGrenade();
+
+	UFUNCTION(BlueprintCallable)
+	void LaunchGrenade();
 
 # pragma endregion
 
