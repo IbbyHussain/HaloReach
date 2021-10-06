@@ -127,7 +127,7 @@ AC_PlayerCharacter::AC_PlayerCharacter(const FObjectInitializer& ObjectInitializ
 	PlayerNameBoxComp->SetupAttachment(RootComponent);
 
 	MontageEndedDelegate.BindUObject(this, &AC_PlayerCharacter::OnGrenadeStartMontageFinished);
-	
+
 }
 
 void AC_PlayerCharacter::BeginPlay()
@@ -169,6 +169,8 @@ void AC_PlayerCharacter::BeginPlay()
 		Secondary3PWeapon = UC_SpawnLibrary::SpawnActorAtSocket<AC_Weapon3P>(GetWorld(), Combat.SecondaryWeapon3PClass, Secondary3PWeapon, Mesh3P, ("Pistol_3P_Holstered_Socket"));
 		Secondary3PWeapon->SetOwner(this);
 		EquippedWeapon3PArray.Emplace(Secondary3PWeapon);
+
+		EquippedGrenade = UC_SpawnLibrary::SpawnActorAtLocation(GetWorld(), EquippedGrenadeClass, EquippedGrenade, GetActorLocation(), GetActorRotation());
 	}
 
 
@@ -1079,53 +1081,73 @@ bool AC_PlayerCharacter::bIsOverlappingEnemy(UCapsuleComponent* Enemy)
 
 # pragma endregion
 
+void AC_PlayerCharacter::Server_SetBool_Implementation(bool bNew)
+{
+	bIsHoldingGrenade = bNew;
+}
+
 # pragma region Grenade
 
 // when grenade input is held or pressed
 void AC_PlayerCharacter::ThrowGrenade()
 {
-	bIsHoldingGrenade = true;
+	if(HasAuthority())
+	{
+		bIsHoldingGrenade = true;
+	}
 
-	//Server_SpawnGrenade(this);
+	else
+	{
+		Server_SetBool(true);
+	}
 
-	EquippedGrenade = UC_SpawnLibrary::SpawnActorAtLocation(GetWorld(), EquippedGrenadeClass, EquippedGrenade, GetActorLocation(), GetActorRotation());
-
-	//EquippedGrenade->Player = this;
-
-	EquippedGrenade->AttachToComponent(DefaultMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepRelative, true),
-		GrenadeSocket);
-
-	// Restrictions 
-
-	/*EndFire();
-	EndZoom();
-
-	bCanReload = false;
-	bCanFire = false;
-	bCanSwitch = false;
-	bCanZoom = false;
-	bCanMelee = false;*/
+	//Server_SpawnGrenade(this, GrenadeSocket, DefaultMesh);
 
 	if(HasAuthority())
+	{
+		EquippedGrenade->AttachToComponent(DefaultMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, GrenadeSocket);
+		//AttachToComponent(Mesh3P, FAttachmentTransformRules::SnapToTargetIncludingScale, Socket3P);
+	}
+
+	else
+	{
+		Server_AttachGrenade(GrenadeSocket);
+	}
+
+	
+ 
+	/*if(HasAuthority())
 	{
 		Multi_PlayMontage(Mesh3P, GrenadeThrowStartMontage);
 	}
 
 	else
 	{
-		Server_PlayMontage(Mesh3P, GrenadeThrowStartMontage);
-	}
+		Server _PlayMontage(Mesh3P, GrenadeThrowStartMontage);
+	}*/
 
 	//Mesh3P->GetAnimInstance()->Montage_SetEndDelegate(MontageEndedDelegate);
+}
+
+void AC_PlayerCharacter::Server_AttachGrenade_Implementation(FName b)
+{
+	EquippedGrenade->AttachToComponent(DefaultMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, b);
 }
 
 // when grenade input is released
 void AC_PlayerCharacter::ReleaseGrenade()
 {
-	bIsHoldingGrenade = false;
-	bLaunchGrenade = true;
-
 	if (HasAuthority())
+	{
+		bIsHoldingGrenade = false;
+	}
+
+	else
+	{
+		Server_SetBool(false);
+	}
+
+	/*if (HasAuthority())
 	{
 		Multi_PlayMontage(Mesh3P, GrenadeThrowReleaseMontage);
 	}
@@ -1133,7 +1155,9 @@ void AC_PlayerCharacter::ReleaseGrenade()
 	else
 	{
 		Server_PlayMontage(Mesh3P, GrenadeThrowReleaseMontage);
-	}
+	}*/
+
+	//Server_LaunchGrenade(this);
 
 	//Mesh3P->GetAnimInstance()->Montage_Stop(0.1f, GrenadeThrowHoldMontage);
 
@@ -1142,18 +1166,19 @@ void AC_PlayerCharacter::ReleaseGrenade()
 // used in anim montage to launch grenade from players hand
 void AC_PlayerCharacter::LaunchGrenade()
 {
-	//Server_LaunchGrenade(this);
-	if(EquippedGrenade)
+	//Server_LaunchGrenade(this); 
+
+	/*if (EquippedGrenade)
 	{
-		EquippedGrenade->DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepRelative, false));
+		EquippedGrenade->DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, false));
 		EquippedGrenade->Thrown(this);
 		EquippedGrenade = nullptr;
-	}
+	}*/
 }
 
 void AC_PlayerCharacter::OnGrenadeStartMontageFinished(UAnimMontage* Montage, bool bInterrupted)
 {
-	if(bIsHoldingGrenade)
+	/*if(bIsHoldingGrenade)
 	{
 		if (HasAuthority())
 		{
@@ -1164,25 +1189,22 @@ void AC_PlayerCharacter::OnGrenadeStartMontageFinished(UAnimMontage* Montage, bo
 		{
 			Server_PlayMontage(Mesh3P, GrenadeThrowHoldMontage);
 		}
-	}
+	}*/
 }
 
-void AC_PlayerCharacter::Server_SpawnGrenade_Implementation(AC_PlayerCharacter* PlayerOwner)
+void AC_PlayerCharacter::Server_SpawnGrenade_Implementation(AC_PlayerCharacter* PlayerOwner, FName b, USkeletalMeshComponent* c)
 {
 	EquippedGrenade = UC_SpawnLibrary::SpawnActorAtLocation(GetWorld(), EquippedGrenadeClass, EquippedGrenade, GetActorLocation(), GetActorRotation());
-
-	EquippedGrenade->AttachToComponent(DefaultMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepRelative, true),
-		GrenadeSocket);
 }
 
 void AC_PlayerCharacter::Server_LaunchGrenade_Implementation(AC_PlayerCharacter* PlayerOwner)
 {
-	if (EquippedGrenade)
+	/*if (EquippedGrenade)
 	{
-		EquippedGrenade->DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepRelative, false));
+		EquippedGrenade->DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, false));
 		EquippedGrenade->Thrown(PlayerOwner);
 		EquippedGrenade = nullptr;
-	}
+	}*/
 }
 
 # pragma endregion
@@ -1518,6 +1540,8 @@ void AC_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	DOREPLIFETIME(AC_PlayerCharacter, bCrouchKeyDown);
 	DOREPLIFETIME(AC_PlayerCharacter, bIsHoldingGrenade);
 	DOREPLIFETIME(AC_PlayerCharacter, EquippedGrenade);
+	DOREPLIFETIME(AC_PlayerCharacter, DefaultMesh);
+
 
 	DOREPLIFETIME_CONDITION(AC_PlayerCharacter, ControlRotation, COND_SkipOwner);
 }

@@ -27,6 +27,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Thrown(AC_PlayerCharacter* PlayerCharacter);
 
+	AC_PlayerCharacter* Player;
+
 	UFUNCTION(Server, Reliable)
 	void Server_Thrown(AC_PlayerCharacter* PlayerCharacter);
 	void Server_Thrown_Implementation(AC_PlayerCharacter* PlayerCharacter);

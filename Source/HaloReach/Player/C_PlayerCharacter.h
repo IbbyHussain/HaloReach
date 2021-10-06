@@ -131,7 +131,7 @@ private:
 // PLAYER COMPONENTS
 
 	// The character mesh used when in first person
-	UPROPERTY(EditDefaultsOnly, Category = "Player | PlayerComponents")
+	UPROPERTY(EditDefaultsOnly, Replicated, Category = "Player | PlayerComponents")
 	USkeletalMeshComponent* DefaultMesh;
 
 	// The character mesh used when in third person
@@ -256,12 +256,20 @@ public:
 
 	// Spawns a grenade
 	UFUNCTION(Server, Reliable)
-	void Server_SpawnGrenade(AC_PlayerCharacter* PlayerOwner);
-	void Server_SpawnGrenade_Implementation(AC_PlayerCharacter* PlayerOwner);
+	void Server_SpawnGrenade(AC_PlayerCharacter* PlayerOwner, FName b, USkeletalMeshComponent* c);
+	void Server_SpawnGrenade_Implementation(AC_PlayerCharacter* PlayerOwner, FName b, USkeletalMeshComponent* c);
+
+	UFUNCTION(Server, Reliable)
+	void Server_AttachGrenade(FName b);
+	void Server_AttachGrenade_Implementation(FName b);
 
 	UFUNCTION(Server, Reliable)
 	void Server_LaunchGrenade(AC_PlayerCharacter* PlayerOwner);
 	void Server_LaunchGrenade_Implementation(AC_PlayerCharacter* PlayerOwner);
+
+	UFUNCTION(Server, Reliable)
+	void Server_SetBool(bool bNew);
+	void Server_SetBool_Implementation(bool bNew);
 
 
 # pragma endregion
