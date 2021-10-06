@@ -214,10 +214,13 @@ public:
 
 # pragma region Grenades
 
-	UPROPERTY(BlueprintReadWrite, Category = "Player | Grenades")
+	UPROPERTY(BlueprintReadWrite, Replicated, Category = "Player | Grenades")
 	bool bIsHoldingGrenade;
 
-	UPROPERTY(BlueprintReadWrite, Category = "Player | Grenades")
+	UPROPERTY(BlueprintReadWrite, Replicated, Category = "Player | Grenades")
+	bool bLaunchGrenade;
+
+	UPROPERTY(BlueprintReadWrite, Replicated, Category = "Player | Grenades")
 	AC_BaseGrenade* EquippedGrenade;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Player | Grenades")
@@ -234,6 +237,32 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void LaunchGrenade();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player | Grenades")
+	UAnimMontage* GrenadeThrowStartMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player | Grenades")
+	UAnimMontage* GrenadeThrowHoldMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player | Grenades")
+	UAnimMontage* GrenadeThrowReleaseMontage;
+
+	// Montage End
+
+	FOnMontageEnded MontageEndedDelegate;
+
+	UFUNCTION()
+	void OnGrenadeStartMontageFinished(UAnimMontage* Montage, bool bInterrupted);
+
+	// Spawns a grenade
+	UFUNCTION(Server, Reliable)
+	void Server_SpawnGrenade(AC_PlayerCharacter* PlayerOwner);
+	void Server_SpawnGrenade_Implementation(AC_PlayerCharacter* PlayerOwner);
+
+	UFUNCTION(Server, Reliable)
+	void Server_LaunchGrenade(AC_PlayerCharacter* PlayerOwner);
+	void Server_LaunchGrenade_Implementation(AC_PlayerCharacter* PlayerOwner);
+
 
 # pragma endregion
 
@@ -255,7 +284,6 @@ public:
 	void ResetCanReload();
 
 	void Reload();
-
 
 # pragma region Melee Attack
 

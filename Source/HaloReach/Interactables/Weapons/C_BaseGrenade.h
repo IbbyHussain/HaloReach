@@ -25,10 +25,12 @@ public:
 
 	// Enables physics on object after it has been thrown
 	UFUNCTION(BlueprintCallable)
-	void Thrown();
+	void Thrown(AC_PlayerCharacter* PlayerCharacter);
 
-	UPROPERTY(BlueprintReadWrite, Category = "a")
-	class AC_PlayerCharacter* Player;
+	UFUNCTION(Server, Reliable)
+	void Server_Thrown(AC_PlayerCharacter* PlayerCharacter);
+	void Server_Thrown_Implementation(AC_PlayerCharacter* PlayerCharacter);
+
 
 	UPROPERTY(EditDefaultsOnly, Category = "Grenade")
 	float ThrowForce;
