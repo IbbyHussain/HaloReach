@@ -33,7 +33,7 @@ void AC_BaseGrenade::BeginPlay()
 
 void AC_BaseGrenade::Thrown(AC_PlayerCharacter* PlayerCharacter)
 {
-	/*if (PlayerCharacter)
+	if (PlayerCharacter)
 	{
 		MeshComp->SetSimulatePhysics(true);
 		MeshComp->SetPhysicsLinearVelocity(FVector(0.0f, 0.0f, 0.0f), false, NAME_None);
@@ -47,10 +47,7 @@ void AC_BaseGrenade::Thrown(AC_PlayerCharacter* PlayerCharacter)
 		FVector LaunchForce = (FMath::Lerp(CameraUpVector, CameraForwardVector, 1.0f)) * ThrowForce;
 
 		MeshComp->AddImpulse(LaunchForce, NAME_None, true);
-	}*/
-
-	MeshComp->SetSimulatePhysics(true);
-	MeshComp->SetPhysicsLinearVelocity(FVector(0.0f, 0.0f, 0.0f), false, NAME_None);
+	}
 }
 
 void AC_BaseGrenade::Server_Thrown_Implementation(AC_PlayerCharacter* PlayerCharacter)

@@ -1101,7 +1101,9 @@ void AC_PlayerCharacter::ThrowGrenade()
 		Server_SetBool(true);
 	}
 
-	//Server_SpawnGrenade(this, GrenadeSocket, DefaultMesh);
+	//bIsHoldingGrenade = true;
+
+	Server_SpawnGrenade(this, GrenadeSocket, DefaultMesh);
 
 	if(HasAuthority())
 	{
@@ -1116,17 +1118,17 @@ void AC_PlayerCharacter::ThrowGrenade()
 
 	
  
-	/*if(HasAuthority())
+	if(HasAuthority())
 	{
 		Multi_PlayMontage(Mesh3P, GrenadeThrowStartMontage);
 	}
 
 	else
 	{
-		Server _PlayMontage(Mesh3P, GrenadeThrowStartMontage);
-	}*/
+		Server_PlayMontage(Mesh3P, GrenadeThrowStartMontage);
+	}
 
-	//Mesh3P->GetAnimInstance()->Montage_SetEndDelegate(MontageEndedDelegate);
+	Mesh3P->GetAnimInstance()->Montage_SetEndDelegate(MontageEndedDelegate);
 }
 
 void AC_PlayerCharacter::Server_AttachGrenade_Implementation(FName b)
@@ -1147,7 +1149,9 @@ void AC_PlayerCharacter::ReleaseGrenade()
 		Server_SetBool(false);
 	}
 
-	/*if (HasAuthority())
+	//bIsHoldingGrenade = false;
+
+	if (HasAuthority())
 	{
 		Multi_PlayMontage(Mesh3P, GrenadeThrowReleaseMontage);
 	}
@@ -1155,11 +1159,11 @@ void AC_PlayerCharacter::ReleaseGrenade()
 	else
 	{
 		Server_PlayMontage(Mesh3P, GrenadeThrowReleaseMontage);
-	}*/
+	}
 
 	//Server_LaunchGrenade(this);
 
-	//Mesh3P->GetAnimInstance()->Montage_Stop(0.1f, GrenadeThrowHoldMontage);
+	Mesh3P->GetAnimInstance()->Montage_Stop(0.1f, GrenadeThrowHoldMontage);
 
 }
 
@@ -1168,17 +1172,17 @@ void AC_PlayerCharacter::LaunchGrenade()
 {
 	//Server_LaunchGrenade(this); 
 
-	/*if (EquippedGrenade)
+	if (EquippedGrenade)
 	{
 		EquippedGrenade->DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, false));
 		EquippedGrenade->Thrown(this);
 		EquippedGrenade = nullptr;
-	}*/
+	}
 }
 
 void AC_PlayerCharacter::OnGrenadeStartMontageFinished(UAnimMontage* Montage, bool bInterrupted)
 {
-	/*if(bIsHoldingGrenade)
+	if(bIsHoldingGrenade)
 	{
 		if (HasAuthority())
 		{
@@ -1189,7 +1193,7 @@ void AC_PlayerCharacter::OnGrenadeStartMontageFinished(UAnimMontage* Montage, bo
 		{
 			Server_PlayMontage(Mesh3P, GrenadeThrowHoldMontage);
 		}
-	}*/
+	}
 }
 
 void AC_PlayerCharacter::Server_SpawnGrenade_Implementation(AC_PlayerCharacter* PlayerOwner, FName b, USkeletalMeshComponent* c)
@@ -1199,12 +1203,12 @@ void AC_PlayerCharacter::Server_SpawnGrenade_Implementation(AC_PlayerCharacter* 
 
 void AC_PlayerCharacter::Server_LaunchGrenade_Implementation(AC_PlayerCharacter* PlayerOwner)
 {
-	/*if (EquippedGrenade)
+	if (EquippedGrenade)
 	{
 		EquippedGrenade->DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, false));
 		EquippedGrenade->Thrown(PlayerOwner);
 		EquippedGrenade = nullptr;
-	}*/
+	}
 }
 
 # pragma endregion
