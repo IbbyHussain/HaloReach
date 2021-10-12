@@ -235,9 +235,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ReleaseGrenade();
 
-	UFUNCTION(BlueprintCallable)
-	void LaunchGrenade();
-
 	UPROPERTY(EditDefaultsOnly, Category = "Player | Grenades")
 	UAnimMontage* GrenadeThrowStartMontage;
 
@@ -264,13 +261,21 @@ public:
 	void Server_AttachGrenade_Implementation(FName b);
 
 	UFUNCTION(Server, Reliable)
-	void Server_LaunchGrenade(AC_PlayerCharacter* PlayerOwner);
-	void Server_LaunchGrenade_Implementation(AC_PlayerCharacter* PlayerOwner);
-
-	UFUNCTION(Server, Reliable)
 	void Server_SetBool(bool bNew);
 	void Server_SetBool_Implementation(bool bNew);
 
+	UPROPERTY(EditDefaultsOnly, Category = "Grenade")
+	float ThrowForce;
+
+	// Preps the grenade by detaching 
+	UFUNCTION(Server, Reliable)
+	void Server_PrepGrenade(FVector ImpulseDirection);
+	void Server_PrepGrenade_Implementation(FVector ImpulseDirection);
+
+	// used in anim notify 
+	UFUNCTION(Client, Reliable, BlueprintCallable)
+	void Client_LaunchGrenade();
+	void Client_LaunchGrenade_Implementation();
 
 # pragma endregion
 
@@ -284,6 +289,9 @@ public:
 	void Multi_PlayMontage(USkeletalMeshComponent* MeshComp, UAnimMontage* Montage);
 	void Multi_PlayMontage_Implementation(USkeletalMeshComponent* MeshComp, UAnimMontage* Montage);
 
+	UFUNCTION(Server, Reliable)
+	void Server_BindMontageDelegate(USkeletalMeshComponent* MeshComp);
+	void Server_BindMontageDelegate_Implementation(USkeletalMeshComponent* MeshComp);
 
 	bool bCanReload;
 

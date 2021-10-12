@@ -25,15 +25,10 @@ public:
 
 	// Enables physics on object after it has been thrown
 	UFUNCTION(BlueprintCallable)
-	void Thrown(AC_PlayerCharacter* PlayerCharacter);
+	void Thrown(FVector ImpulseDirection);
 
-	AC_PlayerCharacter* Player;
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_bSetOnlyOwnerSeeMesh(bool bCanSee);
+	void Multi_bSetOnlyOwnerSeeMesh_Implementation(bool bCanSee);
 
-	UFUNCTION(Server, Reliable)
-	void Server_Thrown(AC_PlayerCharacter* PlayerCharacter);
-	void Server_Thrown_Implementation(AC_PlayerCharacter* PlayerCharacter);
-
-
-	UPROPERTY(EditDefaultsOnly, Category = "Grenade")
-	float ThrowForce;
 };

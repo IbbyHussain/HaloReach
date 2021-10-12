@@ -34,6 +34,9 @@
 #include "HaloReach/Interactables/Weapons/C_BaseGrenade.h"
 
 #include "HaloReach/GameModes/C_ReachGameStateBase.h"
+#include "Animation/AnimMontage.h"
+
+//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("texthere: %f), x));
 
 AC_PlayerCharacter::AC_PlayerCharacter(const FObjectInitializer& ObjectInitializer) : 
 	Super(ObjectInitializer.SetDefaultSubobjectClass<UC_PlayerCMC>(ACharacter::CharacterMovementComponentName))
@@ -127,6 +130,8 @@ AC_PlayerCharacter::AC_PlayerCharacter(const FObjectInitializer& ObjectInitializ
 	PlayerNameBoxComp->SetupAttachment(RootComponent);
 
 	MontageEndedDelegate.BindUObject(this, &AC_PlayerCharacter::OnGrenadeStartMontageFinished);
+
+	ThrowForce = 2000.0f;
 
 }
 
@@ -1101,34 +1106,36 @@ void AC_PlayerCharacter::ThrowGrenade()
 		Server_SetBool(true);
 	}
 
-	//bIsHoldingGrenade = true;
+	bIsHoldingGrenade = true;
 
 	Server_SpawnGrenade(this, GrenadeSocket, DefaultMesh);
 
 	if(HasAuthority())
 	{
 		EquippedGrenade->AttachToComponent(DefaultMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, GrenadeSocket);
-		//AttachToComponent(Mesh3P, FAttachmentTransformRules::SnapToTargetIncludingScale, Socket3P);
-	}
-
-	else
-	{
-		Server_AttachGrenade(GrenadeSocket);
-	}
-
-	
- 
-	if(HasAuthority())
-	{
 		Multi_PlayMontage(Mesh3P, GrenadeThrowStartMontage);
 	}
 
 	else
 	{
+		Server_AttachGrenade(GrenadeSocket);
 		Server_PlayMontage(Mesh3P, GrenadeThrowStartMontage);
 	}
+	
+	if(HasAuthority())
+	{
+		Mesh3P->GetAnimInstance()->Montage_SetEndDelegate(MontageEndedDelegate);
+	}
 
-	Mesh3P->GetAnimInstance()->Montage_SetEndDelegate(MontageEndedDelegate);
+	else
+	{
+		Server_BindMontageDelegate(Mesh3P);
+	}
+}
+
+void AC_PlayerCharacter::Server_BindMontageDelegate_Implementation(USkeletalMeshComponent* MeshComp)
+{
+	MeshComp->GetAnimInstance()->Montage_SetEndDelegate(MontageEndedDelegate);
 }
 
 void AC_PlayerCharacter::Server_AttachGrenade_Implementation(FName b)
@@ -1149,7 +1156,7 @@ void AC_PlayerCharacter::ReleaseGrenade()
 		Server_SetBool(false);
 	}
 
-	//bIsHoldingGrenade = false;
+	bIsHoldingGrenade = false;
 
 	if (HasAuthority())
 	{
@@ -1161,29 +1168,16 @@ void AC_PlayerCharacter::ReleaseGrenade()
 		Server_PlayMontage(Mesh3P, GrenadeThrowReleaseMontage);
 	}
 
-	//Server_LaunchGrenade(this);
-
 	Mesh3P->GetAnimInstance()->Montage_Stop(0.1f, GrenadeThrowHoldMontage);
-
-}
-
-// used in anim montage to launch grenade from players hand
-void AC_PlayerCharacter::LaunchGrenade()
-{
-	//Server_LaunchGrenade(this); 
-
-	if (EquippedGrenade)
-	{
-		EquippedGrenade->DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, false));
-		EquippedGrenade->Thrown(this);
-		EquippedGrenade = nullptr;
-	}
 }
 
 void AC_PlayerCharacter::OnGrenadeStartMontageFinished(UAnimMontage* Montage, bool bInterrupted)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Delegate binded success")));
+
 	if(bIsHoldingGrenade)
 	{
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Delegate binded success")));
 		if (HasAuthority())
 		{
 			Multi_PlayMontage(Mesh3P, GrenadeThrowHoldMontage);
@@ -1192,6 +1186,7 @@ void AC_PlayerCharacter::OnGrenadeStartMontageFinished(UAnimMontage* Montage, bo
 		else
 		{
 			Server_PlayMontage(Mesh3P, GrenadeThrowHoldMontage);
+
 		}
 	}
 }
@@ -1199,16 +1194,29 @@ void AC_PlayerCharacter::OnGrenadeStartMontageFinished(UAnimMontage* Montage, bo
 void AC_PlayerCharacter::Server_SpawnGrenade_Implementation(AC_PlayerCharacter* PlayerOwner, FName b, USkeletalMeshComponent* c)
 {
 	EquippedGrenade = UC_SpawnLibrary::SpawnActorAtLocation(GetWorld(), EquippedGrenadeClass, EquippedGrenade, GetActorLocation(), GetActorRotation());
+	EquippedGrenade->SetOwner(PlayerOwner);
 }
 
-void AC_PlayerCharacter::Server_LaunchGrenade_Implementation(AC_PlayerCharacter* PlayerOwner)
+void AC_PlayerCharacter::Server_PrepGrenade_Implementation(FVector ImpulseDirection)
 {
 	if (EquippedGrenade)
 	{
 		EquippedGrenade->DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, false));
-		EquippedGrenade->Thrown(PlayerOwner);
+		EquippedGrenade->Thrown(ImpulseDirection);
+		EquippedGrenade->Multi_bSetOnlyOwnerSeeMesh(false);
 		EquippedGrenade = nullptr;
 	}
+}
+
+// used in anim notify to launch grenade from players hand
+void AC_PlayerCharacter::Client_LaunchGrenade_Implementation()
+{
+	FVector CameraUpVector = CameraComp->GetUpVector();
+	FVector CameraForwardVector = CameraComp->GetForwardVector();
+
+	FVector LaunchForce = (FMath::Lerp(CameraUpVector, CameraForwardVector, 1.0f)) * ThrowForce;
+
+	Server_PrepGrenade(LaunchForce);
 }
 
 # pragma endregion
