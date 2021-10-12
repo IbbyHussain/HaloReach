@@ -92,6 +92,24 @@ public:
 
 };
 
+USTRUCT()
+struct FGrenades
+{
+	GENERATED_BODY()
+public:
+
+	int CurrentFragGrenades;
+	
+	int MaxFragGrenades;
+
+	FGrenades()
+	{
+		CurrentFragGrenades = 2;
+
+		MaxFragGrenades = 2;
+	}
+};
+
 UCLASS()
 class HALOREACH_API AC_PlayerCharacter : public ACharacter
 {
@@ -110,6 +128,8 @@ private:
 // CONTAINER DECLARATIONS
 
 	FMovement Movement;
+
+	FGrenades Grenades;
 
 	EMovementState MovementState;
 

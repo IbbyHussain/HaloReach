@@ -252,6 +252,7 @@ void AC_PlayerCharacter::BeginPlay()
 
 	// Tests
 
+
 }
 
 void AC_PlayerCharacter::Tick(float DeltaTime)
@@ -1096,40 +1097,36 @@ void AC_PlayerCharacter::Server_SetBool_Implementation(bool bNew)
 // when grenade input is held or pressed
 void AC_PlayerCharacter::ThrowGrenade()
 {
-	if(HasAuthority())
+	if(Grenades.CurrentFragGrenades > 0)
 	{
+		if (HasAuthority())
+		{
+			bIsHoldingGrenade = true;
+		}
+
+		else
+		{
+			Server_SetBool(true);
+		}
+
 		bIsHoldingGrenade = true;
-	}
 
-	else
-	{
-		Server_SetBool(true);
-	}
+		Server_SpawnGrenade(this, GrenadeSocket, DefaultMesh);
 
-	bIsHoldingGrenade = true;
-
-	Server_SpawnGrenade(this, GrenadeSocket, DefaultMesh);
-
-	if(HasAuthority())
-	{
-		EquippedGrenade->AttachToComponent(DefaultMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, GrenadeSocket);
-		Multi_PlayMontage(Mesh3P, GrenadeThrowStartMontage);
-	}
-
-	else
-	{
-		Server_AttachGrenade(GrenadeSocket);
-		Server_PlayMontage(Mesh3P, GrenadeThrowStartMontage);
-	}
+		if (HasAuthority())
+		{
+			EquippedGrenade->AttachToComponent(DefaultMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, GrenadeSocket);
+			Multi_PlayMontage(Mesh3P, GrenadeThrowStartMontage);
+			Mesh3P->GetAnimInstance()->Montage_SetEndDelegate(MontageEndedDelegate);
+		}
 	
-	if(HasAuthority())
-	{
-		Mesh3P->GetAnimInstance()->Montage_SetEndDelegate(MontageEndedDelegate);
-	}
 
-	else
-	{
-		Server_BindMontageDelegate(Mesh3P);
+		else
+		{
+			Server_AttachGrenade(GrenadeSocket);
+			Server_PlayMontage(Mesh3P, GrenadeThrowStartMontage);
+			Server_BindMontageDelegate(Mesh3P);
+		}
 	}
 }
 
@@ -1146,34 +1143,41 @@ void AC_PlayerCharacter::Server_AttachGrenade_Implementation(FName b)
 // when grenade input is released
 void AC_PlayerCharacter::ReleaseGrenade()
 {
-	if (HasAuthority())
+	if(Grenades.CurrentFragGrenades > 0)
 	{
+		if (HasAuthority())
+		{
+			bIsHoldingGrenade = false;
+		}
+
+		else
+		{
+			Server_SetBool(false);
+		}
+
 		bIsHoldingGrenade = false;
+
+		if (HasAuthority())
+		{
+			Multi_PlayMontage(Mesh3P, GrenadeThrowReleaseMontage);
+		}
+
+		else
+		{
+			Server_PlayMontage(Mesh3P, GrenadeThrowReleaseMontage);
+		}
+
+		Mesh3P->GetAnimInstance()->Montage_Stop(0.1f, GrenadeThrowHoldMontage);
+
+		Grenades.CurrentFragGrenades--;
+
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("texthere: %d"), Grenades.CurrentFragGrenades));
 	}
-
-	else
-	{
-		Server_SetBool(false);
-	}
-
-	bIsHoldingGrenade = false;
-
-	if (HasAuthority())
-	{
-		Multi_PlayMontage(Mesh3P, GrenadeThrowReleaseMontage);
-	}
-
-	else
-	{
-		Server_PlayMontage(Mesh3P, GrenadeThrowReleaseMontage);
-	}
-
-	Mesh3P->GetAnimInstance()->Montage_Stop(0.1f, GrenadeThrowHoldMontage);
 }
 
 void AC_PlayerCharacter::OnGrenadeStartMontageFinished(UAnimMontage* Montage, bool bInterrupted)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Delegate binded success")));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Delegate binded success")));
 
 	if(bIsHoldingGrenade)
 	{
