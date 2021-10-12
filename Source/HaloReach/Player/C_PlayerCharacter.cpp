@@ -36,7 +36,7 @@
 #include "HaloReach/GameModes/C_ReachGameStateBase.h"
 #include "Animation/AnimMontage.h"
 
-//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("texthere: %f), x));
+//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("texthere: %f"), x));
 
 AC_PlayerCharacter::AC_PlayerCharacter(const FObjectInitializer& ObjectInitializer) : 
 	Super(ObjectInitializer.SetDefaultSubobjectClass<UC_PlayerCMC>(ACharacter::CharacterMovementComponentName))
@@ -252,6 +252,7 @@ void AC_PlayerCharacter::BeginPlay()
 
 	// Tests
 
+	Grenades.CurrentFragGrenades = 2;
 
 }
 

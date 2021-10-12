@@ -77,7 +77,6 @@ void AC_BaseGrenade::Explode()
 	// A sweep trace that will hit anything within the sphere
 	bool bHit = GetWorld()->SweepMultiByChannel(OutHits, ActorLocation, ActorLocation, FQuat::Identity, COLLISION_MELEEDAMAGE, MyColSphere, CollisionParams);
 
-	// fix - can be hit multiple times
 	if (bHit)
 	{
 		for (auto& Hit : OutHits)

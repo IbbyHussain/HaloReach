@@ -31,4 +31,23 @@ public:
 	void Multi_bSetOnlyOwnerSeeMesh(bool bCanSee);
 	void Multi_bSetOnlyOwnerSeeMesh_Implementation(bool bCanSee);
 
+	UPROPERTY(EditDefaultsOnly, Category = "Grenade")
+	UParticleSystem* ExplosionEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Grenade")
+	USoundBase* ExplosionSound;
+
+	FTimerHandle ExplosionHandle;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Grenade")
+	float ExplosionDelay;
+
+	// Virtual Functions 
+
+	virtual void StartExplosion();
+
+	virtual void Explode();
+
+
+
 };
