@@ -36,9 +36,6 @@ void UC_PlayerHUDWidget::NativeConstruct()
 
 	FadeInAnimation = GetAnimationByName(TEXT("FadeIn"));
 	BlackImage->SetRenderOpacity(0.0f);
-	
-
-
 }
 
 void UC_PlayerHUDWidget::UpdateHealthImage(float Health)
@@ -225,6 +222,20 @@ void UC_PlayerHUDWidget::UpdateAmmoImage()
 		}
 	}
 }
+
+void UC_PlayerHUDWidget::UpdateGrenadeCounterText()
+{
+	AC_PlayerCharacter* Player = Cast<AC_PlayerCharacter>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn());
+	if(Player)
+	{
+
+	}
+}
+
+void UC_PlayerHUDWidget::UpdateGrenadeCounterImage()
+{
+
+};
 
 # pragma region Black Fade In Animation
 

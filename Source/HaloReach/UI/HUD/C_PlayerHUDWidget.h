@@ -130,4 +130,25 @@ public:
 	UImage* BlackImage;
 
 # pragma endregion
+
+# pragma region Grenade Counter
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UTextBlock* PrimaryGrenadeCounter;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UTextBlock* SecondaryGrenadeCounter;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UImage* PrimaryGrenadeImage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UImage* SecondaryGrenadeImage;
+
+	void UpdateGrenadeCounterText();
+
+	void UpdateGrenadeCounterImage();
+
+
+# pragma endregion
 };

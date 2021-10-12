@@ -100,11 +100,14 @@ public:
 
 	int CurrentFragGrenades;
 	
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player | Grenades")
 	int MaxFragGrenades;
+
+	TArray<AC_BaseGrenade*> GrenadesArray;
 
 	FGrenades()
 	{
-		CurrentFragGrenades = 2;
+		CurrentFragGrenades = MaxFragGrenades;
 
 		MaxFragGrenades = 2;
 	}
