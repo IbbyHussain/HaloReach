@@ -77,7 +77,7 @@ void AC_BaseGrenade::Explode()
 	FVector ActorLocation = GetActorLocation();
 
 	// Creates a sphere
-	FCollisionShape MyColSphere = FCollisionShape::MakeSphere(250.0f);
+	FCollisionShape MyColSphere = FCollisionShape::MakeSphere(200.0f);
 
 	// Debug 
 	DrawDebugSphere(GetWorld(), ActorLocation, MyColSphere.GetSphereRadius(), 20, FColor::Green, true);
@@ -92,6 +92,7 @@ void AC_BaseGrenade::Explode()
 		{
 			AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(Hit.GetActor());
 
+			// Ensures a player is only damaged once
 			if (PlayerCharacter && !IgnoredActorsArray.Contains(PlayerCharacter))
 			{
 				// Apply damage to player, Hack to get around main dmg system where dmg stops after shields are broken
@@ -108,7 +109,7 @@ void AC_BaseGrenade::Explode()
 	FTransform ExplosionTransform;
 	ExplosionTransform.SetLocation(GetActorLocation());
 	ExplosionTransform.SetRotation(GetActorRotation().Quaternion());
-	ExplosionTransform.SetScale3D(FVector(1.0f));
+	ExplosionTransform.SetScale3D(FVector(3.0f));
 
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, ExplosionTransform);
 
