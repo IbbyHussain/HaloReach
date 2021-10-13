@@ -47,7 +47,7 @@ void AC_BaseGrenade::Thrown(FVector ImpulseDirection)
 	MeshComp->AddImpulse(ImpulseDirection, NAME_None, true);
 
 	// wil call a count down 
-	StartExplosion();
+	//StartExplosion();
 }
 
 void AC_BaseGrenade::Multi_bSetOnlyOwnerSeeMesh_Implementation(bool bCanSee)

@@ -23,10 +23,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Grenade")
 	class URadialForceComponent* RadialForceComp;
 
-	// Enables physics on object after it has been thrown
-	UFUNCTION(BlueprintCallable)
-	void Thrown(FVector ImpulseDirection);
-
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_bSetOnlyOwnerSeeMesh(bool bCanSee);
 	void Multi_bSetOnlyOwnerSeeMesh_Implementation(bool bCanSee);
@@ -51,6 +47,10 @@ public:
 	virtual void StartExplosion();
 
 	virtual void Explode();
+
+	// Enables physics on object after it has been thrown
+	UFUNCTION(BlueprintCallable)
+	virtual void Thrown(FVector ImpulseDirection);
 
 
 

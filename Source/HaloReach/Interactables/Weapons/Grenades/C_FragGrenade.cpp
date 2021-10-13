@@ -12,5 +12,14 @@ void AC_FragGrenade::StartExplosion()
 {
 	Super::StartExplosion();
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Frag Start Exploded")));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Frag Start Exploded")));
+}
+
+void AC_FragGrenade::Thrown(FVector ImpulseDirection)
+{
+	Super::Thrown(ImpulseDirection);
+
+	StartExplosion();
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Frag Start THROWN Exploded")));
 }

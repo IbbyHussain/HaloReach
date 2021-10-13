@@ -14,4 +14,6 @@ class HALOREACH_API AC_FragGrenade : public AC_BaseGrenade
 	AC_FragGrenade();
 	
 	virtual void StartExplosion() override;
+
+	virtual void Thrown(FVector ImpulseDirection) override;
 };
