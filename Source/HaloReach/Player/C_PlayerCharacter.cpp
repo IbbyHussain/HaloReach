@@ -174,8 +174,6 @@ void AC_PlayerCharacter::BeginPlay()
 		Secondary3PWeapon = UC_SpawnLibrary::SpawnActorAtSocket<AC_Weapon3P>(GetWorld(), Combat.SecondaryWeapon3PClass, Secondary3PWeapon, Mesh3P, ("Pistol_3P_Holstered_Socket"));
 		Secondary3PWeapon->SetOwner(this);
 		EquippedWeapon3PArray.Emplace(Secondary3PWeapon);
-
-		EquippedGrenade = UC_SpawnLibrary::SpawnActorAtLocation(GetWorld(), EquippedGrenadeClass, EquippedGrenade, GetActorLocation(), GetActorRotation());
 	}
 
 

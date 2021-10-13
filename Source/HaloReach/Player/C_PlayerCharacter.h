@@ -631,11 +631,13 @@ public:
 
 	AActor* Weapon3PMag;
 
+	UFUNCTION(BlueprintCallable)
 	USkeletalMeshComponent* GetDefaultMesh() const
 	{
 		return DefaultMesh;
 	}
 
+	UFUNCTION(BlueprintCallable)
 	USkeletalMeshComponent* GetMesh3P() const
 	{
 		return Mesh3P;

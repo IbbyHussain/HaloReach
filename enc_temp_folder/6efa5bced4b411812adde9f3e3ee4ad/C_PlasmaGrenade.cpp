@@ -30,7 +30,7 @@ void AC_PlasmaGrenade::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActo
 		if (OtherActor && OtherActor != GetOwner() && bHasGrenadeBeenThrown)
 		{
 			AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(OtherActor);
-			AActor* GenericActor = Cast<AActor>(OtherActor);
+			AActor* Akh = Cast<AActor>(OtherActor);
 			
 			// If we hit a player, Attach grenade to it - same for vechile 
 			if (PlayerCharacter && OtherComp == PlayerCharacter->GetMesh3P() && OtherComp != PlayerCharacter->GetCapsuleComponent())
@@ -48,10 +48,10 @@ void AC_PlasmaGrenade::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActo
 				AttachToComponent(PlayerCharacter->GetMesh3P(), FAttachmentTransformRules::KeepWorldTransform, SweepResult.BoneName);
 			}
 
-			// If grenade hits a generic actor in enviroment e.g walls or floor
-			else if(GenericActor && GenericActor != PlayerCharacter)
+			else if(Akh && Akh != PlayerCharacter)
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("HIT GENERIC ACTOR")));
+
 
 				bStartExplosionOnce = true;
 
