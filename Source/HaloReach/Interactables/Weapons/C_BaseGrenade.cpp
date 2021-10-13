@@ -8,6 +8,7 @@
 #include "HaloReach/HaloReach.h"
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
+#include "HaloReach/Components/C_HealthComponent.h"
 
 #include "DrawDebugHelpers.h"
 
@@ -45,6 +46,7 @@ void AC_BaseGrenade::Thrown(FVector ImpulseDirection)
 
 	MeshComp->AddImpulse(ImpulseDirection, NAME_None, true);
 
+	// wil call a count down 
 	StartExplosion();
 }
 
@@ -53,8 +55,14 @@ void AC_BaseGrenade::Multi_bSetOnlyOwnerSeeMesh_Implementation(bool bCanSee)
 	MeshComp->SetOnlyOwnerSee(bCanSee);
 }
 
+void AC_BaseGrenade::ClearIgnoredActorsArray()
+{
+	IgnoredActorsArray.Empty();
+}
+
 void AC_BaseGrenade::StartExplosion()
 {
+	ClearIgnoredActorsArray();
 	GetWorldTimerManager().SetTimer(ExplosionHandle, this, &AC_BaseGrenade::Explode, ExplosionDelay, false);
 }
 
@@ -84,10 +92,13 @@ void AC_BaseGrenade::Explode()
 		{
 			AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(Hit.GetActor());
 
-			if (Hit.GetActor() == PlayerCharacter)
+			if (PlayerCharacter && !IgnoredActorsArray.Contains(PlayerCharacter))
 			{
-				// Apply damage to player
+				// Apply damage to player, Hack to get around main dmg system where dmg stops after shields are broken
 				UGameplayStatics::ApplyDamage(PlayerCharacter, 100.0f, GetOwner()->GetInstigatorController(), GetOwner(), nullptr);
+				UGameplayStatics::ApplyDamage(PlayerCharacter, 100.0f, GetOwner()->GetInstigatorController(), GetOwner(), nullptr);
+
+				IgnoredActorsArray.Emplace(PlayerCharacter);
 			}
 		}
 	}

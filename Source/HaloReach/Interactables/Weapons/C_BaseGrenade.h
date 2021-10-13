@@ -42,6 +42,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Grenade")
 	float ExplosionDelay;
 
+	TArray<AActor*> IgnoredActorsArray;
+
+	void ClearIgnoredActorsArray();
+
 	// Virtual Functions 
 
 	virtual void StartExplosion();

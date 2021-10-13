@@ -577,6 +577,8 @@ void AC_PlayerCharacter::UpdateCombatState(ECombatState NewState)
 
 // INTERACT SYSTEM
 
+# pragma region Interact
+
 void AC_PlayerCharacter::Interact()
 {
 
@@ -621,6 +623,8 @@ void AC_PlayerCharacter::Multi_Interact_Implementation(FHitResult Hit)
 		IC_InteractInterface::Execute_Interact(Hit.GetActor());
 	}
 }
+
+# pragma endregion 
 
 // COMBAT SYSTEM 
 
