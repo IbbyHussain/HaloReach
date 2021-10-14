@@ -111,11 +111,32 @@ void AC_BaseGrenade::Explode()
 	ExplosionTransform.SetRotation(GetActorRotation().Quaternion());
 	ExplosionTransform.SetScale3D(FVector(3.0f));
 
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, ExplosionTransform);
+	if(GetOwner()->HasAuthority())
+	{
+		Multi_SpawnEffects(ExplosionTransform);
+	}
+
+	else
+	{
+		Server_SpawnEffects(ExplosionTransform);
+	}
+
+	
+
+	//UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, ExplosionTransform);
 
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ExplosionSound, GetActorLocation());
 
 	Destroy();
 }
 
+void AC_BaseGrenade::Server_SpawnEffects_Implementation(FTransform EffectTransform)
+{
+	Multi_SpawnEffects(EffectTransform);
+}
+
+void AC_BaseGrenade::Multi_SpawnEffects_Implementation(FTransform EffectTransform)
+{
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, EffectTransform);
+}
 

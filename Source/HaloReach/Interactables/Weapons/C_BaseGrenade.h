@@ -27,12 +27,6 @@ public:
 	void Multi_bSetOnlyOwnerSeeMesh(bool bCanSee);
 	void Multi_bSetOnlyOwnerSeeMesh_Implementation(bool bCanSee);
 
-	UPROPERTY(EditDefaultsOnly, Category = "Grenade")
-	UParticleSystem* ExplosionEffect;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Grenade")
-	USoundBase* ExplosionSound;
-
 	FTimerHandle ExplosionHandle;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Grenade")
@@ -41,6 +35,25 @@ public:
 	TArray<AActor*> IgnoredActorsArray;
 
 	void ClearIgnoredActorsArray();
+
+# pragma region Grenade Effects
+
+	UPROPERTY(EditDefaultsOnly, Category = "Grenade")
+	UParticleSystem* ExplosionEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Grenade")
+	USoundBase* ExplosionSound;
+
+	UFUNCTION(Server, Reliable)
+	void Server_SpawnEffects(FTransform EffectTransform);
+	void Server_SpawnEffects_Implementation(FTransform EffectTransform);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_SpawnEffects(FTransform EffectTransform);
+	void Multi_SpawnEffects_Implementation(FTransform EffectTransform);
+
+
+# pragma endregion
 
 	// Virtual Functions 
 
