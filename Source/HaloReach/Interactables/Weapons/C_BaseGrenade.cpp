@@ -80,7 +80,7 @@ void AC_BaseGrenade::Explode()
 	FCollisionShape MyColSphere = FCollisionShape::MakeSphere(200.0f);
 
 	// Debug 
-	DrawDebugSphere(GetWorld(), ActorLocation, MyColSphere.GetSphereRadius(), 20, FColor::Green, true);
+	//DrawDebugSphere(GetWorld(), ActorLocation, MyColSphere.GetSphereRadius(), 20, FColor::Green, true);
 
 	// A sweep trace that will hit anything within the sphere
 	bool bHit = GetWorld()->SweepMultiByChannel(OutHits, ActorLocation, ActorLocation, FQuat::Identity, COLLISION_MELEEDAMAGE, MyColSphere, CollisionParams);
