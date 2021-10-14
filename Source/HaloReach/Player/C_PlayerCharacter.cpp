@@ -109,6 +109,7 @@ AC_PlayerCharacter::AC_PlayerCharacter(const FObjectInitializer& ObjectInitializ
 	bCanZoom = true;
 	bCanReload = true;
 	bCanFire = true;
+	bCanThrowGrenade = true;
 
 	bCanMelee = true;
 
@@ -632,7 +633,7 @@ void AC_PlayerCharacter::SwitchWeapons()
 {
 	if(bCanSwitch)
 	{
-		EndFire();
+		UpdateRestrictionState(ERestrictionState::RESTRICTED);
 
 		EquippedWeaponArray.Swap(0, 1);
 		WeaponArrayChecks();
@@ -661,29 +662,18 @@ void AC_PlayerCharacter::SwitchWeapons()
 			}
 			
 
-			bCanZoom = false;
-			bCanSwitch = false;
-			bCanFire = false;
-			bCanReload = false;
-			bCanMelee = false;
+			
 
 			UE_LOG(LogTemp, Log, TEXT("Weapon switch length is: %f"), Gun->WeaponStats.SwitchLength);
 
 			GetWorldTimerManager().SetTimer(SwitchResetHandle, this, &AC_PlayerCharacter::ResetCanSwitch, Gun->WeaponStats.SwitchLength, false);
 		}
-	
-		// If zoomed in while switching, stop zooming
-		EndZoom();
 	}
 }
 
 void AC_PlayerCharacter::ResetCanSwitch()
 {
-	bCanSwitch = true;
-	bCanZoom = true;
-	bCanReload = true;
-	bCanFire = true;
-	bCanMelee = true;
+	UpdateRestrictionState(ERestrictionState::FREE);
 }
 
 # pragma endregion
@@ -754,8 +744,7 @@ void AC_PlayerCharacter::Reload()
 			{
 				// Restrictions 
 				// stops firing if, reload at same time
-				EndFire();
-				EndZoom();
+				UpdateRestrictionState(ERestrictionState::RESTRICTED);
 
 				// Call Server RPC for clients 
 				if (HasAuthority())
@@ -773,15 +762,6 @@ void AC_PlayerCharacter::Reload()
 
 				PlayMontage(DefaultMesh, Gun->GetWeaponReloadMontage());
 				
-				bCanReload = false;
-				bCanFire = false;
-				bCanSwitch = false;
-				bCanZoom = false;
-				bCanMelee = false;
-
-				// If we are zoomed in when reload starts
-				EndZoom();
-
 				// Allows for zooming and switching after reload
 				GetWorldTimerManager().SetTimer(ReloadResetHandle, this, &AC_PlayerCharacter::ResetCanReload, Gun->WeaponStats.ReloadLength, false);
 				
@@ -802,11 +782,7 @@ void AC_PlayerCharacter::Multi_PlayMontage_Implementation(USkeletalMeshComponent
 
 void AC_PlayerCharacter::ResetCanReload()
 {
-	bCanReload = true;
-	bCanSwitch = true;
-	bCanFire = true;
-	bCanZoom = true;
-	bCanMelee = true;
+	UpdateRestrictionState(ERestrictionState::FREE);
 }
 
 void AC_PlayerCharacter::OnWeaponTypeUpdate()
@@ -840,6 +816,40 @@ void AC_PlayerCharacter::Server_GunReload_Implementation(AC_BaseGun* Gun)
 	GunReload(Gun);
 }
 
+void AC_PlayerCharacter::UpdateRestrictionState(ERestrictionState NewState)
+{
+	switch(NewState)
+	{
+	case ERestrictionState::RESTRICTED:
+
+		EndFire();
+		EndZoom();
+
+		// Very restrictive - cant do any actions while these happen
+		bCanMelee = false;
+		bCanSwitch = false;
+		bCanReload = false;
+
+		// can be interrupted
+		bCanZoom = false;
+		bCanFire = false;
+		bCanThrowGrenade = false;
+		break;
+
+	case ERestrictionState::FREE:
+
+		bCanMelee = true;
+		bCanSwitch = true;
+		bCanReload = true;
+
+		bCanZoom = true;
+		bCanFire = true;
+		bCanThrowGrenade = true;
+		break;
+
+	}
+}
+
 # pragma region Melee Attack
 
 // called on input binding
@@ -848,14 +858,7 @@ void AC_PlayerCharacter::MeleeTracking()
 	if (bCanMelee)
 	{
 		// Restrictions 
-		EndFire();
-		EndZoom();
-
-		bCanMelee = false;
-		bCanZoom = false;
-		bCanSwitch = false;
-		bCanFire = false;
-		bCanReload = false;
+		UpdateRestrictionState(ERestrictionState::RESTRICTED);
 
 		EnemyMap.Empty();
 
@@ -1001,11 +1004,8 @@ void AC_PlayerCharacter::StartMelee()
 
 void AC_PlayerCharacter::ResetMelee()
 {
-	bCanMelee = true;
-	bCanZoom = true;
-	bCanSwitch = true;
-	bCanFire = true;
-	bCanReload = true;
+	UpdateRestrictionState(ERestrictionState::FREE);
+
 }
 
 void AC_PlayerCharacter::ClearActorsIgnoredArray()
@@ -1100,8 +1100,10 @@ void AC_PlayerCharacter::Server_SetBool_Implementation(bool bNew)
 // when grenade input is held or pressed
 void AC_PlayerCharacter::ThrowGrenade()
 {
-	if(Grenades.CurrentFragGrenades > 0)
+	if(Grenades.CurrentFragGrenades > 0 && bCanThrowGrenade)
 	{
+		UpdateRestrictionState(ERestrictionState::RESTRICTED);
+
 		if (HasAuthority())
 		{
 			bIsHoldingGrenade = true;
@@ -1222,6 +1224,8 @@ void AC_PlayerCharacter::Client_LaunchGrenade_Implementation()
 	FVector CameraForwardVector = CameraComp->GetForwardVector();
 
 	FVector LaunchForce = (FMath::Lerp(CameraUpVector, CameraForwardVector, 1.0f)) * ThrowForce;
+
+	UpdateRestrictionState(ERestrictionState::FREE);
 
 	Server_PrepGrenade(LaunchForce);
 }

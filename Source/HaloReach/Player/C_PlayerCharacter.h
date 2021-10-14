@@ -39,6 +39,13 @@ enum class ECombatState : uint8
 	COMBAT
 };
 
+UENUM()
+enum class ERestrictionState : uint8
+{
+	RESTRICTED,
+	FREE
+};
+
 USTRUCT()
 struct FMovement
 {
@@ -134,6 +141,8 @@ private:
 
 	FGrenades Grenades;
 
+	ERestrictionState RestrictionState;
+
 	EMovementState MovementState;
 
 	UPROPERTY(Replicated)
@@ -169,6 +178,8 @@ private:
 
 	UFUNCTION()
 	void UpdateCombatState(ECombatState NewState);
+
+	void UpdateRestrictionState(ERestrictionState NewState);
 
 // INTERACT SYSTEM
 
@@ -299,6 +310,8 @@ public:
 	UFUNCTION(Client, Reliable, BlueprintCallable)
 	void Client_LaunchGrenade();
 	void Client_LaunchGrenade_Implementation();
+
+	bool bCanThrowGrenade;
 
 # pragma endregion
 
