@@ -116,11 +116,13 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Player | Grenades")
 	TSubclassOf<AC_BaseGrenade> PlasmaGrenadeClass;
 
+	TSubclassOf<AC_BaseGrenade> EquippedGrenadeClass;
+
 	TArray<TSubclassOf<AC_BaseGrenade>> GrenadesArray;
 
 	FGrenades()
 	{
-		FragGrenadeAmount = 4;
+		FragGrenadeAmount = 2;
 		PlasmaGrenadeAmount = 2;
 
 		EquippedGrenadeAmount = FragGrenadeAmount;
@@ -323,6 +325,8 @@ public:
 	void SwitchGrenades();
 
 	bool bSwitchGrenade = true;
+
+	void UpdateGrenadeAmount();
 
 # pragma endregion
 
