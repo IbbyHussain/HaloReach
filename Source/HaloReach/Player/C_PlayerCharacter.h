@@ -106,6 +106,7 @@ struct FGrenades
 public:
 	
 	int EquippedGrenadeAmount;
+	int SecondaryGrenadeAmount;
 
 	int FragGrenadeAmount;
 	int PlasmaGrenadeAmount;
@@ -126,6 +127,7 @@ public:
 		PlasmaGrenadeAmount = 2;
 
 		EquippedGrenadeAmount = FragGrenadeAmount;
+		SecondaryGrenadeAmount = PlasmaGrenadeAmount;
 	}
 };
 

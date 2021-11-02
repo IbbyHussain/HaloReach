@@ -229,6 +229,8 @@ void UC_PlayerHUDWidget::UpdateGrenadeCounterText()
 	AC_PlayerCharacter* Player = Cast<AC_PlayerCharacter>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn());
 	if(Player)
 	{
+		PrimaryGrenadeCounter->SetText(FText::FromString(FString::FromInt(Player->Grenades.EquippedGrenadeAmount)));
+		SecondaryGrenadeCounter->SetText(FText::FromString(FString::FromInt(Player->Grenades.SecondaryGrenadeAmount)));
 
 	}
 }

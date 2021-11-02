@@ -1253,6 +1253,7 @@ void AC_PlayerCharacter::UpdateGrenadeAmount(bool bDecrementGrenadeAmount)
 		}
 
 		Grenades.EquippedGrenadeAmount = Grenades.FragGrenadeAmount;
+		Grenades.SecondaryGrenadeAmount = Grenades.PlasmaGrenadeAmount;
 
 	}
 
@@ -1264,6 +1265,7 @@ void AC_PlayerCharacter::UpdateGrenadeAmount(bool bDecrementGrenadeAmount)
 		}
 
 		Grenades.EquippedGrenadeAmount = Grenades.PlasmaGrenadeAmount;
+		Grenades.SecondaryGrenadeAmount = Grenades.FragGrenadeAmount;
 	}
 
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("FragGrenades: %d, PlasmaGrenades: %d, EquippedGrenades: %d"), 
