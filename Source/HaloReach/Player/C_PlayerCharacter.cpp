@@ -251,7 +251,8 @@ void AC_PlayerCharacter::BeginPlay()
 
 	// Tests
 
-	Grenades.CurrentFragGrenades = 2;
+	Grenades.GrenadesArray.Emplace(Grenades.FragGrenadeClass);
+	Grenades.GrenadesArray.Emplace(Grenades.PlasmaGrenadeClass);
 
 }
 
@@ -1100,7 +1101,7 @@ void AC_PlayerCharacter::Server_SetBool_Implementation(bool bNew)
 // when grenade input is held or pressed
 void AC_PlayerCharacter::ThrowGrenade()
 {
-	if(Grenades.CurrentFragGrenades > 0 && bCanThrowGrenade)
+	if(Grenades.EquippedGrenadeAmount > 0 && bCanThrowGrenade)
 	{
 		UpdateRestrictionState(ERestrictionState::RESTRICTED);
 
@@ -1148,7 +1149,7 @@ void AC_PlayerCharacter::Server_AttachGrenade_Implementation(FName b)
 // when grenade input is released
 void AC_PlayerCharacter::ReleaseGrenade()
 {
-	if(Grenades.CurrentFragGrenades > 0)
+	if(Grenades.EquippedGrenadeAmount > 0)
 	{
 		if (HasAuthority())
 		{
@@ -1174,9 +1175,9 @@ void AC_PlayerCharacter::ReleaseGrenade()
 
 		Mesh3P->GetAnimInstance()->Montage_Stop(0.1f, GrenadeThrowHoldMontage);
 
-		Grenades.CurrentFragGrenades--;
+		Grenades.EquippedGrenadeAmount--;
 
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("texthere: %d"), Grenades.CurrentFragGrenades));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("texthere: %d"), Grenades.EquippedGrenadeAmount));
 	}
 }
 
@@ -1202,7 +1203,7 @@ void AC_PlayerCharacter::OnGrenadeStartMontageFinished(UAnimMontage* Montage, bo
 
 void AC_PlayerCharacter::Server_SpawnGrenade_Implementation(AC_PlayerCharacter* PlayerOwner, FName b, USkeletalMeshComponent* c)
 {
-	EquippedGrenade = UC_SpawnLibrary::SpawnActorAtLocation(GetWorld(), EquippedGrenadeClass, EquippedGrenade, GetActorLocation(), GetActorRotation());
+	EquippedGrenade = UC_SpawnLibrary::SpawnActorAtLocation(GetWorld(), Grenades.GrenadesArray[0], EquippedGrenade, GetActorLocation(), GetActorRotation());
 	EquippedGrenade->SetOwner(PlayerOwner);
 }
 
@@ -1229,6 +1230,17 @@ void AC_PlayerCharacter::Client_LaunchGrenade_Implementation()
 
 	Server_PrepGrenade(LaunchForce);
 }
+
+void AC_PlayerCharacter::SwitchGrenades()
+{
+	// Will switch grenade, assumes frag grenade is the starting grenade
+	Grenades.GrenadesArray.Swap(0, 1);
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("EQUIPPED GRENADE is %s"), *Grenades.GrenadesArray[0]->GetName()));
+
+}
+
+	 
 
 # pragma endregion
 
@@ -1608,4 +1620,7 @@ void AC_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 	PlayerInputComponent->BindAction("Grenade", IE_Pressed, this, &AC_PlayerCharacter::ThrowGrenade);
 	PlayerInputComponent->BindAction("Grenade", IE_Released, this, &AC_PlayerCharacter::ReleaseGrenade);
+
+	PlayerInputComponent->BindAction("SwitchGrenades", IE_Pressed, this, &AC_PlayerCharacter::SwitchGrenades);
+
 }

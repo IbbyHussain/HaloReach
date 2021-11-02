@@ -99,24 +99,31 @@ public:
 
 };
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FGrenades
 {
 	GENERATED_BODY()
 public:
-
-	int CurrentFragGrenades;
 	
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player | Grenades")
-	int MaxFragGrenades;
+	int EquippedGrenadeAmount;
 
-	TArray<AC_BaseGrenade*> GrenadesArray;
+	int FragGrenadeAmount;
+	int PlasmaGrenadeAmount;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player | Grenades")
+	TSubclassOf<AC_BaseGrenade> FragGrenadeClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player | Grenades")
+	TSubclassOf<AC_BaseGrenade> PlasmaGrenadeClass;
+
+	TArray<TSubclassOf<AC_BaseGrenade>> GrenadesArray;
 
 	FGrenades()
 	{
-		CurrentFragGrenades = MaxFragGrenades;
+		FragGrenadeAmount = 4;
+		PlasmaGrenadeAmount = 2;
 
-		MaxFragGrenades = 2;
+		EquippedGrenadeAmount = FragGrenadeAmount;
 	}
 };
 
@@ -139,6 +146,7 @@ private:
 
 	FMovement Movement;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Player | Grenades")
 	FGrenades Grenades;
 
 	ERestrictionState RestrictionState;
@@ -258,9 +266,6 @@ public:
 	AC_BaseGrenade* EquippedGrenade;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Player | Grenades")
-	TSubclassOf<AC_BaseGrenade> EquippedGrenadeClass;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Player | Grenades")
 	FName GrenadeSocket;
 
 	UFUNCTION(BlueprintCallable)
@@ -312,6 +317,12 @@ public:
 	void Client_LaunchGrenade_Implementation();
 
 	bool bCanThrowGrenade;
+
+	// Grenade switching
+
+	void SwitchGrenades();
+
+	bool bSwitchGrenade = true;
 
 # pragma endregion
 
