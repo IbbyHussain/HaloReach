@@ -327,7 +327,7 @@ public:
 
 	void SwitchGrenades();
 
-	bool bSwitchGrenade = true;
+	bool bCanSwitchGrenades = true;
 
 	void UpdateGrenadeAmount(bool bDecrementGrenadeAmount);
 

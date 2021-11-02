@@ -1106,6 +1106,8 @@ void AC_PlayerCharacter::ThrowGrenade()
 	{
 		UpdateRestrictionState(ERestrictionState::RESTRICTED);
 
+		bCanSwitchGrenades = false;
+
 		if (HasAuthority())
 		{
 			bIsHoldingGrenade = true;
@@ -1178,6 +1180,8 @@ void AC_PlayerCharacter::ReleaseGrenade()
 
 		UpdateGrenadeAmount(true);
 
+		bCanSwitchGrenades = true;
+
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("texthere: %d"), Grenades.EquippedGrenadeAmount));
 	}
 }
@@ -1232,13 +1236,16 @@ void AC_PlayerCharacter::Client_LaunchGrenade_Implementation()
 
 void AC_PlayerCharacter::SwitchGrenades()
 {
-	// Will switch grenade, assumes frag grenade is the starting grenade
-	Grenades.GrenadesArray.Swap(0, 1);
-	Grenades.EquippedGrenadeClass = Grenades.GrenadesArray[0];
+	if(bCanSwitchGrenades)
+	{
+		// Will switch grenade, assumes frag grenade is the starting grenade
+		Grenades.GrenadesArray.Swap(0, 1);
+		Grenades.EquippedGrenadeClass = Grenades.GrenadesArray[0];
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("Current grenade class: %s"), *Grenades.EquippedGrenadeClass->GetName()));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("Current grenade class: %s"), *Grenades.EquippedGrenadeClass->GetName()));
 
-	UpdateGrenadeAmount(false);
+		UpdateGrenadeAmount(false);
+	}
 }
 
 void AC_PlayerCharacter::UpdateGrenadeAmount(bool bDecrementGrenadeAmount)
