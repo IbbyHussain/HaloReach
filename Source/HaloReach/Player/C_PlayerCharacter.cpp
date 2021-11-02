@@ -1118,7 +1118,7 @@ void AC_PlayerCharacter::ThrowGrenade()
 
 		bIsHoldingGrenade = true;
 
-		Server_SpawnGrenade(this, GrenadeSocket, DefaultMesh);
+		Server_SpawnGrenade(this, GrenadeSocket, DefaultMesh, Grenades.EquippedGrenadeClass);
 
 		if (HasAuthority())
 		{
@@ -1150,7 +1150,7 @@ void AC_PlayerCharacter::Server_AttachGrenade_Implementation(FName b)
 // when grenade input is released
 void AC_PlayerCharacter::ReleaseGrenade()
 {
-	if(Grenades.EquippedGrenadeAmount > 0)
+	if(Grenades.EquippedGrenadeAmount > 0 && bIsHoldingGrenade)
 	{
 		if (HasAuthority())
 		{
@@ -1176,8 +1176,7 @@ void AC_PlayerCharacter::ReleaseGrenade()
 
 		Mesh3P->GetAnimInstance()->Montage_Stop(0.1f, GrenadeThrowHoldMontage);
 
-		//Grenades.EquippedGrenadeAmount--;
-		UpdateGrenadeAmount();
+		UpdateGrenadeAmount(true);
 
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("texthere: %d"), Grenades.EquippedGrenadeAmount));
 	}
@@ -1203,9 +1202,9 @@ void AC_PlayerCharacter::OnGrenadeStartMontageFinished(UAnimMontage* Montage, bo
 	}
 }
 
-void AC_PlayerCharacter::Server_SpawnGrenade_Implementation(AC_PlayerCharacter* PlayerOwner, FName b, USkeletalMeshComponent* c)
+void AC_PlayerCharacter::Server_SpawnGrenade_Implementation(AC_PlayerCharacter* PlayerOwner, FName b, USkeletalMeshComponent* c, TSubclassOf<AC_BaseGrenade> GrenadeToSpawn)
 {
-	EquippedGrenade = UC_SpawnLibrary::SpawnActorAtLocation(GetWorld(), Grenades.EquippedGrenadeClass, EquippedGrenade, GetActorLocation(), GetActorRotation());
+	EquippedGrenade = UC_SpawnLibrary::SpawnActorAtLocation(GetWorld(), GrenadeToSpawn, EquippedGrenade, GetActorLocation(), GetActorRotation());
 	EquippedGrenade->SetOwner(PlayerOwner);
 }
 
@@ -1228,7 +1227,7 @@ void AC_PlayerCharacter::Client_LaunchGrenade_Implementation()
 
 	FVector LaunchForce = (FMath::Lerp(CameraUpVector, CameraForwardVector, 1.0f)) * ThrowForce;
 
-	UpdateRestrictionState(ERestrictionState::FREE);
+	//UpdateRestrictionState(ERestrictionState::FREE);
 
 	Server_PrepGrenade(LaunchForce);
 }
@@ -1239,35 +1238,33 @@ void AC_PlayerCharacter::SwitchGrenades()
 	Grenades.GrenadesArray.Swap(0, 1);
 	Grenades.EquippedGrenadeClass = Grenades.GrenadesArray[0];
 
-	if (Grenades.EquippedGrenadeClass == Grenades.FragGrenadeClass)
-	{
-		// Frag grenade equipped
-		Grenades.EquippedGrenadeAmount = Grenades.FragGrenadeAmount;
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("Current grenade class: %s"), *Grenades.EquippedGrenadeClass->GetName()));
 
-	}
-
-	else
-	{
-		Grenades.EquippedGrenadeAmount = Grenades.PlasmaGrenadeAmount;
-	}
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("FragGrenades: %d, PlasmaGrenades: %d, EquippedGrenades: %d"),
-		Grenades.FragGrenadeAmount, Grenades.PlasmaGrenadeAmount, Grenades.EquippedGrenadeAmount));
+	UpdateGrenadeAmount(false);
 }
 
-void AC_PlayerCharacter::UpdateGrenadeAmount()
+void AC_PlayerCharacter::UpdateGrenadeAmount(bool bDecrementGrenadeAmount)
 {
+	// Will set the equipped grenade Amount to correct amount depending on what grenade is equipped
 	if(Grenades.EquippedGrenadeClass == Grenades.FragGrenadeClass)
 	{
-		// Frag grenade equipped
-		Grenades.FragGrenadeAmount--;
+		// Will decrement amount when a grenade is released.
+		if(bDecrementGrenadeAmount)
+		{
+			Grenades.FragGrenadeAmount--;
+		}
+
 		Grenades.EquippedGrenadeAmount = Grenades.FragGrenadeAmount;
 
 	}
 
 	else
 	{
-		Grenades.PlasmaGrenadeAmount--;
+		if (bDecrementGrenadeAmount)
+		{
+			Grenades.PlasmaGrenadeAmount--;
+		}
+
 		Grenades.EquippedGrenadeAmount = Grenades.PlasmaGrenadeAmount;
 	}
 

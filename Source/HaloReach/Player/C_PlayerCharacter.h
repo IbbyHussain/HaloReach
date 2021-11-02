@@ -189,6 +189,7 @@ private:
 	UFUNCTION()
 	void UpdateCombatState(ECombatState NewState);
 
+	UFUNCTION(BlueprintCallable)
 	void UpdateRestrictionState(ERestrictionState NewState);
 
 // INTERACT SYSTEM
@@ -294,8 +295,8 @@ public:
 
 	// Spawns a grenade
 	UFUNCTION(Server, Reliable)
-	void Server_SpawnGrenade(AC_PlayerCharacter* PlayerOwner, FName b, USkeletalMeshComponent* c);
-	void Server_SpawnGrenade_Implementation(AC_PlayerCharacter* PlayerOwner, FName b, USkeletalMeshComponent* c);
+	void Server_SpawnGrenade(AC_PlayerCharacter* PlayerOwner, FName b, USkeletalMeshComponent* c, TSubclassOf<AC_BaseGrenade> GrenadeToSpawn);
+	void Server_SpawnGrenade_Implementation(AC_PlayerCharacter* PlayerOwner, FName b, USkeletalMeshComponent* c, TSubclassOf<AC_BaseGrenade> GrenadeToSpawn);
 
 	UFUNCTION(Server, Reliable)
 	void Server_AttachGrenade(FName b);
@@ -326,7 +327,7 @@ public:
 
 	bool bSwitchGrenade = true;
 
-	void UpdateGrenadeAmount();
+	void UpdateGrenadeAmount(bool bDecrementGrenadeAmount);
 
 # pragma endregion
 
