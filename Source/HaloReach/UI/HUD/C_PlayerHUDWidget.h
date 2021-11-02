@@ -145,8 +145,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UImage* SecondaryGrenadeImage;
 
+	UFUNCTION(BlueprintCallable)
 	void UpdateGrenadeCounterText();
 
+	UFUNCTION(BlueprintCallable)
 	void UpdateGrenadeCounterImage();
 
 

@@ -1227,8 +1227,6 @@ void AC_PlayerCharacter::Client_LaunchGrenade_Implementation()
 
 	FVector LaunchForce = (FMath::Lerp(CameraUpVector, CameraForwardVector, 1.0f)) * ThrowForce;
 
-	//UpdateRestrictionState(ERestrictionState::FREE);
-
 	Server_PrepGrenade(LaunchForce);
 }
 

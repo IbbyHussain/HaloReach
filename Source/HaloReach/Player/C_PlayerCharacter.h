@@ -148,9 +148,6 @@ private:
 
 	FMovement Movement;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Player | Grenades")
-	FGrenades Grenades;
-
 	ERestrictionState RestrictionState;
 
 	EMovementState MovementState;
@@ -207,6 +204,9 @@ private:
 public:
 
 	void UpdateMovementSettings(EMovementState NewState);
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player | Grenades")
+	FGrenades Grenades;
 
 // COMBAT SYSTEM
 

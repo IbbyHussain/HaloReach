@@ -52,6 +52,9 @@ public:
 	void Multi_SpawnEffects(FTransform EffectTransform);
 	void Multi_SpawnEffects_Implementation(FTransform EffectTransform);
 
+	UPROPERTY(EditDefaultsOnly, Category = "Grenade")
+	UTexture2D* GrenadeIcon;
+
 
 # pragma endregion
 

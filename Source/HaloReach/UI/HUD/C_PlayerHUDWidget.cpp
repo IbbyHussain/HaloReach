@@ -14,6 +14,7 @@
 #include "HaloReach/Player/C_PlayerCharacter.h"
 #include "HaloReach/Interactables/Weapons/C_BaseWeapon.h"
 #include "HaloReach/Interactables/Weapons/Guns/C_BaseGun.h"
+#include "HaloReach/Interactables/Weapons/C_BaseGrenade.h"
 
 UC_PlayerHUDWidget::UC_PlayerHUDWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -234,7 +235,20 @@ void UC_PlayerHUDWidget::UpdateGrenadeCounterText()
 
 void UC_PlayerHUDWidget::UpdateGrenadeCounterImage()
 {
-
+	APlayerController* const PC = Cast<APlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	if (PC)
+	{
+		AC_PlayerCharacter* Player = Cast<AC_PlayerCharacter>(PC->GetPawn());
+		if (Player)
+		{
+			//AC_BaseGun* Weapon = Cast<AC_BaseGun>(Player->EquippedWeaponArray[0]);
+			if (Player->Grenades.GrenadesArray[0] && Player->Grenades.GrenadesArray[1])
+			{
+				PrimaryGrenadeImage->SetBrushFromTexture(Player->Grenades.GrenadesArray[0]->GetDefaultObject<AC_BaseGrenade>()->GrenadeIcon);
+				SecondaryGrenadeImage->SetBrushFromTexture(Player->Grenades.GrenadesArray[1]->GetDefaultObject<AC_BaseGrenade>()->GrenadeIcon);
+			}
+		}
+	}
 };
 
 # pragma region Black Fade In Animation
