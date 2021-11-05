@@ -35,6 +35,7 @@
 
 #include "HaloReach/GameModes/C_ReachGameStateBase.h"
 #include "Animation/AnimMontage.h"
+#include "HaloReach/Interfaces/C_BaseSaveGame.h"
 
 //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("texthere: %f"), x));
 
@@ -254,7 +255,6 @@ void AC_PlayerCharacter::BeginPlay()
 	Grenades.GrenadesArray.Emplace(Grenades.FragGrenadeClass);
 	Grenades.GrenadesArray.Emplace(Grenades.PlasmaGrenadeClass);
 	Grenades.EquippedGrenadeClass = Grenades.GrenadesArray[0];
-
 }
 
 void AC_PlayerCharacter::Tick(float DeltaTime)
@@ -1597,6 +1597,31 @@ void AC_PlayerCharacter::Server_DestroyWeapons_Implementation()
 
 # pragma endregion
 
+void AC_PlayerCharacter::Client_LoadPlayerName_Implementation(const FString& SlotName)
+{
+	// If a custom name has been set, use it
+	if (UGameplayStatics::DoesSaveGameExist(SlotName, 0))
+	{
+		if (UC_BaseSaveGame* LoadedGame = Cast<UC_BaseSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, 0)))
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, FString::Printf(TEXT("LOAD GAME SUCCEEDED (Slot name is: %s)"), *SlotName));
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, FString::Printf(TEXT("LOAD GAME Player Name is %s"), *LoadedGame->SavedPlayerName));
+			Server_SetPlayerName(LoadedGame->SavedPlayerName);
+		}
+	}
+
+	// If no custom name has been set use the steam name by default
+	/*else
+	{
+		APlayerState* PS = UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayerState;
+		if (PS)
+		{
+			Server_SetPlayerName(PS->GetPlayerName());
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, FString::Printf(TEXT("LOAD GAME FAILED, no name was saved")));
+		}
+	}*/
+}
+
 void AC_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -1662,4 +1687,17 @@ void AC_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 	PlayerInputComponent->BindAction("SwitchGrenades", IE_Pressed, this, &AC_PlayerCharacter::SwitchGrenades);
 
+	PlayerInputComponent->BindAction("Load", IE_Pressed, this, &AC_PlayerCharacter::LoadIt);
+
+
+}
+
+void AC_PlayerCharacter::LoadIt()
+{
+	APlayerState* PS = UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayerState;
+	if (PS)
+	{
+		Client_LoadPlayerName(PS->UniqueId->ToString());
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("texthere: %s"), *PS->UniqueId->ToString()));
+	}
 }

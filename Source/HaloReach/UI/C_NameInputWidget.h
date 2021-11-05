@@ -32,8 +32,19 @@ public:
 
 	FString TestName();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UTextBlock* PlayerNameText;
 
 	UFUNCTION()
 	void OnPlayerNameComitted(const FText& InText, ETextCommit::Type InCommitType);
+
+	//
+	UFUNCTION(Client, Reliable)
+	void Client_LoadPlayerName(const FString& SlotName);
+	void Client_LoadPlayerName_Implementation(const FString& SlotName);
+
+	UFUNCTION(Client, Reliable)
+	void Client_SavePlayerName(const FString& SlotName, const FString& NewPlayerName);
+	void Client_SavePlayerName_Implementation(const FString& SlotName, const FString& NewPlayerName);
 
 };

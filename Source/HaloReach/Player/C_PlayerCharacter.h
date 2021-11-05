@@ -757,7 +757,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player | PlayerComponents")
 	class UWidgetComponent* PlayerNameWidgetComp;
 
-	UFUNCTION(Server, Reliable)
+	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void Server_SetPlayerName(const FString& NewPlayerName);
 	void Server_SetPlayerName_Implementation(const FString& NewPlayerName);
 
@@ -813,5 +813,11 @@ public:
 	void Server_UpdateAllPlayerDeathWidgets(const FString& PlayerKiller, const FString& DeadPlayer);
 	void Server_UpdateAllPlayerDeathWidgets_Implementation(const FString& PlayerKiller, const FString& DeadPlayer);
 
+	UFUNCTION(Client, Reliable, BlueprintCallable)
+	void Client_LoadPlayerName(const FString& SlotName);
+	void Client_LoadPlayerName_Implementation(const FString& SlotName);
+
+	UFUNCTION(BlueprintCallable)
+	void LoadIt();
 # pragma endregion
 };

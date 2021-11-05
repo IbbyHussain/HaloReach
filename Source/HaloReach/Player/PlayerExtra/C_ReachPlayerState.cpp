@@ -38,6 +38,9 @@ void AC_ReachPlayerState::Tick(float Delta)
 			SetPlayerName(PlayerNameWidget->DisplayedPlayerName);
 		}
 	}
+
+	GetPlayerId();
+	
 }
 
 
