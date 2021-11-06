@@ -29,7 +29,6 @@ void AC_ReachPlayerState::Tick(float Delta)
 {
 	Super::Tick(Delta);
 
-	// this does nothing lol
 	/*AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn());
 	if(PlayerCharacter && PlayerCharacter->IsLocallyControlled())
 	{

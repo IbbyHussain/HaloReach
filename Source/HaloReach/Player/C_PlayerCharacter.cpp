@@ -1605,21 +1605,20 @@ void AC_PlayerCharacter::Client_LoadPlayerName_Implementation(const FString& Slo
 		if (UC_BaseSaveGame* LoadedGame = Cast<UC_BaseSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, 0)))
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, FString::Printf(TEXT("LOAD GAME SUCCEEDED (Slot name is: %s)"), *SlotName));
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, FString::Printf(TEXT("LOAD GAME Player Name is %s"), *LoadedGame->SavedPlayerName));
 			Server_SetPlayerName(LoadedGame->SavedPlayerName);
 		}
 	}
 
 	// If no custom name has been set use the steam name by default
-	/*else
+	else
 	{
 		APlayerState* PS = UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayerState;
 		if (PS)
 		{
 			Server_SetPlayerName(PS->GetPlayerName());
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, FString::Printf(TEXT("LOAD GAME FAILED, no name was saved")));
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, FString::Printf(TEXT("LOAD GAME FAILED, no name was saved name is: %s"), *PS->GetPlayerName()));
 		}
-	}*/
+	}
 }
 
 void AC_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -1698,6 +1697,6 @@ void AC_PlayerCharacter::LoadIt()
 	if (PS)
 	{
 		Client_LoadPlayerName(PS->UniqueId->ToString());
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("texthere: %s"), *PS->UniqueId->ToString()));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("texthere: %s"), *PS->UniqueId->ToString()));
 	}
 }
