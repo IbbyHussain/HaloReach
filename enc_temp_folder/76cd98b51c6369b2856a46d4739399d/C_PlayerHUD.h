@@ -145,11 +145,4 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	FString DeathText;
 
-	//MiniMap
-	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
-	TSubclassOf<class UC_Radar> RadarWidgetClass;
-
-	UPROPERTY(BlueprintReadWrite)
-	class UC_Radar* RadarWidget;
-
 };
