@@ -29,15 +29,17 @@ void UC_Radar::NativeConstruct()
 	DynamicMaterial = Map->GetDynamicMaterial();
 	DynamicMaterial->SetTextureParameterValue(FName("CurrentMap"), MapTexture);
 
+	// PLAYER ICONS ARE NO LONGER USED - DEPRECATED
+
 	//Creates the player icon class
-	PlayerIcon = UC_SpawnLibrary::SpawnWidgetNoViewport(GetWorld(), PlayerIconClass, PlayerIcon);
+	//PlayerIcon = UC_SpawnLibrary::SpawnWidgetNoViewport(GetWorld(), PlayerIconClass, PlayerIcon);
 		
 	//Adds the widget above the map
-	SlotRef = MapOverlay->AddChildToOverlay(PlayerIcon);
+	//SlotRef = MapOverlay->AddChildToOverlay(PlayerIcon);
 
 	//Sets it alignment to the center
-	SlotRef->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Center);
-	SlotRef->SetVerticalAlignment(EVerticalAlignment::VAlign_Center);
+	//SlotRef->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Center);
+	//SlotRef->SetVerticalAlignment(EVerticalAlignment::VAlign_Center);
 		
 	
 }
@@ -50,8 +52,10 @@ void UC_Radar::NativeTick(const FGeometry& MyGeometry, float DeltaTime)
 		float X = UGameplayStatics::GetPlayerCharacter(this, 0)->GetActorLocation().X;
 		float Y = UGameplayStatics::GetPlayerCharacter(this, 0)->GetActorLocation().Y;
 
+		// Makes the map move
 		//Instance->SetScalarParameterValue(FName("X"), X);
 		//Instance->SetScalarParameterValue(FName("Y"), Y);
+
 		Instance->SetScalarParameterValue(FName("Zoom"), Zoom);
 	}
 }

@@ -103,7 +103,7 @@ TTuple<float, float> UC_RadarIcon::ActorLocation()
 
 
 		float Totalx = PlayerX - OwnerX;
-		float Totaly = (PlayerY - OwnerY) * -1.0f; //* -1.0f
+		float Totaly = (PlayerY - OwnerY) * -1.0f;
 
 		return MakeTuple(Totalx, Totaly);
 	}

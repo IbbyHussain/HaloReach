@@ -66,7 +66,7 @@ private:
 
 	UMaterialParameterCollectionInstance* Instance;
 
-	UUserWidget* PlayerIcon;
+	//UUserWidget* PlayerIcon;
 
 	UC_RadarIcon* RadarIcon;
 
