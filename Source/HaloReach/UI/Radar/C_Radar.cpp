@@ -71,6 +71,14 @@ UC_RadarIcon* UC_Radar::AddPOI(AActor* Actor)
 	return RadarIcon;
 }
 
+void UC_Radar::RemovePOI()
+{
+	if(RadarIcon)
+	{
+		RadarIcon->RemoveFromParent();
+	}
+}
+
 float UC_Radar::CalculateZoom()
 {
 	return Zoom * (Dimensions / 300.0f); // Default was 300

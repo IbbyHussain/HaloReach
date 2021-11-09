@@ -53,7 +53,7 @@ FVector2D UC_RadarIcon::GetPOILocation(UC_Radar* MiniMap)
 
 void UC_RadarIcon::UpdateIconImage(UC_RadarIconComponent* POIComponent)
 {
-	if (IsValid(POIComponent->RadarIconImage))
+	if (POIComponent && POIComponent->RadarIconImage)
 	{
 		IconImage->SetBrushFromTexture(POIComponent->RadarIconImage);
 		DefaultImage->SetVisibility(ESlateVisibility::Hidden);

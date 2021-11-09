@@ -1693,10 +1693,10 @@ void AC_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 void AC_PlayerCharacter::LoadIt()
 {
-	APlayerState* PS = UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayerState;
-	if (PS)
-	{
-		Client_LoadPlayerName(PS->UniqueId->ToString());
-		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("texthere: %s"), *PS->UniqueId->ToString()));
-	}
+	//APlayerState* PS = UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayerState;
+	//if (PS)
+	//{
+	//	Client_LoadPlayerName(PS->UniqueId->ToString());
+	//	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("texthere: %s"), *PS->UniqueId->ToString()));
+	//}
 }

@@ -58,7 +58,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UC_RadarIcon* AddPOI(AActor* Actor);
 
+	UFUNCTION(BlueprintCallable)
+	void RemovePOI();
+
 	float CalculateZoom();
+
+	UPROPERTY(BlueprintReadWrite, Category = "BP")
+		UC_RadarIcon* RadarIcon;
 
 private:
 
@@ -67,8 +73,6 @@ private:
 	UMaterialParameterCollectionInstance* Instance;
 
 	//UUserWidget* PlayerIcon;
-
-	UC_RadarIcon* RadarIcon;
 
 	UOverlaySlot* MapOverlaySlot;
 

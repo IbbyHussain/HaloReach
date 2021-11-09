@@ -507,6 +507,7 @@ public: // temp
 
 // Class Declarations
 
+	UPROPERTY(BlueprintReadWrite, Category = "BP")
 	class AC_PlayerHUD* HUD;
 
 	// Movement
