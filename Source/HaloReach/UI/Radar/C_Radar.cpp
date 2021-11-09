@@ -50,8 +50,8 @@ void UC_Radar::NativeTick(const FGeometry& MyGeometry, float DeltaTime)
 		float X = UGameplayStatics::GetPlayerCharacter(this, 0)->GetActorLocation().X;
 		float Y = UGameplayStatics::GetPlayerCharacter(this, 0)->GetActorLocation().Y;
 
-		Instance->SetScalarParameterValue(FName("X"), X);
-		Instance->SetScalarParameterValue(FName("Y"), Y);
+		//Instance->SetScalarParameterValue(FName("X"), X);
+		//Instance->SetScalarParameterValue(FName("Y"), Y);
 		Instance->SetScalarParameterValue(FName("Zoom"), Zoom);
 	}
 }
