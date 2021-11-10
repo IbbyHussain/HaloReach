@@ -2,33 +2,39 @@
 
 
 #include "HaloReach/Components/C_RadarIconComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "HaloReach/UI/HUD/C_PlayerHUD.h"
+#include "HaloReach/UI/HUD/C_PlayerHUDWidget.h"
+#include "HaloReach/UI/Radar/C_Radar.h"
 
-// Sets default values for this component's properties
+
 UC_RadarIconComponent::UC_RadarIconComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
 }
 
-
-// Called when the game starts
 void UC_RadarIconComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
-	
+	HUD = Cast<AC_PlayerHUD>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetHUD());
 }
 
-
-// Called every frame
-void UC_RadarIconComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UC_RadarIconComponent::AddRadarIcon()
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
+	if(GetOwner())
+	{
+		if(HUD)
+		{
+			// Will add this components radar icon to the players radar widget
+			if(HUD->HUDWidget)
+			{
+				RadarIcon = HUD->HUDWidget->RadarWidget->AddPOI(GetOwner());
+				SetRadar();
+				
+				
+			}
+		}
+	}
 }
 

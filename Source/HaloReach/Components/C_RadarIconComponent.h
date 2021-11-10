@@ -17,13 +17,22 @@ public:
 
 	virtual void BeginPlay() override;
 
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
 	UPROPERTY(BlueprintReadWrite, Category = "Components")
 	AActor* Owner;
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Components")
 	UTexture2D* RadarIconImage;
 
+	// Will add a radar icon to the players radar widget
+	UFUNCTION(BlueprintCallable)
+	void AddRadarIcon();
+
+	class AC_PlayerHUD* HUD;
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "BaseCharacter")
+	void SetRadar();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	class UC_RadarIcon* RadarIcon;
 		
 };
