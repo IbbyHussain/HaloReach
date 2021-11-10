@@ -29,9 +29,6 @@ public:
 
 	class AC_PlayerHUD* HUD;
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "BaseCharacter")
-	void SetRadar();
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	class UC_RadarIcon* RadarIcon;
 		

@@ -70,6 +70,8 @@ void AC_ReachPlayerController::RespawnPlayer(AC_PlayerCharacter* PlayerToRespawn
 			NewPlayerCharacter->Server_SetPlayerName(AssignedName);
 
 			BindRespawnDelegate();
+
+			BP_PlayerHasRespawned();
 		}
 
 		else
@@ -91,6 +93,8 @@ void AC_ReachPlayerController::Server_PossessPlayer_Implementation(AC_PlayerChar
 	AC_PlayerCharacter* NewPlayerCharacter = GetWorld()->SpawnActor<AC_PlayerCharacter>(PlayerClass, GetPlayerSpawnLocation(), FRotator::ZeroRotator, SpawnParams);
 	Possess(NewPlayerCharacter);
 	NewPlayerCharacter->Server_SetPlayerName(PlayerName);
+
+	BP_PlayerHasRespawned();
 }
 
 FVector AC_ReachPlayerController::GetPlayerSpawnLocation()

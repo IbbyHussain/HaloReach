@@ -30,9 +30,6 @@ void UC_RadarIconComponent::AddRadarIcon()
 			if(HUD->HUDWidget)
 			{
 				RadarIcon = HUD->HUDWidget->RadarWidget->AddPOI(GetOwner());
-				SetRadar();
-				
-				
 			}
 		}
 	}

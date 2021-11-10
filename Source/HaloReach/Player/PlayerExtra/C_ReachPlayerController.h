@@ -48,7 +48,8 @@ public:
 
 # pragma endregion
 
-
+	UFUNCTION(BlueprintImplementableEvent, Category = "BaseCharacter")
+		void BP_PlayerHasRespawned();
 
 
 };
