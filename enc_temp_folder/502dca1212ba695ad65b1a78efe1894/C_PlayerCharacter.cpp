@@ -382,11 +382,16 @@ void AC_PlayerCharacter::MoveRight(float Axis)
 void AC_PlayerCharacter::LookUp(float Axis)
 {
 	AddControllerPitchInput(Axis);
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Looking Up")));
 }
 
 void AC_PlayerCharacter::LookRight(float Axis)
 {
 	AddControllerYawInput(Axis);
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Looking Right")));
+
 }
 
 // JUMP SYSYTEM

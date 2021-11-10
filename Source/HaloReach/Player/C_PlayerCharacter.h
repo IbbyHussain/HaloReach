@@ -518,6 +518,10 @@ public: // temp
 
 	void MoveRight(float Axis);
 
+	void LookUp(float Axis);
+
+	void LookRight(float Axis);
+
 	bool CheckIdle();
 
 // JUMP

@@ -15,8 +15,10 @@
 #include "HaloReach/Libraries/C_SpawnLibrary.h"
 #include "HaloReach/UI/Names/C_DeathUpdateWidget.h"
 #include "HaloReach/UI/Names/C_GlobalAlertWidget.h"
+#include "HaloReach/UI/Radar/C_Radar.h"
 #include "Components/VerticalBox.h"
-
+#include "HaloReach/Libraries/C_SpawnLibrary.h"
+#include "Components/CanvasPanel.h"
 
 
 AC_PlayerHUD::AC_PlayerHUD()

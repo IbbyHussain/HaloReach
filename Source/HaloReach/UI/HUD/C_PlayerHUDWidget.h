@@ -153,4 +153,16 @@ public:
 
 
 # pragma endregion
+
+
+# pragma region Radar
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	class UC_Radar* RadarWidget;
+
+	// The radar works by rotating itslef based on the players world rotation
+	UFUNCTION(BlueprintCallable)
+	void UpdateRadarRotation();
+
+# pragma endregion
 };

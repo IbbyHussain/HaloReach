@@ -11,6 +11,7 @@ class UC_PlayerNameWidget;
 class UC_NameInputWidget;
 class UC_DeathUpdateWidget;
 class UC_GlobalAlertWidget;
+class UC_Radar;
 
 UCLASS()
 class HALOREACH_API AC_PlayerHUD : public AHUD

@@ -15,6 +15,7 @@
 #include "HaloReach/Interactables/Weapons/C_BaseWeapon.h"
 #include "HaloReach/Interactables/Weapons/Guns/C_BaseGun.h"
 #include "HaloReach/Interactables/Weapons/C_BaseGrenade.h"
+#include "HaloReach/UI/Radar/C_Radar.h"
 
 UC_PlayerHUDWidget::UC_PlayerHUDWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -251,7 +252,16 @@ void UC_PlayerHUDWidget::UpdateGrenadeCounterImage()
 			}
 		}
 	}
-};
+}
+
+void UC_PlayerHUDWidget::UpdateRadarRotation()
+{
+	if(RadarWidget)
+	{
+		// Set render transform to the player characters world transform. * -1 to get correct rotation.
+		RadarWidget->SetRenderTransformAngle(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetMesh()->GetComponentRotation().Yaw * -1.0f);
+	}
+}
 
 # pragma region Black Fade In Animation
 
