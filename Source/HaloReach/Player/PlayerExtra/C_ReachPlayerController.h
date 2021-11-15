@@ -46,8 +46,14 @@ public:
 
 	FVector GetPlayerSpawnLocation();
 
+	// Used to esnure that the Refresh Radar Icons method is only called once and can be reset throughout the game as the controller is never destroyed.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "S")
 	bool bHasRespawned;
+
+	// Adds icons from other players to this players radar.
+	UFUNCTION(Client, Reliable)
+	void Client_RefreshRadar();
+	void Client_RefreshRadar_Implementation();
 
 # pragma endregion
 

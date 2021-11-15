@@ -32,6 +32,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	class UC_RadarIcon* RadarIcon;
 
+	// Removes the owners radar icon from all players in game
 	UFUNCTION(BlueprintCallable)
 	void RemoveRadarIcon();
 
@@ -42,6 +43,10 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_RemoveRadarIcon();
 	void Multi_RemoveRadarIcon_Implementation();
+
+	// Gets all players and adds their icons to this players radar
+	UFUNCTION(BlueprintCallable)
+	void RefreshRadarIcons();
 
 
 		

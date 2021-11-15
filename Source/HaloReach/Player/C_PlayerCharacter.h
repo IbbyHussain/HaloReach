@@ -179,6 +179,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Player | PlayerComponents")
 	USkeletalMeshComponent* Mesh3P;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Player | PlayerComponents")
+	UC_RadarIconComponent* RadarComp;
+
 	class UC_PlayerNameWidget* PlayerNameWidget;
 
 	APlayerController* PC;
@@ -677,6 +680,12 @@ public:
 	USkeletalMeshComponent* GetMesh3P() const
 	{
 		return Mesh3P;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	UC_RadarIconComponent* GetRadarComponent() const
+	{
+		return RadarComp;
 	}
 
 

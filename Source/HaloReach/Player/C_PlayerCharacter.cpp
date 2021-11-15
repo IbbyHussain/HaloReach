@@ -23,6 +23,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "HaloReach/UI/HUD/C_PlayerHUDWidget.h"
+#include "HaloReach/Components/C_RadarIconComponent.h"
 
 #include "HaloReach/Libraries/C_SpawnLibrary.h"
 
@@ -72,6 +73,8 @@ AC_PlayerCharacter::AC_PlayerCharacter(const FObjectInitializer& ObjectInitializ
 	Mesh3P->CastShadow = true;
 
 	HealthComp = CreateDefaultSubobject<UC_HealthComponent>(TEXT("HealthComponent"));
+
+	RadarComp = CreateDefaultSubobject<UC_RadarIconComponent>(TEXT("RadarComponent"));
 
 	//Crouch Timeline
 	CrouchTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("CrouchTimeline"));

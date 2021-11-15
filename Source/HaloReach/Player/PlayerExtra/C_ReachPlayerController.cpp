@@ -11,6 +11,7 @@
 #include "HaloReach/Player/C_PlayerCharacter.h"
 #include "HaloReach/GameModes/C_ReachPlayerStart.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "HaloReach/Components/C_RadarIconComponent.h"
 
 // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("texthere: %f), x));
 
@@ -69,6 +70,8 @@ void AC_ReachPlayerController::RespawnPlayer(AC_PlayerCharacter* PlayerToRespawn
 
 			NewPlayerCharacter->Server_SetPlayerName(AssignedName);
 
+			Client_RefreshRadar();
+
 			BindRespawnDelegate();
 
 			BP_PlayerHasRespawned();
@@ -93,6 +96,8 @@ void AC_ReachPlayerController::Server_PossessPlayer_Implementation(AC_PlayerChar
 	AC_PlayerCharacter* NewPlayerCharacter = GetWorld()->SpawnActor<AC_PlayerCharacter>(PlayerClass, GetPlayerSpawnLocation(), FRotator::ZeroRotator, SpawnParams);
 	Possess(NewPlayerCharacter);
 	NewPlayerCharacter->Server_SetPlayerName(PlayerName);
+
+	Client_RefreshRadar();
 
 	BP_PlayerHasRespawned();
 }
@@ -132,6 +137,16 @@ FVector AC_ReachPlayerController::GetPlayerSpawnLocation()
 	}
 
 	return FVector(0, 0, 0);
+}
+
+void AC_ReachPlayerController::Client_RefreshRadar_Implementation()
+{
+	AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(GetPawn());
+	if(PlayerCharacter)
+	{
+		PlayerCharacter->GetRadarComponent()->RefreshRadarIcons();
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Added icon")));
+	}
 }
 
 void AC_ReachPlayerController::SetupInputComponent()
