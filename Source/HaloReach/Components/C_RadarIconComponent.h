@@ -31,5 +31,18 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	class UC_RadarIcon* RadarIcon;
+
+	UFUNCTION(BlueprintCallable)
+	void RemoveRadarIcon();
+
+	UFUNCTION(Server, Reliable)
+	void Server_RemoveRadarIcon();
+	void Server_RemoveRadarIcon_Implementation();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_RemoveRadarIcon();
+	void Multi_RemoveRadarIcon_Implementation();
+
+
 		
 };

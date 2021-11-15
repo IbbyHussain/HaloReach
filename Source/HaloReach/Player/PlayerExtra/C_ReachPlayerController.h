@@ -46,6 +46,9 @@ public:
 
 	FVector GetPlayerSpawnLocation();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "S")
+	bool bHasRespawned;
+
 # pragma endregion
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "BaseCharacter")

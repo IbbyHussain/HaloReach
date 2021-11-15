@@ -6,7 +6,8 @@
 #include "HaloReach/UI/HUD/C_PlayerHUD.h"
 #include "HaloReach/UI/HUD/C_PlayerHUDWidget.h"
 #include "HaloReach/UI/Radar/C_Radar.h"
-
+#include "HaloReach/UI/Radar/C_RadarIcon.h"
+#include "HaloReach/Player/PlayerExtra/C_ReachPlayerController.h"
 
 UC_RadarIconComponent::UC_RadarIconComponent()
 {
@@ -32,6 +33,35 @@ void UC_RadarIconComponent::AddRadarIcon()
 				RadarIcon = HUD->HUDWidget->RadarWidget->AddPOI(GetOwner());
 			}
 		}
+	}
+}
+
+void UC_RadarIconComponent::RemoveRadarIcon()
+{
+	if(GetOwner()->HasAuthority())
+	{
+		Multi_RemoveRadarIcon();
+	}
+
+	else
+	{
+		Server_RemoveRadarIcon();
+	}
+}
+
+void UC_RadarIconComponent::Server_RemoveRadarIcon_Implementation()
+{
+	Multi_RemoveRadarIcon();
+}
+
+void UC_RadarIconComponent::Multi_RemoveRadarIcon_Implementation()
+{
+	RadarIcon->RemoveFromParent();
+
+	AC_ReachPlayerController* RPC = Cast<AC_ReachPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	if(RPC)
+	{
+		RPC->bHasRespawned = true;
 	}
 }
 
