@@ -11,6 +11,7 @@
 #include "HaloReach/Player/C_PlayerCharacter.h"
 #include "EngineUtils.h"
 
+//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Added icon")));
 
 UC_RadarIconComponent::UC_RadarIconComponent()
 {
@@ -40,7 +41,6 @@ void UC_RadarIconComponent::AddRadarIcon()
 			if(HUD->HUDWidget)
 			{
 				RadarIcon = HUD->HUDWidget->RadarWidget->AddPOI(GetOwner());
-				//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Added icon")));
 			}
 		}
 	}
@@ -98,7 +98,6 @@ void UC_RadarIconComponent::RefreshRadarIcons()
 
 					// Ensures this method is only called once
 					RPC->bHasRespawned = false;
-
 				}
 			}
 
@@ -106,3 +105,36 @@ void UC_RadarIconComponent::RefreshRadarIcons()
 	}
 }
 
+# pragma region Toggle Radar Icon
+
+void UC_RadarIconComponent::ToggleRadarIcon(bool bShowRadarIcon)
+{
+	if (GetOwner()->HasAuthority())
+	{
+		Multi_ToggleRadarIcon(bShowRadarIcon);
+	}
+
+	else
+	{
+		Server_ToggleRadarIcon(bShowRadarIcon);
+	}
+	
+}
+
+void UC_RadarIconComponent::Server_ToggleRadarIcon_Implementation(bool bShowRadarIcon)
+{
+	Multi_ToggleRadarIcon(bShowRadarIcon);
+}
+
+void UC_RadarIconComponent::Multi_ToggleRadarIcon_Implementation(bool bShowRadarIcon)
+{
+	AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(GetOwner());
+
+	// Ensures that the radar icon's visibility is not changed on local player but changes for everyone else
+	if (PlayerCharacter && !PlayerCharacter->IsLocallyControlled())
+	{
+		bShowRadarIcon ? RadarIcon->SetVisibility(ESlateVisibility::Visible) : RadarIcon->SetVisibility(ESlateVisibility::Hidden);
+	}
+}
+
+# pragma endregion

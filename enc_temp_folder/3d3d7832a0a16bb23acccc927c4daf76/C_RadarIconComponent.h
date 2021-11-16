@@ -56,7 +56,7 @@ public:
 
 # pragma region Radar Toggle
 
-	// Used to set the owners radar icon on or off (visibility) for other players. The owners local icon will always be visisble
+	// Used to set the owners radar icon on or off for other players. The owners local icon will always be visisble
 	UFUNCTION(BlueprintCallable)
 	void ToggleRadarIcon(bool bShowRadarIcon);
 

@@ -258,6 +258,17 @@ void AC_PlayerCharacter::BeginPlay()
 	Grenades.GrenadesArray.Emplace(Grenades.FragGrenadeClass);
 	Grenades.GrenadesArray.Emplace(Grenades.PlasmaGrenadeClass);
 	Grenades.EquippedGrenadeClass = Grenades.GrenadesArray[0];
+
+	// Sets the radar icons - temp for ffa - needs to be a slight delay for server
+	/*if (IsLocallyControlled())
+	{
+		RadarComp->RadarIconImage = RadarComp->TAllyIcon;
+	}
+
+	else
+	{
+		RadarComp->RadarIconImage = RadarComp->TEnemyIcon;
+	}*/
 }
 
 void AC_PlayerCharacter::Tick(float DeltaTime)
