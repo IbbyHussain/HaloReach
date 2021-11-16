@@ -337,7 +337,6 @@ bool AC_PlayerCharacter::CheckIdle()
 {
 	if (Movement.PlayersVelocityMagnitude > 0.0f)
 	{
-		// Move to input action W,A,S,D ???
 		RadarComp->ShowRadarIcon();
 		return false;
 	}

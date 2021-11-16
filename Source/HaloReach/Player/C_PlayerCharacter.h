@@ -25,7 +25,7 @@ UENUM()
 enum class EMovementState : uint8
 {
 	IDLE,
-	NOTIDLE,
+	DEAD,
 	WALK,
 	SPRINT,
 	CROUCH,

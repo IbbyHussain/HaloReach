@@ -56,18 +56,31 @@ public:
 
 # pragma region Radar Toggle
 
-	// Used to set the owners radar icon on or off (visibility) for other players. The owners local icon will always be visisble
+	// Sets visibility of radar icon to visible ignores local player.
 	UFUNCTION(BlueprintCallable)
-	void ToggleRadarIcon(bool bShowRadarIcon);
+	void ShowRadarIcon();
 
 	UFUNCTION(Server, Reliable)
-	void Server_ToggleRadarIcon(bool bShowRadarIcon);
-	void Server_ToggleRadarIcon_Implementation(bool bShowRadarIcon);
+	void Server_ShowRadarIcon();
+	void Server_ShowRadarIcon_Implementation();
 
 	UFUNCTION(NetMulticast, Reliable)
-	void Multi_ToggleRadarIcon(bool bShowRadarIcon);
-	void Multi_ToggleRadarIcon_Implementation(bool bShowRadarIcon);
+	void Multi_ShowRadarIcon();
+	void Multi_ShowRadarIcon_Implementation();
 
+	// Sets visibility of radar icon to hidden ignores local player.
+	UFUNCTION(BlueprintCallable)
+	void HideRadarIcon();
+
+	UFUNCTION(Server, Reliable)
+	void Server_HideRadarIcon();
+	void Server_HideRadarIcon_Implementation();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_HideRadarIcon();
+	void Multi_HideRadarIcon_Implementation();
+
+	FTimerHandle RadarIconFadeHandle;
 
 # pragma endregion
 

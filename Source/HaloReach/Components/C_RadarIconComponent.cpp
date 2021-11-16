@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "HaloReach/Components/C_RadarIconComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "HaloReach/UI/HUD/C_PlayerHUD.h"
@@ -10,6 +9,8 @@
 #include "HaloReach/Player/PlayerExtra/C_ReachPlayerController.h"
 #include "HaloReach/Player/C_PlayerCharacter.h"
 #include "EngineUtils.h"
+#include "TimerManager.h"
+#include <Runtime/Engine/Public/Net/UnrealNetwork.h>
 
 //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Added icon")));
 
@@ -107,34 +108,68 @@ void UC_RadarIconComponent::RefreshRadarIcons()
 
 # pragma region Toggle Radar Icon
 
-void UC_RadarIconComponent::ToggleRadarIcon(bool bShowRadarIcon)
+// Shows radar icon (excludes owning client)
+void UC_RadarIconComponent::ShowRadarIcon()
 {
 	if (GetOwner()->HasAuthority())
 	{
-		Multi_ToggleRadarIcon(bShowRadarIcon);
+		Multi_ShowRadarIcon();
 	}
 
 	else
 	{
-		Server_ToggleRadarIcon(bShowRadarIcon);
+		Server_ShowRadarIcon();
 	}
-	
+
+	// Sets visibility back to hidden after delay
+	GetWorld()->GetTimerManager().SetTimer(RadarIconFadeHandle, this, &UC_RadarIconComponent::HideRadarIcon, 1.0f, false);
 }
 
-void UC_RadarIconComponent::Server_ToggleRadarIcon_Implementation(bool bShowRadarIcon)
+void UC_RadarIconComponent::Server_ShowRadarIcon_Implementation()
 {
-	Multi_ToggleRadarIcon(bShowRadarIcon);
+	Multi_ShowRadarIcon();
 }
 
-void UC_RadarIconComponent::Multi_ToggleRadarIcon_Implementation(bool bShowRadarIcon)
+void UC_RadarIconComponent::Multi_ShowRadarIcon_Implementation()
 {
 	AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(GetOwner());
 
 	// Ensures that the radar icon's visibility is not changed on local player but changes for everyone else
-	if (PlayerCharacter && !PlayerCharacter->IsLocallyControlled())
+	if (PlayerCharacter && !PlayerCharacter->IsLocallyControlled() && RadarIcon)
 	{
-		bShowRadarIcon ? RadarIcon->SetVisibility(ESlateVisibility::Visible) : RadarIcon->SetVisibility(ESlateVisibility::Hidden);
+		RadarIcon->SetVisibility(ESlateVisibility::Visible);
+	}
+}
+
+// Hides radar icon (excludes owning client)
+void UC_RadarIconComponent::HideRadarIcon()
+{
+	if (GetOwner()->HasAuthority())
+	{
+		Multi_HideRadarIcon();
+	}
+
+	else
+	{
+		Server_HideRadarIcon();
+	}
+}
+
+void UC_RadarIconComponent::Server_HideRadarIcon_Implementation()
+{
+	Multi_HideRadarIcon();
+}
+
+void UC_RadarIconComponent::Multi_HideRadarIcon_Implementation()
+{
+	AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(GetOwner());
+
+	// Ensures that the radar icon's visibility is not changed on local player but changes for everyone else
+	if (PlayerCharacter && !PlayerCharacter->IsLocallyControlled() && RadarIcon)
+	{
+		RadarIcon->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
 
 # pragma endregion
+

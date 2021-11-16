@@ -14,6 +14,7 @@
 #include "UnrealClient.h"
 #include "HaloReach/Interactables/Weapons/C_Weapon3P.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "HaloReach/Components/C_RadarIconComponent.h"
 
 AC_BaseGun::AC_BaseGun()
 {
@@ -116,6 +117,8 @@ void AC_BaseGun::Fire()
 		{
 			Server_Fire(MyOwner, PlayerCharacter->CameraComp->GetComponentRotation());
 		}
+
+		PlayerCharacter->GetRadarComponent()->ShowRadarIcon();
 	}
 }
 
