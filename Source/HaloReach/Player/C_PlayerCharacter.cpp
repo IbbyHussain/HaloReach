@@ -897,6 +897,7 @@ void AC_PlayerCharacter::WkeyReleased()
 	// Allows other keys to be pressed and not start a fade out timer. E.g W and A are held, releases A but no fade out as W is still held
 	if(!(bAKeyPressed || bSKeyPressed || bDKeyPressed))
 	{
+		// Pass HideRadarIcon as a function parameter?
 		GetWorldTimerManager().SetTimer(StartRadarFadeoutHandle, this, &AC_PlayerCharacter::HideRadarIcon, 1.0f, false);
 	}
 }
@@ -948,7 +949,7 @@ void AC_PlayerCharacter::DkeyReleased()
 
 void AC_PlayerCharacter::HideRadarIcon()
 {
-	RadarComp->HideRadarIcon();
+	RadarComp->HideRadarIcon(true);
 }
 
 # pragma endregion

@@ -68,17 +68,17 @@ public:
 	void Multi_ShowRadarIcon();
 	void Multi_ShowRadarIcon_Implementation();
 
-	// Sets Render opacity of radar icon to 0.0 ignores local player.
+	// Sets Render opacity of radar icon to 0.0 ignores local player. Boolean so that at start match other players are hidden striaght away
 	UFUNCTION(BlueprintCallable)
-	void HideRadarIcon();
+	void HideRadarIcon(bool bPlayFadeAnim);
 
 	UFUNCTION(Server, Reliable)
-	void Server_HideRadarIcon();
-	void Server_HideRadarIcon_Implementation();
+	void Server_HideRadarIcon(bool bPlayFadeAnim);
+	void Server_HideRadarIcon_Implementation(bool bPlayFadeAnim);
 
 	UFUNCTION(NetMulticast, Reliable)
-	void Multi_HideRadarIcon();
-	void Multi_HideRadarIcon_Implementation();
+	void Multi_HideRadarIcon(bool bPlayFadeAnim);
+	void Multi_HideRadarIcon_Implementation(bool bPlayFadeAnim);
 
 	// Will stop the fade out if the icon still needs to be displayed e.g when walking
 	UFUNCTION(BlueprintCallable)
@@ -86,6 +86,8 @@ public:
 
 	// Plays fade out after a short delay
 	FTimerHandle RadarIconFadeHandle;
+
+	FTimerDelegate RadarIconFadeDelegate;
 
 # pragma endregion
 

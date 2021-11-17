@@ -125,7 +125,10 @@ void UC_RadarIconComponent::ShowRadarIcon(bool bAutoHide)
 	if(bAutoHide)
 	{
 		// Sets render opacity back to 0 after delay
-		GetWorld()->GetTimerManager().SetTimer(RadarIconFadeHandle, this, &UC_RadarIconComponent::HideRadarIcon, 1.0f, false);
+
+		RadarIconFadeDelegate.BindUFunction(this, FName("HideRadarIcon"), true);
+		GetWorld()->GetTimerManager().SetTimer(RadarIconFadeHandle, RadarIconFadeDelegate, 1.0f, false);
+		//GetWorld()->GetTimerManager().SetTimer(RadarIconFadeHandle, this, &UC_RadarIconComponent::HideRadarIcon, 1.0f, false);
 	}
 }
 
@@ -146,33 +149,32 @@ void UC_RadarIconComponent::Multi_ShowRadarIcon_Implementation()
 }
 
 // Hides radar icon (excludes owning client)
-void UC_RadarIconComponent::HideRadarIcon()
+void UC_RadarIconComponent::HideRadarIcon(bool bPlayFadeAnim)
 {
 	if (GetOwner()->HasAuthority())
 	{
-		Multi_HideRadarIcon();
+		Multi_HideRadarIcon(bPlayFadeAnim);
 	}
 
 	else
 	{
-		Server_HideRadarIcon();
+		Server_HideRadarIcon(bPlayFadeAnim);
 	}
 }
 
-void UC_RadarIconComponent::Server_HideRadarIcon_Implementation()
+void UC_RadarIconComponent::Server_HideRadarIcon_Implementation(bool bPlayFadeAnim)
 {
-	Multi_HideRadarIcon();
+	Multi_HideRadarIcon(bPlayFadeAnim);
 }
 
-void UC_RadarIconComponent::Multi_HideRadarIcon_Implementation()
+void UC_RadarIconComponent::Multi_HideRadarIcon_Implementation(bool bPlayFadeAnim)
 {
 	AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(GetOwner());
 
 	// Ensures that the radar icon's visibility is not changed on local player but changes for everyone else
 	if (PlayerCharacter && !PlayerCharacter->IsLocallyControlled() && RadarIcon)
 	{
-		//RadarIcon->SetRenderOpacity(0.0f);
-		RadarIcon->PlayFadeOutAnimation();
+		bPlayFadeAnim ? RadarIcon->PlayFadeOutAnimation() : RadarIcon->SetRenderOpacity(0.0f);
 	}
 }
 
