@@ -121,11 +121,11 @@ void UC_RadarIconComponent::ShowRadarIcon(bool bAutoHide)
 		Server_ShowRadarIcon();
 	}
 
-	// When the current action will not manually call HideRadarIcon, Used for melee and firing weapon etc
 	if(bAutoHide)
 	{
-		// Sets render opacity back to 0 after delay
+		// Sets visibility back to hidden after delay
 		GetWorld()->GetTimerManager().SetTimer(RadarIconFadeHandle, this, &UC_RadarIconComponent::HideRadarIcon, 1.0f, false);
+		//HideRadarIcon();
 	}
 }
 
@@ -176,13 +176,18 @@ void UC_RadarIconComponent::Multi_HideRadarIcon_Implementation()
 	}
 }
 
-// If the player is walking, will need to clear the fade out handle as walking uses its own calls for fading out radar icon
 void UC_RadarIconComponent::ClearRadarIconFadeHandle()
 {
 	if(GetWorld()->GetTimerManager().IsTimerActive(RadarIconFadeHandle))
 	{
 		GetWorld()->GetTimerManager().ClearTimer(RadarIconFadeHandle);
 	}
+
+	// Cancels fade out anim
+	/*if(RadarIcon)
+	{
+		RadarIcon->StopFadeOutAnimation();
+	}*/
 }
 
 # pragma endregion

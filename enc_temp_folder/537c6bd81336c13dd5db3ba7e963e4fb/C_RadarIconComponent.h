@@ -56,7 +56,7 @@ public:
 
 # pragma region Radar Toggle
 
-	// Sets Render opacity of radar icon to 1.0 ignores local player.
+	// Sets visibility of radar icon to visible ignores local player.
 	UFUNCTION(BlueprintCallable)
 	void ShowRadarIcon(bool bAutoHide);
 
@@ -68,7 +68,7 @@ public:
 	void Multi_ShowRadarIcon();
 	void Multi_ShowRadarIcon_Implementation();
 
-	// Sets Render opacity of radar icon to 0.0 ignores local player.
+	// Sets visibility of radar icon to hidden ignores local player.
 	UFUNCTION(BlueprintCallable)
 	void HideRadarIcon();
 
@@ -80,11 +80,10 @@ public:
 	void Multi_HideRadarIcon();
 	void Multi_HideRadarIcon_Implementation();
 
-	// Will stop the fade out if the icon still needs to be displayed e.g when walking
+	// Will stop the fade if the icon still needs to be displayed w.g when walking
 	UFUNCTION(BlueprintCallable)
 	void ClearRadarIconFadeHandle();
 
-	// Plays fade out after a short delay
 	FTimerHandle RadarIconFadeHandle;
 
 # pragma endregion

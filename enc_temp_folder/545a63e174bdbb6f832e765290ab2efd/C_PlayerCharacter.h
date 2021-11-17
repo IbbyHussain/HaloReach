@@ -213,10 +213,8 @@ private:
 
 	void DkeyReleased();
 
-
 	bool bWKeyPressed, bAKeyPressed, bSKeyPressed, bDKeyPressed;
 
-	// After releasing a walk key (W,A,S,D), will start a timer to fade out radar icon
 	FTimerHandle StartRadarFadeoutHandle;
 
 	void HideRadarIcon();

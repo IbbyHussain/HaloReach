@@ -124,6 +124,14 @@ void UC_RadarIcon::PlayFadeOutAnimation()
 	PlayAnimation(FadeOutAnimation, 0.0f, 1, EUMGSequencePlayMode::Forward, 1.0f);
 }
 
+void UC_RadarIcon::StopFadeOutAnimation()
+{
+	if(IsAnimationPlaying(FadeOutAnimation))
+	{
+		StopAnimation(FadeOutAnimation);
+	}
+}
+
 float UC_RadarIcon::FindTheeta(FVector2D PointA, FVector2D PointB)
 {
 	float X = PointA.X - PointB.X;

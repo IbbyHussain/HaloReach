@@ -337,8 +337,9 @@ bool AC_PlayerCharacter::CheckIdle()
 {
 	if (Movement.PlayersVelocityMagnitude > 0.0f)
 	{
-		// Move to input action W,A,S,D ???
-		RadarComp->ShowRadarIcon();
+		// If walking clear timer from component as walking uses its own fade out system
+		RadarComp->ClearRadarIconFadeHandle();
+		
 		return false;
 	}
 
@@ -544,7 +545,7 @@ void AC_PlayerCharacter::UpdateMovementSettings(EMovementState NewState)
 		bCanJump = false;
 		bCanCrouch = false;
 
-		RadarComp->ShowRadarIcon();
+		RadarComp->ShowRadarIcon(true);
 		
 		break;
 
@@ -882,6 +883,76 @@ void AC_PlayerCharacter::UpdateRestrictionState(ERestrictionState NewState)
 	}
 }
 
+# pragma region W,A,S,D Presses
+
+void AC_PlayerCharacter::WkeyPressed()
+{
+	bWKeyPressed = true;
+	RadarComp->ShowRadarIcon(false);
+}
+
+void AC_PlayerCharacter::WkeyReleased()
+{
+	bWKeyPressed = false;
+	// Allows other keys to be pressed and not start a fade out timer. E.g W and A are held, releases A but no fade out as W is still held
+	if(!(bAKeyPressed || bSKeyPressed || bDKeyPressed))
+	{
+		GetWorldTimerManager().SetTimer(StartRadarFadeoutHandle, this, &AC_PlayerCharacter::HideRadarIcon, 1.0f, false);
+	}
+}
+
+void AC_PlayerCharacter::AkeyPressed()
+{
+	bAKeyPressed = true;
+	RadarComp->ShowRadarIcon(false);
+}
+
+void AC_PlayerCharacter::AkeyReleased()
+{
+	bAKeyPressed = false;
+	if (!(bWKeyPressed || bSKeyPressed || bDKeyPressed))
+	{
+		GetWorldTimerManager().SetTimer(StartRadarFadeoutHandle, this, &AC_PlayerCharacter::HideRadarIcon, 1.0f, false);
+	}
+}
+
+void AC_PlayerCharacter::SkeyPressed()
+{
+	bSKeyPressed = true;
+	RadarComp->ShowRadarIcon(false);
+}
+
+void AC_PlayerCharacter::SkeyReleased()
+{
+	bSKeyPressed = false;
+	if (!(bWKeyPressed || bAKeyPressed || bDKeyPressed))
+	{
+		GetWorldTimerManager().SetTimer(StartRadarFadeoutHandle, this, &AC_PlayerCharacter::HideRadarIcon, 1.0f, false);
+	}
+}
+
+void AC_PlayerCharacter::DkeyPressed()
+{
+	bDKeyPressed = true;
+	RadarComp->ShowRadarIcon(false);
+}
+
+void AC_PlayerCharacter::DkeyReleased()
+{
+	bDKeyPressed = false;
+	if (!(bWKeyPressed || bAKeyPressed || bSKeyPressed))
+	{
+		GetWorldTimerManager().SetTimer(StartRadarFadeoutHandle, this, &AC_PlayerCharacter::HideRadarIcon, 1.0f, false);
+	}
+}
+
+void AC_PlayerCharacter::HideRadarIcon()
+{
+	RadarComp->HideRadarIcon();
+}
+
+# pragma endregion
+
 # pragma region Melee Attack
 
 // called on input binding
@@ -1030,7 +1101,7 @@ void AC_PlayerCharacter::StartMelee()
 			Server_PlayMontage(Mesh3P, Weapon->GetWeapon3PMeleeMontage());
 		}
 
-		RadarComp->ShowRadarIcon();
+		RadarComp->ShowRadarIcon(true);
 
 		GetWorldTimerManager().SetTimer(MeleeHandle, this, &AC_PlayerCharacter::ResetMelee, Weapon->MeleeTime, false);
 	}
@@ -1154,7 +1225,7 @@ void AC_PlayerCharacter::ThrowGrenade()
 
 		Server_SpawnGrenade(this, GrenadeSocket, DefaultMesh, Grenades.EquippedGrenadeClass);
 
-		RadarComp->ShowRadarIcon();
+		RadarComp->ShowRadarIcon(true);
 
 		if (HasAuthority())
 		{
@@ -1724,6 +1795,18 @@ void AC_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAction("SwitchGrenades", IE_Pressed, this, &AC_PlayerCharacter::SwitchGrenades);
 
 	//PlayerInputComponent->BindAction("Load", IE_Pressed, this, &AC_PlayerCharacter::LoadIt);
+
+	// Used to set the radar icon visibility when walking, avoids using axis mapping(ticks)
+
+	PlayerInputComponent->BindAction("WPressed", IE_Pressed, this, &AC_PlayerCharacter::WkeyPressed);
+	PlayerInputComponent->BindAction("APressed", IE_Pressed, this, &AC_PlayerCharacter::AkeyPressed);
+	PlayerInputComponent->BindAction("SPressed", IE_Pressed, this, &AC_PlayerCharacter::SkeyPressed);
+	PlayerInputComponent->BindAction("DPressed", IE_Pressed, this, &AC_PlayerCharacter::DkeyPressed);
+
+	PlayerInputComponent->BindAction("WPressed", IE_Released, this, &AC_PlayerCharacter::WkeyReleased);
+	PlayerInputComponent->BindAction("APressed", IE_Released, this, &AC_PlayerCharacter::AkeyReleased);
+	PlayerInputComponent->BindAction("SPressed", IE_Released, this, &AC_PlayerCharacter::SkeyReleased);
+	PlayerInputComponent->BindAction("DPressed", IE_Released, this, &AC_PlayerCharacter::DkeyReleased);
 
 
 }
