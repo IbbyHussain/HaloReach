@@ -165,4 +165,7 @@ public:
 	void UpdateRadarRotation();
 
 # pragma endregion
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	class UC_CardinalDirectionsWidget* CardinalWidget;
 };

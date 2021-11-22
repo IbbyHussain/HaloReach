@@ -36,6 +36,7 @@
 
 #include "HaloReach/GameModes/C_ReachGameStateBase.h"
 #include "Animation/AnimMontage.h"
+#include "HaloReach/Components/C_CardinalDirectionsComponent.h"
 #include "HaloReach/Interfaces/C_BaseSaveGame.h"
 
 //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("texthere: %f"), x));
@@ -75,6 +76,8 @@ AC_PlayerCharacter::AC_PlayerCharacter(const FObjectInitializer& ObjectInitializ
 	HealthComp = CreateDefaultSubobject<UC_HealthComponent>(TEXT("HealthComponent"));
 
 	RadarComp = CreateDefaultSubobject<UC_RadarIconComponent>(TEXT("RadarComponent"));
+
+	CardinalComp = CreateDefaultSubobject<UC_CardinalDirectionsComponent>(TEXT("CardinalComponent"));
 
 	//Crouch Timeline
 	CrouchTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("CrouchTimeline"));
