@@ -8,9 +8,10 @@
 #include "HaloReach/GlobalStructs.h"
 #include "C_DirectionWidget.generated.h"
 
-/**
- * 
- */
+class UHorizontalBox;
+class UImage;
+class UTextBlock;
+
 UCLASS()
 class HALOREACH_API UC_DirectionWidget : public UUserWidget
 {
@@ -18,6 +19,22 @@ class HALOREACH_API UC_DirectionWidget : public UUserWidget
 
 public:
 
+	UC_DirectionWidget(const FObjectInitializer& ObjectInitializer);
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Widget")
 	FDirectionsStruct Directions;
+
+	virtual void NativePreConstruct() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UHorizontalBox* MainBox;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UImage* LeftImage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UImage* RightImage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UTextBlock* DirectionName;
 };
