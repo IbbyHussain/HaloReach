@@ -77,7 +77,7 @@ AC_PlayerCharacter::AC_PlayerCharacter(const FObjectInitializer& ObjectInitializ
 
 	RadarComp = CreateDefaultSubobject<UC_RadarIconComponent>(TEXT("RadarComponent"));
 
-	CardinalComp = CreateDefaultSubobject<UC_CardinalDirectionsComponent>(TEXT("CardinalComponent"));
+	//CardinalComp = CreateDefaultSubobject<UC_CardinalDirectionsComponent>(TEXT("CardinalComponent"));
 
 	//Crouch Timeline
 	CrouchTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("CrouchTimeline"));

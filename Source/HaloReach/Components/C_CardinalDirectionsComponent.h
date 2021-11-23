@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "HaloReach/GlobalStructs.h"
 #include "C_CardinalDirectionsComponent.generated.h"
 
 
@@ -24,4 +25,7 @@ public:
 	void InitDirections();
 
 	class UC_CardinalDirectionsWidget* CardinalWidgetptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Widget")
+	TArray<FDirectionsStruct> DirectionsArray;
 };

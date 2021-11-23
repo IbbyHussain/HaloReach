@@ -4,7 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "HaloReach/C_DirectionStruct.h"
+#include "HaloReach/GlobalEnums.h"
+#include "HaloReach/GlobalStructs.h"
 #include "C_DirectionWidget.generated.h"
 
 /**
@@ -17,6 +18,6 @@ class HALOREACH_API UC_DirectionWidget : public UUserWidget
 
 public:
 
-	FDirections Directions;
-	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Widget")
+	FDirectionsStruct Directions;
 };

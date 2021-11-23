@@ -10,15 +10,14 @@ UC_CardinalDirectionsComponent::UC_CardinalDirectionsComponent()
 
 	PrimaryComponentTick.bCanEverTick = true;
 
-
+	
+	
 }
 
 
 void UC_CardinalDirectionsComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	
 }
 
 
@@ -31,14 +30,14 @@ void UC_CardinalDirectionsComponent::TickComponent(float DeltaTime, ELevelTick T
 
 void UC_CardinalDirectionsComponent::InitDirections()
 {
-	AC_PlayerHUD* HUD = Cast<AC_PlayerHUD>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetHUD());
-	if(HUD)
-	{
-		CardinalWidgetptr = HUD->HUDWidget->CardinalWidget;
-		if(CardinalWidgetptr)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("texthere: valid ptr")));
-		}
-	}
+	//AC_PlayerHUD* HUD = Cast<AC_PlayerHUD>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetHUD());
+	//if(HUD)
+	//{
+	//	CardinalWidgetptr = HUD->HUDWidget->CardinalWidget;
+	//	if(CardinalWidgetptr)
+	//	{
+	//		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("texthere: valid ptr")));
+	//	}
+	//}
 	
 }
