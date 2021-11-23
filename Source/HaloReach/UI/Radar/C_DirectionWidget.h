@@ -21,7 +21,7 @@ public:
 
 	UC_DirectionWidget(const FObjectInitializer& ObjectInitializer);
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Widget")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
 	FDirectionsStruct Directions;
 
 	virtual void NativePreConstruct() override;

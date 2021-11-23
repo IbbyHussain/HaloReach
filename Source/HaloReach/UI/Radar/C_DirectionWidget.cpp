@@ -13,7 +13,7 @@ void UC_DirectionWidget::NativePreConstruct()
 {
 	Super::NativePreConstruct();
 
-
+	// Changes the direction name to only two letters, then make sthem uppercase
 	FString DirectionString = Directions.DirectionName.ToString();
 	FString FinalString =  DirectionString.LeftChop(DirectionString.Len() - 2).ToUpper();
 
