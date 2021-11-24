@@ -5,6 +5,7 @@
 #include "HaloReach/UI/HUD/C_PlayerHUDWidget.h"
 #include "HaloReach/Player/C_PlayerCharacter.h"
 #include "GenericPlatform/GenericPlatformMath.h"
+#include "HaloReach/UI/Radar/C_CardinalDirectionsWidget.h"
 
 UC_CardinalDirectionsComponent::UC_CardinalDirectionsComponent()
 {
@@ -27,20 +28,6 @@ void UC_CardinalDirectionsComponent::TickComponent(float DeltaTime, ELevelTick T
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-}
-
-void UC_CardinalDirectionsComponent::InitDirections()
-{
-	//AC_PlayerHUD* HUD = Cast<AC_PlayerHUD>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetHUD());
-	//if(HUD)
-	//{
-	//	CardinalWidgetptr = HUD->HUDWidget->CardinalWidget;
-	//	if(CardinalWidgetptr)
-	//	{
-	//		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("texthere: valid ptr")));
-	//	}
-	//}
-	
 }
 
 float UC_CardinalDirectionsComponent::RotationToCirlceDegrees(float Rotation)
@@ -132,4 +119,54 @@ FTranslationsOutput UC_CardinalDirectionsComponent::RotationToTranslation(FRotat
 	}
 
 	return { FVector2D(0.0f), false, false };
+}
+
+void UC_CardinalDirectionsComponent::UpdateDirectionWidget()
+{
+	if(CardinalWidgetptr)
+	{
+		for (int i = 0; i < CardinalWidgetptr->DirectionWidgetArray.Num(); i++)
+		{
+			FTranslationsOutput TranslationOutput = RotationToTranslation(PlayerCameraComp->GetComponentRotation(), FRotator(0.0f, DirectionsArray[i].WorldRotation, 0.0f));
+
+			if (TranslationOutput.bInRadarSight)
+			{
+				CardinalWidgetptr->SetRenderTranslation(TranslationOutput.Translation);
+				if (!CardinalWidgetptr->IsVisible())
+				{
+					CardinalWidgetptr->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+				}
+
+			}
+
+			else
+			{
+				if (CardinalWidgetptr->IsVisible())
+				{
+					CardinalWidgetptr->SetVisibility(ESlateVisibility::Hidden);
+				}
+			}
+		}
+	}
+	
+}
+
+void UC_CardinalDirectionsComponent::InitDirectionsComponent(AActor* Player, UCameraComponent* PlayerCamera)
+{
+	PlayerCameraComp = PlayerCamera;
+
+	AC_PlayerHUD* HUD = Cast<AC_PlayerHUD>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetHUD());
+	if(HUD)
+	{
+		CardinalWidgetptr = HUD->HUDWidget->CardinalWidget;
+		if(CardinalWidgetptr)
+		{
+			for (int i = 0; i < DirectionsArray.Num(); i++)
+			{
+				CardinalWidgetptr->AddDirectionWidget(DirectionsArray[i]);
+			}
+
+			UpdateDirectionWidget();
+		}
+	}
 }

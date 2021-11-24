@@ -36,17 +36,17 @@ public:
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	UFUNCTION(BlueprintCallable)
-	void InitDirections();
-
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Struct")
 	class UC_CardinalDirectionsWidget* CardinalWidgetptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Widget")
 	TArray<FDirectionsStruct> DirectionsArray;
 
+	//	System uses camera comp to get current rotation of player
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Struct")
 	UCameraComponent* PlayerCameraComp;
 
+	// How far before a direction widget should become hidden
 	float MaxWidgetTranslation = 332.5f;
 
 # pragma region Helper Functions
@@ -61,6 +61,15 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	FTranslationsOutput RotationToTranslation(FRotator A, FRotator B);
+
+	// Will set the visibility of each direction widget currently on screen based on their translation. 
+	// If one widget goes too far left or tight they become hidden and the widgtes still on screen become visible
+	UFUNCTION(BlueprintCallable)
+	void UpdateDirectionWidget();
+
+	// Sets varibales and direction widgtes
+	UFUNCTION(BlueprintCallable)
+	void InitDirectionsComponent(AActor* Player, UCameraComponent* PlayerCamera);
 
 # pragma endregion
 };
