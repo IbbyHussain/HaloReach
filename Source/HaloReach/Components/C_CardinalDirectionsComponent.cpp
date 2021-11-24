@@ -134,6 +134,7 @@ void UC_CardinalDirectionsComponent::UpdateDirectionWidget()
 			if (TranslationOutput.bInRadarSight)
 			{
 				CardinalWidgetptr->DirectionWidgetArray[i]->SetRenderTranslation(TranslationOutput.Translation);
+
 				if (!CardinalWidgetptr->DirectionWidgetArray[i]->IsVisible())
 				{
 					CardinalWidgetptr->DirectionWidgetArray[i]->SetVisibility(ESlateVisibility::SelfHitTestInvisible);

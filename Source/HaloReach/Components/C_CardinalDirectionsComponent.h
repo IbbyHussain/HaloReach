@@ -47,6 +47,7 @@ public:
 	UCameraComponent* PlayerCameraComp;
 
 	// How far before a direction widget should become hidden
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Struct")
 	float MaxWidgetTranslation = 332.5f;
 
 # pragma region Helper Functions
