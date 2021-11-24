@@ -77,7 +77,7 @@ AC_PlayerCharacter::AC_PlayerCharacter(const FObjectInitializer& ObjectInitializ
 
 	RadarComp = CreateDefaultSubobject<UC_RadarIconComponent>(TEXT("RadarComponent"));
 
-	//CardinalComp = CreateDefaultSubobject<UC_CardinalDirectionsComponent>(TEXT("CardinalComponent"));
+	CardinalComp = CreateDefaultSubobject<UC_CardinalDirectionsComponent>(TEXT("CardinalComponent"));
 
 	//Crouch Timeline
 	CrouchTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("CrouchTimeline"));
@@ -272,6 +272,12 @@ void AC_PlayerCharacter::BeginPlay()
 	{
 		RadarComp->RadarIconImage = RadarComp->TEnemyIcon;
 	}*/
+
+	// Stops other clients calling for this player
+	if(IsLocallyControlled())
+	{
+		CardinalComp->InitDirectionsComponent(CameraComp);
+	}
 }
 
 void AC_PlayerCharacter::Tick(float DeltaTime)
@@ -409,6 +415,13 @@ void AC_PlayerCharacter::LookUp(float Axis)
 void AC_PlayerCharacter::LookRight(float Axis)
 {
 	AddControllerYawInput(Axis);
+
+	// Will update cardinal directions if player turns
+	if(Axis != 0.0f)
+	{
+		CardinalComp->UpdateDirectionWidget();
+	}
+
 }
 
 // JUMP SYSYTEM

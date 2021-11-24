@@ -182,8 +182,8 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Player | PlayerComponents")
 	UC_RadarIconComponent* RadarComp;
 
-	//UPROPERTY(EditDefaultsOnly, Category = "Player | PlayerComponents")
-	//class UC_CardinalDirectionsComponent* CardinalComp;
+	UPROPERTY(EditDefaultsOnly, Category = "Player | PlayerComponents")
+	class UC_CardinalDirectionsComponent* CardinalComp;
 
 	class UC_PlayerNameWidget* PlayerNameWidget;
 
@@ -718,11 +718,11 @@ public:
 		return RadarComp;
 	}
 
-	//UFUNCTION(BlueprintCallable)
-	//class UC_CardinalDirectionsComponent* GetCardinalComponent() const
-	//{
-	//	return CardinalComp;
-	//}
+	UFUNCTION(BlueprintCallable)
+	class UC_CardinalDirectionsComponent* GetCardinalComponent() const
+	{
+		return CardinalComp;
+	}
 
 
 # pragma region Player Death

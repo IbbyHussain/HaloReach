@@ -126,6 +126,7 @@ void UC_CardinalDirectionsComponent::UpdateDirectionWidget()
 {
 	if(CardinalWidgetptr)
 	{
+		// Sets the correct translation and visibility for each direction widget
 		for (int i = 0; i < CardinalWidgetptr->DirectionWidgetArray.Num(); i++)
 		{
 			FTranslationsOutput TranslationOutput = RotationToTranslation(PlayerCameraComp->GetComponentRotation(), FRotator(0.0f, DirectionsArray[i].WorldRotation, 0.0f));
@@ -159,6 +160,7 @@ void UC_CardinalDirectionsComponent::InitDirectionsComponent(UCameraComponent* P
 	AC_PlayerHUD* HUD = Cast<AC_PlayerHUD>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetHUD());
 	if(HUD)
 	{
+		// Adds direction widgets to the cardinal direction widget
 		CardinalWidgetptr = HUD->HUDWidget->CardinalWidget;
 		if(CardinalWidgetptr)
 		{
