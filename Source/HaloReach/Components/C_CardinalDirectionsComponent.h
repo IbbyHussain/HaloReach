@@ -28,4 +28,13 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Widget")
 	TArray<FDirectionsStruct> DirectionsArray;
+
+# pragma region Helper Functions
+
+	// UE4 uses rotation in range of 0 to 180 then -180 to 0.
+	// This function will convert that range to 0 to 360.
+	UFUNCTION(BlueprintCallable)
+	float RotationToCirlceDegrees(float Rotation);
+
+# pragma endregion
 };

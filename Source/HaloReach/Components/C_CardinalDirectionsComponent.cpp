@@ -4,6 +4,7 @@
 #include "HaloReach/UI/HUD/C_PlayerHUD.h"
 #include "HaloReach/UI/HUD/C_PlayerHUDWidget.h"
 #include "HaloReach/Player/C_PlayerCharacter.h"
+#include "GenericPlatform/GenericPlatformMath.h"
 
 UC_CardinalDirectionsComponent::UC_CardinalDirectionsComponent()
 {
@@ -40,4 +41,14 @@ void UC_CardinalDirectionsComponent::InitDirections()
 	//	}
 	//}
 	
+}
+
+float UC_CardinalDirectionsComponent::RotationToCirlceDegrees(float Rotation)
+{
+	if(Rotation < 0.0f)
+	{
+		return FGenericPlatformMath::Fmod(Rotation + 360.0f, 360.0f);
+	}
+
+	return Rotation;
 }
