@@ -6,6 +6,7 @@
 #include "HaloReach/Player/C_PlayerCharacter.h"
 #include "GenericPlatform/GenericPlatformMath.h"
 #include "HaloReach/UI/Radar/C_CardinalDirectionsWidget.h"
+#include "HaloReach/UI/Radar/C_DirectionWidget.h"
 
 UC_CardinalDirectionsComponent::UC_CardinalDirectionsComponent()
 {
@@ -131,19 +132,19 @@ void UC_CardinalDirectionsComponent::UpdateDirectionWidget()
 
 			if (TranslationOutput.bInRadarSight)
 			{
-				CardinalWidgetptr->SetRenderTranslation(TranslationOutput.Translation);
-				if (!CardinalWidgetptr->IsVisible())
+				CardinalWidgetptr->DirectionWidgetArray[i]->SetRenderTranslation(TranslationOutput.Translation);
+				if (!CardinalWidgetptr->DirectionWidgetArray[i]->IsVisible())
 				{
-					CardinalWidgetptr->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+					CardinalWidgetptr->DirectionWidgetArray[i]->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 				}
 
 			}
 
 			else
 			{
-				if (CardinalWidgetptr->IsVisible())
+				if (CardinalWidgetptr->DirectionWidgetArray[i]->IsVisible())
 				{
-					CardinalWidgetptr->SetVisibility(ESlateVisibility::Hidden);
+					CardinalWidgetptr->DirectionWidgetArray[i]->SetVisibility(ESlateVisibility::Hidden);
 				}
 			}
 		}
@@ -151,7 +152,7 @@ void UC_CardinalDirectionsComponent::UpdateDirectionWidget()
 	
 }
 
-void UC_CardinalDirectionsComponent::InitDirectionsComponent(AActor* Player, UCameraComponent* PlayerCamera)
+void UC_CardinalDirectionsComponent::InitDirectionsComponent(UCameraComponent* PlayerCamera)
 {
 	PlayerCameraComp = PlayerCamera;
 

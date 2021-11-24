@@ -69,7 +69,7 @@ public:
 
 	// Sets varibales and direction widgtes
 	UFUNCTION(BlueprintCallable)
-	void InitDirectionsComponent(AActor* Player, UCameraComponent* PlayerCamera);
+	void InitDirectionsComponent(UCameraComponent* PlayerCamera);
 
 # pragma endregion
 };
