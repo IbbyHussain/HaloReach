@@ -63,6 +63,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void PlayFadeOutAnimation();
 
+	void StopFadeOutAnimation();
+
 # pragma endregion
 
 private:

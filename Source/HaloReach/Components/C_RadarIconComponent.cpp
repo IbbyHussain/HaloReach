@@ -144,6 +144,7 @@ void UC_RadarIconComponent::Multi_ShowRadarIcon_Implementation()
 	// Ensures that the radar icon's visibility is not changed on local player but changes for everyone else
 	if (PlayerCharacter && !PlayerCharacter->IsLocallyControlled() && RadarIcon)
 	{
+		RadarIcon->StopFadeOutAnimation();
 		RadarIcon->SetRenderOpacity(1.0f);
 	}
 }

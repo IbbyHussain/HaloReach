@@ -904,6 +904,7 @@ void AC_PlayerCharacter::UpdateRestrictionState(ERestrictionState NewState)
 void AC_PlayerCharacter::WkeyPressed()
 {
 	bWKeyPressed = true;
+	GetWorldTimerManager().ClearTimer(StartRadarFadeoutHandle);
 	RadarComp->ShowRadarIcon(false);
 }
 
@@ -921,6 +922,7 @@ void AC_PlayerCharacter::WkeyReleased()
 void AC_PlayerCharacter::AkeyPressed()
 {
 	bAKeyPressed = true;
+	GetWorldTimerManager().ClearTimer(StartRadarFadeoutHandle);
 	RadarComp->ShowRadarIcon(false);
 }
 
@@ -936,6 +938,7 @@ void AC_PlayerCharacter::AkeyReleased()
 void AC_PlayerCharacter::SkeyPressed()
 {
 	bSKeyPressed = true;
+	GetWorldTimerManager().ClearTimer(StartRadarFadeoutHandle);
 	RadarComp->ShowRadarIcon(false);
 }
 
@@ -951,6 +954,7 @@ void AC_PlayerCharacter::SkeyReleased()
 void AC_PlayerCharacter::DkeyPressed()
 {
 	bDKeyPressed = true;
+	GetWorldTimerManager().ClearTimer(StartRadarFadeoutHandle);
 	RadarComp->ShowRadarIcon(false);
 }
 
