@@ -243,6 +243,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Player | Grenades")
 	FGrenades Grenades;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player | PlayerComponents")
+	class UC_TeamsComponent* TeamsComp;
+
 // COMBAT SYSTEM
 
 	UPROPERTY(Replicated)
@@ -869,5 +872,30 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void LoadIt();
+# pragma endregion
+
+# pragma region PlayerColour
+
+	// The dynmaically created materials
+	TArray <UMaterialInstanceDynamic*> DynamicPlayerMaterialArray;
+
+	// The player meshs default materials 
+	UPROPERTY(EditDefaultsOnly, Category = "Material Interface")
+	TArray<UMaterialInterface*> PlayerMaterialInterfaceArray;
+
+	void CreateDynamicMaterials();
+
+	// Sets dynmaic colour paraamter to a new color, for all materials of player
+	void SetPlayerColour(FColor Color);
+
+	UFUNCTION(Server, Reliable)
+	void Server_SetPlayerColor(FColor Color);
+	void Server_SetPlayerColor_Implementation(FColor Color);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_SetPlayerColor(FColor Color);
+	void Multi_SetPlayerColor_Implementation(FColor Color);
+
+
 # pragma endregion
 };

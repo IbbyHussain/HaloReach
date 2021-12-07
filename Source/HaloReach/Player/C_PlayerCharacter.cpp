@@ -38,6 +38,7 @@
 #include "Animation/AnimMontage.h"
 #include "HaloReach/Components/C_CardinalDirectionsComponent.h"
 #include "HaloReach/Interfaces/C_BaseSaveGame.h"
+#include "HaloReach/Components/C_TeamsComponent.h"
 
 //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("texthere: %f"), x));
 
@@ -78,6 +79,9 @@ AC_PlayerCharacter::AC_PlayerCharacter(const FObjectInitializer& ObjectInitializ
 	RadarComp = CreateDefaultSubobject<UC_RadarIconComponent>(TEXT("RadarComponent"));
 
 	CardinalComp = CreateDefaultSubobject<UC_CardinalDirectionsComponent>(TEXT("CardinalComponent"));
+
+	TeamsComp = CreateDefaultSubobject<UC_TeamsComponent>(TEXT("Teams Component"));
+	//TeamsComp->SetOwner(this);
 
 	//Crouch Timeline
 	CrouchTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("CrouchTimeline"));
@@ -278,6 +282,8 @@ void AC_PlayerCharacter::BeginPlay()
 	{
 		CardinalComp->InitDirectionsComponent(CameraComp);
 	}
+
+	CreateDynamicMaterials();
 }
 
 void AC_PlayerCharacter::Tick(float DeltaTime)
@@ -1839,5 +1845,43 @@ void AC_PlayerCharacter::LoadIt()
 	{
 		Client_LoadPlayerName(PS->UniqueId->ToString());
 		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("texthere: %s"), *PS->UniqueId->ToString()));
+	}
+}
+
+void AC_PlayerCharacter::CreateDynamicMaterials()
+{
+	// Iterate over player materials and create dynamic instances 
+	for (int i = 0; i < PlayerMaterialInterfaceArray.Num(); i++)
+	{
+		UMaterialInstanceDynamic* DynamicMaterial = UMaterialInstanceDynamic::Create(PlayerMaterialInterfaceArray[i], this);
+		DynamicPlayerMaterialArray.Add(DynamicMaterial);
+
+		Mesh3P->SetMaterial(i, DynamicPlayerMaterialArray[i]);
+	}
+}
+
+void AC_PlayerCharacter::SetPlayerColour(FColor Color)
+{
+	if(HasAuthority())
+	{
+		Multi_SetPlayerColor(Color);
+	}
+
+	else
+	{
+		Server_SetPlayerColor(Color);
+	}
+}
+
+void AC_PlayerCharacter::Server_SetPlayerColor_Implementation(FColor Color)
+{
+	Multi_SetPlayerColor(Color);
+}
+
+void AC_PlayerCharacter::Multi_SetPlayerColor_Implementation(FColor Color)
+{
+	for (auto x : DynamicPlayerMaterialArray)
+	{
+		x->SetVectorParameterValue(FName("Colour"), Color);
 	}
 }
