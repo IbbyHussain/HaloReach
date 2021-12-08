@@ -16,6 +16,7 @@
 #include "HaloReach/UI/Names/C_DeathUpdateWidget.h"
 #include "HaloReach/UI/Names/C_GlobalAlertWidget.h"
 #include "Components/VerticalBox.h"
+#include "HaloReach/UI/Options/C_OptionsWidget.h"
 
 
 
@@ -244,6 +245,19 @@ void AC_PlayerHUD::PlayHUDFadeOutAnimation()
 	if (DeathWidget)
 	{
 		DeathWidget->PlayFadeOutAnimation();
+	}
+}
+
+void AC_PlayerHUD::CreateOptionsWidget()
+{
+	OptionsWidget = UC_SpawnLibrary::SpawnWidget(GetWorld(), OptionsWidgetClass, OptionsWidget);
+}
+
+void AC_PlayerHUD::DestroyOptionsWidget()
+{
+	if (OptionsWidget) 
+	{
+		OptionsWidget->RemoveFromParent();
 	}
 }
 

@@ -1898,7 +1898,7 @@ void AC_PlayerCharacter::ToggleOptionsWidget()
 	if (bOpenOptionsWidget)
 	{
 
-		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("OPEN")));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("OPEN")));
 		if (HUD)
 		{
 			HUD->CreateOptionsWidget();
@@ -1916,7 +1916,7 @@ void AC_PlayerCharacter::ToggleOptionsWidget()
 
 	else
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("CLOSE")));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("CLOSE")));
 
 		if (HUD)
 		{

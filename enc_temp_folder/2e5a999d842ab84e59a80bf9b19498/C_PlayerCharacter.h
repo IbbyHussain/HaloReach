@@ -903,6 +903,5 @@ public:
 
 	bool bOpenOptionsWidget = true;
 
-	// Will create and destroy the options widget
 	void ToggleOptionsWidget();
 };

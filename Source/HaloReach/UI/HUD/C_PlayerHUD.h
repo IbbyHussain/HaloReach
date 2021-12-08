@@ -138,6 +138,19 @@ public:
 
 # pragma endregion
 
+# pragma region Options Widget
+
+	class UC_OptionsWidget* OptionsWidget;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
+	TSubclassOf<class UC_OptionsWidget> OptionsWidgetClass;
+
+	void CreateOptionsWidget();
+
+	void DestroyOptionsWidget();
+
+# pragma endregion
+
 public:
 
 	UFUNCTION(BlueprintCallable)
