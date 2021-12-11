@@ -7,10 +7,10 @@
 #include "C_TeamsComponent.generated.h"
 
 
+
 UENUM()
 enum class ETeam : uint8
 {
-	NEUTRAL,
 	RED,
 	BLUE,
 	GREEN,
@@ -18,8 +18,12 @@ enum class ETeam : uint8
 	ORANGE,
 	PURPLE,
 	WHITE,
-	BLACK
+	BLACK,
+	NEUTRAL
 };
+
+// Used for iteration over enums, requires an enum value to be used as the last value(does not include this in iteration)
+ENUM_RANGE_BY_COUNT(ETeam, ETeam::NEUTRAL)
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class HALOREACH_API UC_TeamsComponent : public UActorComponent
@@ -28,7 +32,8 @@ class HALOREACH_API UC_TeamsComponent : public UActorComponent
 
 	UC_TeamsComponent();
 
-	UPROPERTY(VisibleAnywhere, Category = "Team")
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Team") //VisibleAnywhere
 	ETeam Team;
 
 	// Default Functions
@@ -56,5 +61,19 @@ class HALOREACH_API UC_TeamsComponent : public UActorComponent
 	// Will change the owners colour, to the team colour
 	UFUNCTION(BlueprintCallable, Category = "Teams")
 	void UpdateOwnerColour();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Teams")
+	TArray<FString> TeamsArray;
+
+	UFUNCTION(BlueprintCallable)
+	TArray<FString> GetAllTeams();
+
+	// testings 
+
+	UFUNCTION(BlueprintCallable)
+	TArray<ETeam> GetAllTeamsENUM();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Teams")
+	TArray<ETeam> TeamsENUMArray;
 
 };

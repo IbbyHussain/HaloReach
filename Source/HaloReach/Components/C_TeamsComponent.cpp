@@ -63,6 +63,32 @@ void UC_TeamsComponent::UpdateOwnerColour()
 	}
 }
 
+TArray<FString> UC_TeamsComponent::GetAllTeams()
+{
+	for(ETeam T : TEnumRange<ETeam>())
+	{
+		FString TeamString = UEnum::GetValueAsString(T);
+		TeamString.RemoveFromStart("ETeam::", ESearchCase::IgnoreCase);
+		TeamsArray.AddUnique(TeamString);
+	}
+
+	for (auto x: TeamsArray)
+	{
+		UE_LOG(LogTemp, Log, TEXT(" All Teams: %s"), *x);
+	}
+
+	return TeamsArray;
+}
+
+TArray<ETeam> UC_TeamsComponent::GetAllTeamsENUM()
+{
+	for (ETeam T : TEnumRange<ETeam>())
+	{
+		TeamsENUMArray.AddUnique(T);
+	}
+	return TeamsENUMArray;
+}
+
 void UC_TeamsComponent::OnTeamChanged()
 {
 	// If owner is a player, switch player colour
