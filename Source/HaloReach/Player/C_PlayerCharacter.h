@@ -888,16 +888,16 @@ public:
 	void CreateDynamicMaterials();
 
 	// Sets dynmaic colour paraamter to a new color, for all materials of player
+	UFUNCTION(BlueprintCallable)
 	void SetPlayerColour(FColor Color);
 
-	UFUNCTION(Server, Reliable)
+	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Server_SetPlayerColor(FColor Color);
 	void Server_SetPlayerColor_Implementation(FColor Color);
 
-	UFUNCTION(NetMulticast, Reliable)
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
 	void Multi_SetPlayerColor(FColor Color);
 	void Multi_SetPlayerColor_Implementation(FColor Color);
-
 
 # pragma endregion
 

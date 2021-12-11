@@ -1853,6 +1853,8 @@ void AC_PlayerCharacter::LoadIt()
 	}
 }
 
+# pragma region Player Team Colour
+
 void AC_PlayerCharacter::CreateDynamicMaterials()
 {
 	// Iterate over player materials and create dynamic instances 
@@ -1867,7 +1869,7 @@ void AC_PlayerCharacter::CreateDynamicMaterials()
 
 void AC_PlayerCharacter::SetPlayerColour(FColor Color)
 {
-	if(HasAuthority())
+	if (HasAuthority())
 	{
 		Multi_SetPlayerColor(Color);
 	}
@@ -1887,6 +1889,7 @@ void AC_PlayerCharacter::Multi_SetPlayerColor_Implementation(FColor Color)
 {
 	for (auto x : DynamicPlayerMaterialArray)
 	{
+		//CurrentTeamColour = Color;
 		x->SetVectorParameterValue(FName("Colour"), Color);
 	}
 }
@@ -1935,4 +1938,7 @@ void AC_PlayerCharacter::ToggleOptionsWidget()
 
 	bOpenOptionsWidget = !bOpenOptionsWidget;
 }
+
+# pragma endregion
+
 

@@ -11,6 +11,9 @@ void UC_TeamsComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//SetTeam(ETeam::RED);
+	//UpdateOwnerColour();
+
 }
 
 void UC_TeamsComponent::UpdateOwnerColour()
@@ -41,18 +44,22 @@ void UC_TeamsComponent::UpdateOwnerColour()
 			break;
 
 		case ETeam::ORANGE:
+			PlayerCharacter->SetPlayerColour(FColor::Orange);
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Team is: ORANGE")));
 			break;
 
 		case ETeam::PURPLE:
+			PlayerCharacter->SetPlayerColour(FColor::Purple);
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Team is: PURPLE")));
 			break;
 
-		case ETeam::WHITE:
+		case ETeam::CYAN:
+			PlayerCharacter->SetPlayerColour(FColor(0,255,255));
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Team is: WHITE")));
 			break;
 
 		case ETeam::YELLOW:
+			PlayerCharacter->SetPlayerColour(FColor::Yellow);
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Team is: YELLOW")));
 			break;
 
@@ -63,30 +70,13 @@ void UC_TeamsComponent::UpdateOwnerColour()
 	}
 }
 
-TArray<FString> UC_TeamsComponent::GetAllTeams()
-{
-	for(ETeam T : TEnumRange<ETeam>())
-	{
-		FString TeamString = UEnum::GetValueAsString(T);
-		TeamString.RemoveFromStart("ETeam::", ESearchCase::IgnoreCase);
-		TeamsArray.AddUnique(TeamString);
-	}
-
-	for (auto x: TeamsArray)
-	{
-		UE_LOG(LogTemp, Log, TEXT(" All Teams: %s"), *x);
-	}
-
-	return TeamsArray;
-}
-
-TArray<ETeam> UC_TeamsComponent::GetAllTeamsENUM()
+TArray<ETeam> UC_TeamsComponent::GetAllTeams()
 {
 	for (ETeam T : TEnumRange<ETeam>())
 	{
-		TeamsENUMArray.AddUnique(T);
+		TeamsArray.AddUnique(T);
 	}
-	return TeamsENUMArray;
+	return TeamsArray;
 }
 
 void UC_TeamsComponent::OnTeamChanged()

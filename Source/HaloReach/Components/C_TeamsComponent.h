@@ -17,7 +17,7 @@ enum class ETeam : uint8
 	YELLOW,
 	ORANGE,
 	PURPLE,
-	WHITE,
+	CYAN,
 	BLACK,
 	NEUTRAL
 };
@@ -62,18 +62,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Teams")
 	void UpdateOwnerColour();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Teams")
-	TArray<FString> TeamsArray;
-
 	UFUNCTION(BlueprintCallable)
-	TArray<FString> GetAllTeams();
-
-	// testings 
-
-	UFUNCTION(BlueprintCallable)
-	TArray<ETeam> GetAllTeamsENUM();
+	TArray<ETeam> GetAllTeams();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Teams")
-	TArray<ETeam> TeamsENUMArray;
+	TArray<ETeam> TeamsArray;
 
 };
