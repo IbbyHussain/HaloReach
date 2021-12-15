@@ -43,7 +43,7 @@ public:
 	// Teams
 
 	UFUNCTION(BlueprintCallable, Category = "Teams")
-		ETeam GetTeam() const
+	ETeam GetTeam() const
 	{
 		return Team;
 	}
@@ -51,12 +51,22 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Teams")
 	void SetTeam(ETeam NewTeam)
 	{
+		// clients set team on server and locally for damage 
+		if(!GetOwner()->HasAuthority())
+		{
+			Server_SetTeam(NewTeam);
+		}
+	
 		Team = NewTeam;
 
 		UpdateOwnerColour();
 	}
 
 	void OnTeamChanged();
+
+	UFUNCTION(Server, Reliable)
+	void Server_SetTeam(ETeam NewTeam);
+	void Server_SetTeam_Implementation(ETeam NewTeam);
 
 	// Will change the owners colour, to the team colour
 	UFUNCTION(BlueprintCallable, Category = "Teams")

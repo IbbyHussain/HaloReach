@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Runtime/Engine/Classes/Components/TimelineComponent.h" 
 #include "HaloReach/Interfaces/C_InteractInterface.h"
+#include "HaloReach/Interfaces/C_DamageInterface.h"
 #include "HaloReach/GlobalEnums.h"
 #include "Components/TimelineComponent.h"
 
@@ -132,7 +133,7 @@ public:
 };
 
 UCLASS()
-class HALOREACH_API AC_PlayerCharacter : public ACharacter
+class HALOREACH_API AC_PlayerCharacter : public ACharacter, public IC_DamageInterface
 {
 	GENERATED_BODY()
 
@@ -235,6 +236,10 @@ private:
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_Interact(FHitResult Hit);
 	void Multi_Interact_Implementation(FHitResult Hit);
+
+	// Damage
+
+	virtual void DealDamage(AActor* DamagedActor, float BaseDamage, AController* EventInstigator, AActor* DamageCauser) override;
 
 public:
 
@@ -727,6 +732,12 @@ public:
 	class UC_CardinalDirectionsComponent* GetCardinalComponent() const
 	{
 		return CardinalComp;
+	}
+
+	UFUNCTION(BlueprintCallable)
+		class UC_TeamsComponent* GetTeamsComponent() const
+	{
+		return TeamsComp;
 	}
 
 

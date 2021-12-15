@@ -96,8 +96,8 @@ void AC_BaseGrenade::Explode()
 			if (PlayerCharacter && !IgnoredActorsArray.Contains(PlayerCharacter))
 			{
 				// Apply damage to player, Hack to get around main dmg system where dmg stops after shields are broken
-				UGameplayStatics::ApplyDamage(PlayerCharacter, 200.0f, GetOwner()->GetInstigatorController(), GetOwner(), nullptr);
-				//UGameplayStatics::ApplyDamage(PlayerCharacter, 100.0f, GetOwner()->GetInstigatorController(), GetOwner(), nullptr);
+				UGameplayStatics::ApplyDamage(PlayerCharacter, 100.0f, GetOwner()->GetInstigatorController(), GetOwner(), nullptr);
+				UGameplayStatics::ApplyDamage(PlayerCharacter, 100.0f, GetOwner()->GetInstigatorController(), GetOwner(), nullptr);
 
 				IgnoredActorsArray.Emplace(PlayerCharacter);
 			}

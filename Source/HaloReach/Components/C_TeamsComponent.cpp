@@ -14,6 +14,7 @@ void UC_TeamsComponent::BeginPlay()
 	//SetTeam(ETeam::RED);
 	//UpdateOwnerColour();
 
+
 }
 
 void UC_TeamsComponent::UpdateOwnerColour()
@@ -25,45 +26,54 @@ void UC_TeamsComponent::UpdateOwnerColour()
 		{
 		case ETeam::RED:
 			PlayerCharacter->SetPlayerColour(FColor::Red);
+			//SetTeam(ETeam::RED);
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Team is: RED")));
 			break;
 
 		case ETeam::BLACK:
 			PlayerCharacter->SetPlayerColour(FColor::Black);
+			//SetTeam(ETeam::BLACK);
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Team is: BLACK")));
 			break;
 
 		case ETeam::BLUE:
 			PlayerCharacter->SetPlayerColour(FColor::Blue);
+			//SetTeam(ETeam::BLUE);
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Team is: BLUE")));
 			break;
 
 		case ETeam::GREEN:
 			PlayerCharacter->SetPlayerColour(FColor::Green);
+			//SetTeam(ETeam::GREEN);
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Team is: GREEN")));
 			break;
 
 		case ETeam::ORANGE:
 			PlayerCharacter->SetPlayerColour(FColor::Orange);
+			//SetTeam(ETeam::ORANGE);
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Team is: ORANGE")));
 			break;
 
 		case ETeam::PURPLE:
 			PlayerCharacter->SetPlayerColour(FColor::Purple);
+			//SetTeam(ETeam::PURPLE);
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Team is: PURPLE")));
 			break;
 
 		case ETeam::CYAN:
 			PlayerCharacter->SetPlayerColour(FColor(0,255,255));
+			//SetTeam(ETeam::CYAN);
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Team is: WHITE")));
 			break;
 
 		case ETeam::YELLOW:
 			PlayerCharacter->SetPlayerColour(FColor::Yellow);
+			//SetTeam(ETeam::YELLOW);
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Team is: YELLOW")));
 			break;
 
 		case ETeam::NEUTRAL:
+			//SetTeam(ETeam::NEUTRAL);
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Team is: NEUTRAL")));
 			break;
 		}
@@ -89,3 +99,7 @@ void UC_TeamsComponent::OnTeamChanged()
 	}
 }
 
+void UC_TeamsComponent::Server_SetTeam_Implementation(ETeam NewTeam)
+{
+	Team = NewTeam;
+}
