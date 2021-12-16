@@ -108,6 +108,8 @@ void UC_RadarIconComponent::RefreshRadarIcons()
 
 # pragma region Toggle Radar Icon
 
+# pragma region Show Radar Icon
+
 // Shows radar icon (excludes owning client)
 void UC_RadarIconComponent::ShowRadarIcon(bool bAutoHide)
 {
@@ -122,7 +124,7 @@ void UC_RadarIconComponent::ShowRadarIcon(bool bAutoHide)
 	}
 
 	// When the current action will not manually call HideRadarIcon, Used for melee and firing weapon etc
-	if(bAutoHide)
+	if (bAutoHide)
 	{
 		// Sets render opacity back to 0 after delay
 
@@ -148,6 +150,10 @@ void UC_RadarIconComponent::Multi_ShowRadarIcon_Implementation()
 		RadarIcon->SetRenderOpacity(1.0f);
 	}
 }
+
+# pragma endregion
+
+# pragma region Hide Radar Icon
 
 // Hides radar icon (excludes owning client)
 void UC_RadarIconComponent::HideRadarIcon(bool bPlayFadeAnim)
@@ -178,6 +184,8 @@ void UC_RadarIconComponent::Multi_HideRadarIcon_Implementation(bool bPlayFadeAni
 		bPlayFadeAnim ? RadarIcon->PlayFadeOutAnimation() : RadarIcon->SetRenderOpacity(0.0f);
 	}
 }
+
+# pragma endregion
 
 // If the player is walking, will need to clear the fade out handle as walking uses its own calls for fading out radar icon
 void UC_RadarIconComponent::ClearRadarIconFadeHandle()
