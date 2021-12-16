@@ -68,6 +68,4 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void Thrown(FVector ImpulseDirection);
 
-
-
 };

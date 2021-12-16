@@ -681,18 +681,6 @@ void AC_PlayerCharacter::Multi_Interact_Implementation(FHitResult Hit)
 	}
 }
 
-void AC_PlayerCharacter::DealDamage(AActor* DamagedActor, float BaseDamage, AController* EventInstigator, AActor* DamageCauser)
-{
-	AC_PlayerCharacter* DamagedPlayer = Cast<AC_PlayerCharacter>(DamagedActor);
-	AC_PlayerCharacter* DamageCauserPlayer = Cast<AC_PlayerCharacter>(DamageCauser);
-
-	// If two players have different teams, damage each other
-	if(DamageCauserPlayer->GetTeamsComponent()->GetTeam() != DamagedPlayer->GetTeamsComponent()->GetTeam())
-	{
-		UGameplayStatics::ApplyDamage(DamagedActor, BaseDamage, EventInstigator, DamageCauser, nullptr);
-	}
-}
-
 # pragma endregion 
 
 // COMBAT SYSTEM 
@@ -1181,23 +1169,18 @@ void AC_PlayerCharacter::MeleeAttack(USkeletalMeshComponent* MeshComp)
 	{
 		if (HasAuthority())
 		{
-			if (HitPlayer->HealthComp->GetShields() <= 0.0f)
+			if (!(TeamsComp->IsSameTeam(TeamsComp->GetTeam(), HitPlayer->GetTeamsComponent()->GetTeam())))
 			{
-				// Will one hit enemy player if sheields are 0
-				IC_DamageInterface* Interface = Cast<IC_DamageInterface>(HitPlayer);
-				if(Interface)
+				if (HitPlayer->HealthComp->GetShields() <= 0.0f)
 				{
-					Interface->DealDamage(HitPlayer, HitPlayer->HealthComp->MaxHealth, UGameplayStatics::GetPlayerController(this, 0), this);
+					// Will one hit enemy player if sheields are 0
+					UGameplayStatics::ApplyDamage(HitPlayer, HitPlayer->HealthComp->MaxHealth, UGameplayStatics::GetPlayerController(this, 0), this, nullptr);
 				}
-			}
 
-			else
-			{
-				// will one hit shields, but does not allow for damage to affect health
-				IC_DamageInterface* Interface = Cast<IC_DamageInterface>(HitPlayer);
-				if (Interface)
+				else
 				{
-					Interface->DealDamage(HitPlayer, HitPlayer->HealthComp->GetShields(), UGameplayStatics::GetPlayerController(this, 0), this);
+					// will one hit shields, but does not allow for damage to affect health
+					UGameplayStatics::ApplyDamage(HitPlayer, HitPlayer->HealthComp->GetShields(), UGameplayStatics::GetPlayerController(this, 0), this, nullptr);
 				}
 			}
 		}
@@ -1209,28 +1192,24 @@ void AC_PlayerCharacter::MeleeAttack(USkeletalMeshComponent* MeshComp)
 
 		// Stops player from being damaged multiple times
 		ActorsIgnored.Emplace(HitPlayer);
+		
 	}
 }
 
 void AC_PlayerCharacter::Server_MeleeAttack_Implementation(AC_PlayerCharacter* HitActor)
 {
-	if (HitActor->HealthComp->GetShields() <= 0.0f)
+	if (!(TeamsComp->IsSameTeam(TeamsComp->GetTeam(), HitActor->GetTeamsComponent()->GetTeam())))
 	{
-		// Will one hit enemy player if sheields are 0
-		IC_DamageInterface* Interface = Cast<IC_DamageInterface>(HitActor);
-		if (Interface)
+		if (HitActor->HealthComp->GetShields() <= 0.0f)
 		{
-			Interface->DealDamage(HitActor, HitActor->HealthComp->MaxHealth, UGameplayStatics::GetPlayerController(this, 0), this);
+			// Will one hit enemy player if sheields are 0
+			UGameplayStatics::ApplyDamage(HitActor, HitActor->HealthComp->MaxHealth, UGameplayStatics::GetPlayerController(this, 0), this, nullptr);
 		}
-	}
 
-	else
-	{
-		// will one hit shields
-		IC_DamageInterface* Interface = Cast<IC_DamageInterface>(HitActor);
-		if (Interface)
+		else
 		{
-			Interface->DealDamage(HitActor, HitActor->HealthComp->GetShields(), UGameplayStatics::GetPlayerController(this, 0), this);
+			// will one hit shields
+			UGameplayStatics::ApplyDamage(HitActor, HitActor->HealthComp->GetShields(), UGameplayStatics::GetPlayerController(this, 0), this, nullptr);
 		}
 	}
 }

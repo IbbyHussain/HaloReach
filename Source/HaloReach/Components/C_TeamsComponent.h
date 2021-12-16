@@ -78,4 +78,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Teams")
 	TArray<ETeam> TeamsArray;
 
+	bool IsSameTeam(ETeam Team1, ETeam Team2);
+
 };

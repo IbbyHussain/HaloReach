@@ -11,6 +11,7 @@
 #include "HaloReach/Components/C_HealthComponent.h"
 
 #include "DrawDebugHelpers.h"
+#include "HaloReach/Components/C_TeamsComponent.h"
 
 AC_BaseGrenade::AC_BaseGrenade()
 {
@@ -37,7 +38,6 @@ void AC_BaseGrenade::BeginPlay()
 
 void AC_BaseGrenade::Thrown(FVector ImpulseDirection)
 {
-	
 	MeshComp->SetSimulatePhysics(true);
 	MeshComp->SetPhysicsLinearVelocity(FVector(0.0f, 0.0f, 0.0f), false, NAME_None);
 
@@ -91,15 +91,21 @@ void AC_BaseGrenade::Explode()
 		for (auto& Hit : OutHits)
 		{
 			AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(Hit.GetActor());
+			AC_PlayerCharacter* PlayerOwner = Cast<AC_PlayerCharacter>(GetOwner());
 
 			// Ensures a player is only damaged once
-			if (PlayerCharacter && !IgnoredActorsArray.Contains(PlayerCharacter))
+			if (PlayerCharacter && PlayerOwner && !IgnoredActorsArray.Contains(PlayerCharacter))
 			{
-				// Apply damage to player, Hack to get around main dmg system where dmg stops after shields are broken
-				UGameplayStatics::ApplyDamage(PlayerCharacter, 100.0f, GetOwner()->GetInstigatorController(), GetOwner(), nullptr);
-				UGameplayStatics::ApplyDamage(PlayerCharacter, 100.0f, GetOwner()->GetInstigatorController(), GetOwner(), nullptr);
+				// Allows for self damage but also ensures no team damage
+				if(PlayerCharacter == PlayerOwner || 
+					!(PlayerOwner->GetTeamsComponent()->IsSameTeam(PlayerOwner->GetTeamsComponent()->GetTeam(), PlayerCharacter->GetTeamsComponent()->GetTeam())))
+				{
+					// Apply damage to player, Hack to get around main dmg system where dmg stops after shields are broken
+					UGameplayStatics::ApplyDamage(PlayerCharacter, 100.0f, GetOwner()->GetInstigatorController(), GetOwner(), nullptr);
+					UGameplayStatics::ApplyDamage(PlayerCharacter, 100.0f, GetOwner()->GetInstigatorController(), GetOwner(), nullptr);
 
-				IgnoredActorsArray.Emplace(PlayerCharacter);
+					IgnoredActorsArray.Emplace(PlayerCharacter);
+				}
 			}
 		}
 	}

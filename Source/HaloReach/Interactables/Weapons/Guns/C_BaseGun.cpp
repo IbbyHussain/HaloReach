@@ -15,6 +15,7 @@
 #include "HaloReach/Interactables/Weapons/C_Weapon3P.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "HaloReach/Components/C_RadarIconComponent.h"
+#include "HaloReach/Components/C_TeamsComponent.h"
 
 AC_BaseGun::AC_BaseGun()
 {
@@ -508,10 +509,11 @@ void AC_BaseGun::Multi_Fire_Implementation(AActor* NewOwner, FRotator TraceRotat
 			bool bHit = GetWorld()->LineTraceSingleByChannel(Hit, EyeLocation, TraceEnd, COLLISION_WEAPON, QueryParams);
 			DrawDebugLine(GetWorld(), EyeLocation, TraceEnd, FColor::Red, false, 1.0f, 0, 1.0f);
 
-			if (bHit)
-			{
-				AActor* HitActor = Hit.GetActor();
+			AActor* HitActor = Hit.GetActor();
+			AC_PlayerCharacter* PlayerHit = Cast<AC_PlayerCharacter>(HitActor);
 
+			if (bHit && PlayerHit)
+			{
 				EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
 
 				// Head shot damage should only be applied when shields = 0
@@ -523,8 +525,12 @@ void AC_BaseGun::Multi_Fire_Implementation(AActor* NewOwner, FRotator TraceRotat
 					ActualDamage *= WeaponStats.HeadShotMultiplier;
 				}
 
-				UGameplayStatics::ApplyPointDamage(HitActor, ActualDamage, ShotDirection, Hit, NewOwner->GetInstigatorController(), NewOwner, DamageType);
-
+				// stops team damage
+				if(!(PlayerCharacter->GetTeamsComponent()->IsSameTeam(PlayerCharacter->GetTeamsComponent()->GetTeam(), PlayerHit->GetTeamsComponent()->GetTeam())))
+				{
+					UGameplayStatics::ApplyPointDamage(HitActor, ActualDamage, ShotDirection, Hit, NewOwner->GetInstigatorController(), NewOwner, DamageType);
+				}
+				
 				// Plays particle effect (Impact Effect) depending on physical material hit
 				UParticleSystem* SelectedEffect = nullptr;
 				switch (SurfaceType)

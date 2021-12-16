@@ -6,7 +6,6 @@
 #include "GameFramework/Character.h"
 #include "Runtime/Engine/Classes/Components/TimelineComponent.h" 
 #include "HaloReach/Interfaces/C_InteractInterface.h"
-#include "HaloReach/Interfaces/C_DamageInterface.h"
 #include "HaloReach/GlobalEnums.h"
 #include "Components/TimelineComponent.h"
 
@@ -133,7 +132,7 @@ public:
 };
 
 UCLASS()
-class HALOREACH_API AC_PlayerCharacter : public ACharacter, public IC_DamageInterface
+class HALOREACH_API AC_PlayerCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
@@ -236,10 +235,6 @@ private:
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_Interact(FHitResult Hit);
 	void Multi_Interact_Implementation(FHitResult Hit);
-
-	// Damage
-
-	virtual void DealDamage(AActor* DamagedActor, float BaseDamage, AController* EventInstigator, AActor* DamageCauser) override;
 
 public:
 
