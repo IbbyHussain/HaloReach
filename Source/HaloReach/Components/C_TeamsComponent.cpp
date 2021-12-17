@@ -26,46 +26,46 @@ void UC_TeamsComponent::UpdateOwnerColour()
 		{
 		case ETeam::RED:
 			PlayerCharacter->SetPlayerColour(FColor::Red);
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Team is: RED")));
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Team is: RED")));
 			break;
 
 		case ETeam::BLACK:
 			PlayerCharacter->SetPlayerColour(FColor::Black);
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Team is: BLACK")));
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Team is: BLACK")));
 			break;
 
 		case ETeam::BLUE:
 			PlayerCharacter->SetPlayerColour(FColor::Blue);
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Team is: BLUE")));
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Team is: BLUE")));
 			break;
 
 		case ETeam::GREEN:
 			PlayerCharacter->SetPlayerColour(FColor::Green);
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Team is: GREEN")));
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Team is: GREEN")));
 			break;
 
 		case ETeam::ORANGE:
 			PlayerCharacter->SetPlayerColour(FColor::Orange);
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Team is: ORANGE")));
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Team is: ORANGE")));
 			break;
 
 		case ETeam::PURPLE:
 			PlayerCharacter->SetPlayerColour(FColor::Purple);
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Team is: PURPLE")));
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Team is: PURPLE")));
 			break;
 
 		case ETeam::CYAN:
 			PlayerCharacter->SetPlayerColour(FColor(0,255,255));
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Team is: WHITE")));
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Team is: WHITE")));
 			break;
 
 		case ETeam::YELLOW:
 			PlayerCharacter->SetPlayerColour(FColor::Yellow);
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Team is: YELLOW")));
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Team is: YELLOW")));
 			break;
 
 		case ETeam::NEUTRAL:
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Team is: NEUTRAL")));
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Team is: NEUTRAL")));
 			break;
 		}
 	}
