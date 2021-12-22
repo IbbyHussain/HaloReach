@@ -11,6 +11,7 @@
 #include "EngineUtils.h"
 #include "TimerManager.h"
 #include <Runtime/Engine/Public/Net/UnrealNetwork.h>
+#include "HaloReach/Player/C_PlayerCharacter.h"
 
 //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Added icon")));
 
@@ -127,10 +128,8 @@ void UC_RadarIconComponent::ShowRadarIcon(bool bAutoHide)
 	if (bAutoHide)
 	{
 		// Sets render opacity back to 0 after delay
-
 		RadarIconFadeDelegate.BindUFunction(this, FName("HideRadarIcon"), true);
 		GetWorld()->GetTimerManager().SetTimer(RadarIconFadeHandle, RadarIconFadeDelegate, 1.0f, false);
-		//GetWorld()->GetTimerManager().SetTimer(RadarIconFadeHandle, this, &UC_RadarIconComponent::HideRadarIcon, 1.0f, false);
 	}
 }
 
@@ -196,5 +195,35 @@ void UC_RadarIconComponent::ClearRadarIconFadeHandle()
 	}
 }
 
+
+
 # pragma endregion
 
+void UC_RadarIconComponent::ShowRadarIcon2(bool bHide)
+{
+	RadarIcon->StopFadeOutAnimation();
+	RadarIcon->SetRenderOpacity(1.0f);
+
+	// When the current action will not manually call HideRadarIcon, Used for melee and firing weapon etc
+	if (bHide)
+	{
+		// Sets render opacity back to 0 after delay
+		RadarIconFadeDelegate.BindUFunction(this, FName("HideRadarIcon2"), true);
+		GetWorld()->GetTimerManager().SetTimer(RadarIconFadeHandle, RadarIconFadeDelegate, 1.0f, false);
+	}
+}
+
+void UC_RadarIconComponent::HideRadarIcon2(bool bPlayFade)
+{
+	bPlayFade ? RadarIcon->PlayFadeOutAnimation() : RadarIcon->SetRenderOpacity(0.0f);
+}
+
+void UC_RadarIconComponent::Server_UpdateRadarIcon_Implementation()
+{
+
+}
+
+void UC_RadarIconComponent::Client_HideRadarIcon_Implementation(AC_PlayerCharacter* PlayerOwner)
+{
+	PlayerOwner->GetRadarComponent()->ShowRadarIcon2(true);
+}

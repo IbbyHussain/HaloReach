@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "C_RadarIconComponent.generated.h"
 
+class AC_PlayerCharacter;
 
 UCLASS(Blueprintable, BlueprintType, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class HALOREACH_API UC_RadarIconComponent : public UActorComponent
@@ -91,5 +92,21 @@ public:
 
 # pragma endregion
 
+# pragma region Radar Toggle NEW
+
+	void ShowRadarIcon2(bool bHide);
+	void HideRadarIcon2(bool bPlayFade);
+
+	UFUNCTION(Server, Reliable)
+	void Server_UpdateRadarIcon();
+	void Server_UpdateRadarIcon_Implementation();
+
+
+	UFUNCTION(Client, BlueprintCallable, Reliable)
+	void Client_HideRadarIcon(AC_PlayerCharacter* PlayerOwner);
+	void Client_HideRadarIcon_Implementation(AC_PlayerCharacter* PlayerOwner);
+
+
+# pragma endregion
 		
 };
