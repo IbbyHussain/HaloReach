@@ -4,23 +4,22 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "HaloReach/GlobalEnums.h"
 #include "C_TeamsComponent.generated.h"
 
-
-
-UENUM()
-enum class ETeam : uint8
-{
-	RED,
-	BLUE,
-	GREEN,
-	YELLOW,
-	ORANGE,
-	PURPLE,
-	CYAN,
-	BLACK,
-	NEUTRAL
-};
+//UENUM()
+//enum class ETeam : uint8
+//{
+//	RED,
+//	BLUE,
+//	GREEN,
+//	YELLOW,
+//	ORANGE,
+//	PURPLE,
+//	CYAN,
+//	BLACK,
+//	NEUTRAL
+//};
 
 // Used for iteration over enums, requires an enum value to be used as the last value(does not include this in iteration)
 ENUM_RANGE_BY_COUNT(ETeam, ETeam::NEUTRAL)
@@ -49,18 +48,8 @@ public:
 	}
 
 	UFUNCTION(BlueprintCallable, Category = "Teams")
-	void SetTeam(ETeam NewTeam)
-	{
-		// clients set team on server and locally for damage 
-		if(!GetOwner()->HasAuthority())
-		{
-			Server_SetTeam(NewTeam);
-		}
+	void SetTeam(ETeam NewTeam);
 	
-		Team = NewTeam;
-
-		UpdateOwnerColour();
-	}
 
 	void OnTeamChanged();
 
@@ -79,5 +68,7 @@ public:
 	TArray<ETeam> TeamsArray;
 
 	bool IsSameTeam(ETeam Team1, ETeam Team2);
+
+	class AC_PlayerCharacter* PlayerOwner;
 
 };

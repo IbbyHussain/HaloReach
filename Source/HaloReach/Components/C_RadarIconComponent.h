@@ -94,7 +94,10 @@ public:
 
 # pragma region Radar Toggle NEW
 
+	UFUNCTION(BlueprintCallable)
 	void ShowRadarIcon2(bool bHide);
+
+	UFUNCTION(BlueprintCallable)
 	void HideRadarIcon2(bool bPlayFade);
 
 	UFUNCTION(Server, Reliable)
@@ -105,6 +108,10 @@ public:
 	UFUNCTION(Client, BlueprintCallable, Reliable)
 	void Client_HideRadarIcon(AC_PlayerCharacter* PlayerOwner);
 	void Client_HideRadarIcon_Implementation(AC_PlayerCharacter* PlayerOwner);
+
+	FTimerHandle Handle;
+
+	FTimerDelegate Delegate;
 
 
 # pragma endregion

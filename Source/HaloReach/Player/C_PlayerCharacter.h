@@ -735,6 +735,12 @@ public:
 		return TeamsComp;
 	}
 
+	void Test()
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("PLAYER CHAR TEST")));
+	}
+
+
 
 # pragma region Player Death
 

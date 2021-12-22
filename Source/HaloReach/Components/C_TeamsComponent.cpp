@@ -1,6 +1,7 @@
 
 #include "HaloReach/Components/C_TeamsComponent.h"
 #include "HaloReach/Player/C_PlayerCharacter.h"
+#include "HaloReach/Player/PlayerExtra/C_ReachPlayerState.h"
 
 UC_TeamsComponent::UC_TeamsComponent()
 {
@@ -14,6 +15,7 @@ void UC_TeamsComponent::BeginPlay()
 	//SetTeam(ETeam::RED);
 	//UpdateOwnerColour();
 
+	PlayerOwner = Cast<AC_PlayerCharacter>(GetOwner());
 
 }
 
@@ -103,4 +105,24 @@ void UC_TeamsComponent::OnTeamChanged()
 void UC_TeamsComponent::Server_SetTeam_Implementation(ETeam NewTeam)
 {
 	Team = NewTeam;
+}
+
+void UC_TeamsComponent::SetTeam(ETeam NewTeam)
+{
+	// clients set team on server and locally for damage 
+	if (!GetOwner()->HasAuthority())
+	{
+		Server_SetTeam(NewTeam);
+	}
+
+	if(PlayerOwner && PlayerOwner->GetPlayerState<AC_ReachPlayerState>())
+	{
+		PlayerOwner->GetPlayerState<AC_ReachPlayerState>()->SetPlayerTeam(NewTeam);
+	}
+	
+
+
+	Team = NewTeam;
+
+	UpdateOwnerColour();
 }

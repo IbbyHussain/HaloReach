@@ -17,7 +17,7 @@
 
 AC_BaseReachGameMode::AC_BaseReachGameMode()
 {
-
+	PlayerStateClass = AC_ReachPlayerState::StaticClass();
 }
 
 void AC_BaseReachGameMode::BeginPlay()

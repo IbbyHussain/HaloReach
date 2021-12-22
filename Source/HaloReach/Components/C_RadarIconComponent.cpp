@@ -215,7 +215,12 @@ void UC_RadarIconComponent::ShowRadarIcon2(bool bHide)
 
 void UC_RadarIconComponent::HideRadarIcon2(bool bPlayFade)
 {
-	bPlayFade ? RadarIcon->PlayFadeOutAnimation() : RadarIcon->SetRenderOpacity(0.0f);
+	if(RadarIcon)
+	{
+		bPlayFade ? RadarIcon->PlayFadeOutAnimation() : RadarIcon->SetRenderOpacity(0.0f);
+	}
+	
+	
 }
 
 void UC_RadarIconComponent::Server_UpdateRadarIcon_Implementation()

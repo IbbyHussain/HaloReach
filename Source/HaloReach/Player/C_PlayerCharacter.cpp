@@ -285,6 +285,7 @@ void AC_PlayerCharacter::BeginPlay()
 	}
 
 	CreateDynamicMaterials();
+
 }
 
 void AC_PlayerCharacter::Tick(float DeltaTime)
@@ -1859,6 +1860,7 @@ void AC_PlayerCharacter::LoadIt()
 	if (PS)
 	{
 		Client_LoadPlayerName(PS->UniqueId->ToString());
+		
 		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("texthere: %s"), *PS->UniqueId->ToString()));
 	}
 }

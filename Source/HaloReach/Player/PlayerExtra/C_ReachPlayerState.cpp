@@ -23,6 +23,9 @@ AC_ReachPlayerState::AC_ReachPlayerState()
 void AC_ReachPlayerState::BeginPlay()
 {
 	Super::BeginPlay();
+
+	PlayerOwner = GetPawn<AC_PlayerCharacter>();
+	PlayerOwner->Test();
 }
 
 void AC_ReachPlayerState::Tick(float Delta)
