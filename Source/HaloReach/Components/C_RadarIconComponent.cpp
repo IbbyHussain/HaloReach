@@ -266,16 +266,19 @@ void UC_RadarIconComponent::Server_ComapreTeams_Implementation()
 
 void UC_RadarIconComponent::Client_SetRadarIconOpacity_Implementation(bool bSameTeam, AC_PlayerCharacter* PlayerPTR)
 {
-	if(bSameTeam)
+	if(PlayerPTR)
 	{
-		PlayerPTR->GetRadarComponent()->RadarIconImage = TAllyIcon;
-		PlayerPTR->GetRadarComponent()->RadarIcon->SetRenderOpacity(1.0f);
-	}
+		if (bSameTeam)
+		{
+			PlayerPTR->GetRadarComponent()->RadarIconImage = TAllyIcon;
+			PlayerPTR->GetRadarComponent()->RadarIcon->SetRenderOpacity(1.0f);
+		}
 
-	else
-	{
-		PlayerPTR->GetRadarComponent()->RadarIconImage = TEnemyIcon;
-		PlayerPTR->GetRadarComponent()->RadarIcon->SetRenderOpacity(0.0f);
+		else
+		{
+			PlayerPTR->GetRadarComponent()->RadarIconImage = TEnemyIcon;
+			PlayerPTR->GetRadarComponent()->RadarIcon->SetRenderOpacity(0.0f);
+		}
 	}
 }
 

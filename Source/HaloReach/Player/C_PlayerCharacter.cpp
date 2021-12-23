@@ -1132,8 +1132,6 @@ void AC_PlayerCharacter::StartMelee()
 			Server_PlayMontage(Mesh3P, Weapon->GetWeapon3PMeleeMontage());
 		}
 
-		RadarComp->ShowRadarIcon(true);
-
 		GetWorldTimerManager().SetTimer(MeleeHandle, this, &AC_PlayerCharacter::ResetMelee, Weapon->MeleeTime, false);
 	}
 }
@@ -1191,9 +1189,10 @@ void AC_PlayerCharacter::MeleeAttack(USkeletalMeshComponent* MeshComp)
 			Server_MeleeAttack(HitPlayer);
 		}
 
+		RadarComp->Server_UpdateRadarIconsOnAction(true, true);
+
 		// Stops player from being damaged multiple times
 		ActorsIgnored.Emplace(HitPlayer);
-		
 	}
 }
 
@@ -1266,7 +1265,7 @@ void AC_PlayerCharacter::ThrowGrenade()
 
 		Server_SpawnGrenade(this, GrenadeSocket, DefaultMesh, Grenades.EquippedGrenadeClass);
 
-		RadarComp->ShowRadarIcon(true);
+		RadarComp->Server_UpdateRadarIconsOnAction(true, true);
 
 		if (HasAuthority())
 		{

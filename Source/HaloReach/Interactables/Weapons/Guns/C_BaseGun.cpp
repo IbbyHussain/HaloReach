@@ -119,7 +119,7 @@ void AC_BaseGun::Fire()
 			Server_Fire(MyOwner, PlayerCharacter->CameraComp->GetComponentRotation());
 		}
 
-		PlayerCharacter->GetRadarComponent()->ShowRadarIcon(true);
+		PlayerCharacter->GetRadarComponent()->Server_UpdateRadarIconsOnAction(true, true);
 	}
 }
 
