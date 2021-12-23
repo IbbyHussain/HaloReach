@@ -119,8 +119,6 @@ void UC_TeamsComponent::SetTeam(ETeam NewTeam)
 	{
 		PlayerOwner->GetPlayerState<AC_ReachPlayerState>()->SetPlayerTeam(NewTeam);
 	}
-	
-
 
 	Team = NewTeam;
 
