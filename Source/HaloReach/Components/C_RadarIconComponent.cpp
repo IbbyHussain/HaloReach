@@ -225,8 +225,6 @@ void UC_RadarIconComponent::HideRadarIcon2(bool bPlayFade)
 	{
 		bPlayFade ? RadarIcon->PlayFadeOutAnimation() : RadarIcon->SetRenderOpacity(0.0f);
 	}
-	
-	
 }
 
 void UC_RadarIconComponent::Server_UpdateRadarIcon_Implementation()
@@ -234,10 +232,10 @@ void UC_RadarIconComponent::Server_UpdateRadarIcon_Implementation()
 
 }
 
-void UC_RadarIconComponent::Client_HideRadarIcon_Implementation(AC_PlayerCharacter* ClientPlayerOwner)
-{
-	ClientPlayerOwner->GetRadarComponent()->ShowRadarIcon2(true);
-}
+//void UC_RadarIconComponent::Client_HideRadarIcon_Implementation(AC_PlayerCharacter* ClientPlayerOwner)
+//{
+//	ClientPlayerOwner->GetRadarComponent()->ShowRadarIcon2(true);
+//}
 
 # pragma region Update Radar Icons on Team Change
 
@@ -279,6 +277,40 @@ void UC_RadarIconComponent::Client_SetRadarIconOpacity_Implementation(bool bSame
 		PlayerPTR->GetRadarComponent()->RadarIconImage = TEnemyIcon;
 		PlayerPTR->GetRadarComponent()->RadarIcon->SetRenderOpacity(0.0f);
 	}
+}
+
+#pragma endregion
+
+# pragma region Update Radar Icons on Action
+
+void UC_RadarIconComponent::Server_UpdateRadarIconsOnAction_Implementation(bool bShowRadarIcon, bool bAutoFadeOut)
+{
+	for (auto i : GetWorld()->GetGameState()->PlayerArray)
+	{
+		if (PlayerOwner->GetTeamsComponent()->GetTeam() != i->GetPawn<AC_PlayerCharacter>()->GetTeamsComponent()->GetTeam())
+		{
+			if(bShowRadarIcon)
+			{
+				i->GetPawn<AC_PlayerCharacter>()->GetRadarComponent()->Client_ShowRadarIcon(PlayerOwner, bAutoFadeOut);
+			}
+
+			else
+			{
+				i->GetPawn<AC_PlayerCharacter>()->GetRadarComponent()->Client_HideRadarIcon(PlayerOwner, bAutoFadeOut);
+			}
+			
+		}
+	}
+}
+
+void UC_RadarIconComponent::Client_ShowRadarIcon_Implementation(AC_PlayerCharacter* PlayerPTR, bool bAutoFadeOut)
+{
+	PlayerPTR->GetRadarComponent()->ShowRadarIcon2(bAutoFadeOut);
+}
+
+void UC_RadarIconComponent::Client_HideRadarIcon_Implementation(AC_PlayerCharacter* PlayerPTR, bool bAutoFadeOut)
+{
+	PlayerPTR->GetRadarComponent()->HideRadarIcon2(bAutoFadeOut);
 }
 
 # pragma endregion

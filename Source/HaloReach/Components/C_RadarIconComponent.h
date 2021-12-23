@@ -107,9 +107,9 @@ public:
 	void Server_UpdateRadarIcon_Implementation();
 
 
-	UFUNCTION(Client, BlueprintCallable, Reliable)
+	/*UFUNCTION(Client, BlueprintCallable, Reliable)
 	void Client_HideRadarIcon(AC_PlayerCharacter* ClientPlayerOwner);
-	void Client_HideRadarIcon_Implementation(AC_PlayerCharacter* ClientPlayerOwner);
+	void Client_HideRadarIcon_Implementation(AC_PlayerCharacter* ClientPlayerOwner);*/
 
 	FTimerHandle Handle;
 
@@ -137,4 +137,20 @@ public:
 
 # pragma endregion
 		
+# pragma region Update Radar Icons on Action
+
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void Server_UpdateRadarIconsOnAction(bool bShowRadarIcon, bool bAutoFadeOut);
+	void Server_UpdateRadarIconsOnAction_Implementation(bool bShowRadarIcon, bool bAutoFadeOut);
+
+	UFUNCTION(Client, Reliable)
+	void Client_ShowRadarIcon(AC_PlayerCharacter* PlayerPTR, bool bAutoFadeOut);
+	void Client_ShowRadarIcon_Implementation(AC_PlayerCharacter* PlayerPTR, bool bAutoFadeOut);
+
+	UFUNCTION(Client, Reliable)
+	void Client_HideRadarIcon(AC_PlayerCharacter* PlayerPTR, bool bAutoFadeOut);
+	void Client_HideRadarIcon_Implementation(AC_PlayerCharacter* PlayerPTR, bool bAutoFadeOut);
+
+# pragma endregion
+
 };

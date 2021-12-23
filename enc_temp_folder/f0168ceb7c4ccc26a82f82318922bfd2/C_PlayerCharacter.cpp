@@ -915,6 +915,7 @@ void AC_PlayerCharacter::WkeyPressed()
 {
 	bWKeyPressed = true;
 	GetWorldTimerManager().ClearTimer(StartRadarFadeoutHandle);
+	//RadarComp->ShowRadarIcon(false);
 	RadarComp->Server_UpdateRadarIconsOnAction(true, false);
 }
 
@@ -933,6 +934,7 @@ void AC_PlayerCharacter::AkeyPressed()
 {
 	bAKeyPressed = true;
 	GetWorldTimerManager().ClearTimer(StartRadarFadeoutHandle);
+	//RadarComp->ShowRadarIcon(false);
 	RadarComp->Server_UpdateRadarIconsOnAction(true, false);
 }
 
@@ -943,12 +945,15 @@ void AC_PlayerCharacter::AkeyReleased()
 	{
 		GetWorldTimerManager().SetTimer(StartRadarFadeoutHandle, this, &AC_PlayerCharacter::HideRadarIcon, 1.0f, false);
 	}
+
+	//RadarComp->Server_UpdateRadarIconsOnAction(false, true);
 }
 
 void AC_PlayerCharacter::SkeyPressed()
 {
 	bSKeyPressed = true;
 	GetWorldTimerManager().ClearTimer(StartRadarFadeoutHandle);
+	//RadarComp->ShowRadarIcon(false);
 	RadarComp->Server_UpdateRadarIconsOnAction(true, false);
 }
 
@@ -959,12 +964,15 @@ void AC_PlayerCharacter::SkeyReleased()
 	{
 		GetWorldTimerManager().SetTimer(StartRadarFadeoutHandle, this, &AC_PlayerCharacter::HideRadarIcon, 1.0f, false);
 	}
+
+	//RadarComp->Server_UpdateRadarIconsOnAction(false, true);
 }
 
 void AC_PlayerCharacter::DkeyPressed()
 {
 	bDKeyPressed = true;
 	GetWorldTimerManager().ClearTimer(StartRadarFadeoutHandle);
+	//RadarComp->ShowRadarIcon(false);
 	RadarComp->Server_UpdateRadarIconsOnAction(true, false);
 }
 
@@ -975,10 +983,13 @@ void AC_PlayerCharacter::DkeyReleased()
 	{
 		GetWorldTimerManager().SetTimer(StartRadarFadeoutHandle, this, &AC_PlayerCharacter::HideRadarIcon, 1.0f, false);
 	}
+
+	//RadarComp->Server_UpdateRadarIconsOnAction(false, true);
 }
 
 void AC_PlayerCharacter::HideRadarIcon()
 {
+	//RadarComp->HideRadarIcon(true);
 	RadarComp->Server_UpdateRadarIconsOnAction(false, true);
 }
 
