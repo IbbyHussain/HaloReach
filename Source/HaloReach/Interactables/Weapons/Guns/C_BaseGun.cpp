@@ -489,7 +489,6 @@ void AC_BaseGun::Multi_Fire_Implementation(AActor* NewOwner, FRotator TraceRotat
 			
 			FVector EyeLocation;
 			FRotator EyeRotation;
-			//NewOwner->GetActorEyesViewPoint(StartLoc, EyeRotation);
 
 			EyeLocation = PlayerCharacter->CameraComp->GetComponentLocation();
 			EyeRotation = TraceRotation;

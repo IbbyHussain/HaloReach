@@ -304,6 +304,8 @@ void AC_PlayerCharacter::Tick(float DeltaTime)
 	CheckIdle();
 
 	SetControlRotation();
+
+	ToggleEnemyName();
 }
 
 void AC_PlayerCharacter::PostInitializeComponents()
@@ -1864,7 +1866,7 @@ void AC_PlayerCharacter::LoadIt()
 	}
 }
 
-
+#pragma region Player Name Visibility
 
 void AC_PlayerCharacter::SetPlayerNameVisibility(bool bVisible)
 {
@@ -1938,6 +1940,53 @@ void AC_PlayerCharacter::Client_SetPlayerNameVisibility_Implementation(AC_Player
 		PlayerPTR->PlayerNameWidget->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
+
+bool AC_PlayerCharacter::bIsLookingAtPlayer()
+{
+	// Linetrace as when using a long range weapon players will need to be able to see enemy name, even if enemy is at a distance.
+	// This would not work for collision box w/ dot product
+
+	FVector EyeLocation;
+	FRotator EyeRotation;
+
+	EyeLocation = CameraComp->GetComponentLocation();
+	EyeRotation = CameraComp->GetComponentRotation();
+
+	FVector ShotDirection = EyeRotation.Vector();
+
+	AC_BaseGun* Gun = Cast<AC_BaseGun>(PrimaryWeapon);
+	if(Gun)
+	{
+		FVector TraceEnd = EyeLocation + (ShotDirection * Gun->WeaponStats.WeaponRange);
+
+		FCollisionQueryParams QueryParams;
+		QueryParams.AddIgnoredActor(this);
+
+		FHitResult Hit;
+
+		bool bHit = GetWorld()->LineTraceSingleByChannel(Hit, EyeLocation, TraceEnd, ECC_Visibility, QueryParams);
+		DrawDebugLine(GetWorld(), EyeLocation, TraceEnd, FColor::Red, false, 1.0f, 0, 1.0f);
+
+		AC_PlayerCharacter* PlayerHit = Cast<AC_PlayerCharacter>(Hit.GetActor());
+
+		if (bHit && PlayerHit && (TeamsComp->GetTeam() != PlayerHit->GetTeamsComponent()->GetTeam()))
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Looked at player name is: %s"), *PlayerHit->GetName()));
+			return true;
+		}
+	}
+	
+
+	return false;
+}
+
+void AC_PlayerCharacter::ToggleEnemyName()
+{
+	bIsLookingAtPlayer();
+
+}
+
+#pragma endregion
 
 # pragma region Player Team Colour
 

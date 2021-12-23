@@ -815,9 +815,9 @@ public:
 	void Client_CheckKillerName(const FString& KillerActorName);
 	void Client_CheckKillerName_Implementation(const FString& KillerActorName);
 
-# pragma endregion
+#pragma endregion
 
-# pragma region Player Name
+#pragma region Player Name
 
 public:
 
@@ -889,7 +889,7 @@ public:
 
 	// Visibility of Player Name widget
 
-# pragma region Player Name Visibility
+#pragma region Player Name Visibility
 
 	UFUNCTION(BlueprintCallable)
 	void SetPlayerNameVisibility(bool bVisible);
@@ -915,9 +915,14 @@ public:
 	void Client_SetPlayerNameVisibility(AC_PlayerCharacter* PlayerPTR, bool bVisibility);
 	void Client_SetPlayerNameVisibility_Implementation(AC_PlayerCharacter* PlayerPTR, bool bVisibility);
 
-# pragma endregion
+	// Line trace to check if player is looking at another player
+	bool bIsLookingAtPlayer();
 
-# pragma endregion
+	void ToggleEnemyName();
+
+#pragma endregion
+
+#pragma endregion
 
 # pragma region PlayerColour
 
