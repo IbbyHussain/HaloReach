@@ -1864,6 +1864,81 @@ void AC_PlayerCharacter::LoadIt()
 	}
 }
 
+
+
+void AC_PlayerCharacter::SetPlayerNameVisibility(bool bVisible)
+{
+	if(HasAuthority())
+	{
+		Multi_SetPlayerNameVisibility(bVisible);
+	}
+
+	else
+	{
+		Server_SetPlayerNameVisibility(bVisible);
+	}
+}
+
+void AC_PlayerCharacter::Server_SetPlayerNameVisibility_Implementation(bool bVisible)
+{
+	Multi_SetPlayerNameVisibility(bVisible);
+}
+
+void AC_PlayerCharacter::Multi_SetPlayerNameVisibility_Implementation(bool bVisible)
+{
+	if (bVisible)
+	{
+		PlayerNameWidget->SetVisibility(ESlateVisibility::Visible);
+	}
+
+	else
+	{
+		PlayerNameWidget->SetVisibility(ESlateVisibility::Hidden);
+	}
+}
+
+void AC_PlayerCharacter::Server_GetAllPlayers_Implementation()
+{
+	// Allows for name widgets to be updated locally
+	for (auto i : GetWorld()->GetGameState()->PlayerArray)
+	{
+		i->GetPawn<AC_PlayerCharacter>()->Server_CompareTeams();
+	}
+}
+
+void AC_PlayerCharacter::Server_CompareTeams_Implementation()
+{
+	// updates name widgets for other clients 
+	for (auto i : GetWorld()->GetGameState()->PlayerArray)
+	{
+		if (TeamsComp->GetTeam() == i->GetPawn<AC_PlayerCharacter>()->GetTeamsComponent()->GetTeam())
+		{
+			// Same Team
+			// Set this players name widgets visibility on the client in the loop
+			i->GetPawn<AC_PlayerCharacter>()->Client_SetPlayerNameVisibility(this, true);
+		}
+
+		else
+		{
+			// different team
+			i->GetPawn<AC_PlayerCharacter>()->Client_SetPlayerNameVisibility(this, false);
+		}
+	}
+}
+
+void AC_PlayerCharacter::Client_SetPlayerNameVisibility_Implementation(AC_PlayerCharacter* PlayerPTR, bool bVisibility)
+{
+	if(bVisibility)
+	{
+		PlayerPTR->PlayerNameWidget->SetVisibility(ESlateVisibility::Visible);
+	}
+
+	else
+	{
+		PlayerPTR->PlayerNameWidget->SetVisibility(ESlateVisibility::Hidden);
+	}
+}
+
 # pragma region Player Team Colour
 
 void AC_PlayerCharacter::CreateDynamicMaterials()

@@ -886,6 +886,37 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void LoadIt();
+
+	// Visibility of Player Name widget
+
+# pragma region Player Name Visibility
+
+	UFUNCTION(BlueprintCallable)
+	void SetPlayerNameVisibility(bool bVisible);
+
+	UFUNCTION(Server, Reliable)
+	void Server_SetPlayerNameVisibility(bool bVisible);
+	void Server_SetPlayerNameVisibility_Implementation(bool bVisible);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_SetPlayerNameVisibility(bool bVisible);
+	void Multi_SetPlayerNameVisibility_Implementation(bool bVisible);
+
+
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void Server_GetAllPlayers();
+	void Server_GetAllPlayers_Implementation();
+
+	UFUNCTION(Server, Reliable)
+	void Server_CompareTeams();
+	void Server_CompareTeams_Implementation();
+
+	UFUNCTION(Client, Reliable)
+	void Client_SetPlayerNameVisibility(AC_PlayerCharacter* PlayerPTR, bool bVisibility);
+	void Client_SetPlayerNameVisibility_Implementation(AC_PlayerCharacter* PlayerPTR, bool bVisibility);
+
+# pragma endregion
+
 # pragma endregion
 
 # pragma region PlayerColour
