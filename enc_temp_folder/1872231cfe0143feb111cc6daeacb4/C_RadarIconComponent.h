@@ -118,17 +118,29 @@ public:
 
 # pragma endregion
 
+
+
+
+# pragma region Radar Icon Visibility
+
+	TTuple<bool, AC_PlayerCharacter*> GetAllPlayers();
+	//bool GetAllPlayers();
+
+# pragma endregion
+
 # pragma region Update Radar Icons on Team Change
 
-	// Gets all players and calls Server_ComapreTeams()
+	// Gets all players and calls Server_ComapreTeams(), Updates the visibility and the RadarIconImage
 	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void Server_UpdateAllPlayersRadarIcons();
 	void Server_UpdateAllPlayersRadarIcons_Implementation();
 
+	// Comapres each players team to each other, then calls Client_SetRdarIconopacity()
 	UFUNCTION(Server, Reliable)
 	void Server_ComapreTeams();
 	void Server_ComapreTeams_Implementation();
 
+	// Sets opacity and RadarIconImage depending on player team
 	UFUNCTION(Client, Reliable)
 	void Client_SetRadarIconOpacity(bool bSameTeam, AC_PlayerCharacter* PlayerPTR);
 	void Client_SetRadarIconOpacity_Implementation(bool bSameTeam, AC_PlayerCharacter* PlayerPTR);

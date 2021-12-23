@@ -243,6 +243,7 @@ void UC_RadarIconComponent::Client_HideRadarIcon_Implementation(AC_PlayerCharact
 
 void UC_RadarIconComponent::Server_UpdateAllPlayersRadarIcons_Implementation()
 {
+	// Loop over all players 
 	for(auto i : GetWorld()->GetGameState()->PlayerArray)
 	{
 		i->GetPawn<AC_PlayerCharacter>()->GetRadarComponent()->Server_ComapreTeams();
@@ -251,6 +252,7 @@ void UC_RadarIconComponent::Server_UpdateAllPlayersRadarIcons_Implementation()
 
 void UC_RadarIconComponent::Server_ComapreTeams_Implementation()
 {
+	// Each player will get all players in the game, so that they can comapre teams 
 	for (auto i : GetWorld()->GetGameState()->PlayerArray)
 	{
 		if(PlayerOwner->GetTeamsComponent()->GetTeam() == i->GetPawn<AC_PlayerCharacter>()->GetTeamsComponent()->GetTeam())
@@ -282,3 +284,20 @@ void UC_RadarIconComponent::Client_SetRadarIconOpacity_Implementation(bool bSame
 }
 
 # pragma endregion
+
+TTuple<bool, AC_PlayerCharacter*> UC_RadarIconComponent::GetAllPlayers()
+{
+	for (auto i : GetWorld()->GetGameState()->PlayerArray)
+	{
+		if (PlayerOwner->GetTeamsComponent()->GetTeam() == i->GetPawn<AC_PlayerCharacter>()->GetTeamsComponent()->GetTeam())
+		{
+			return MakeTuple(true, i->GetPawn<AC_PlayerCharacter>());
+		}
+		
+		else
+		{
+			return MakeTuple(false, i->GetPawn<AC_PlayerCharacter>());
+		}
+	}
+	return MakeTuple(false, nullptr);
+}

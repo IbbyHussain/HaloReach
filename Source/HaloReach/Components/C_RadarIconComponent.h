@@ -118,6 +118,20 @@ public:
 
 # pragma endregion
 
+
+
+
+# pragma region Radar Icon Visibility
+
+	TTuple<bool, AC_PlayerCharacter*> GetAllPlayers();
+	//bool GetAllPlayers();
+
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void Server_GetAllPlayers(TFunction<void()> MyFunctionToCall);
+	void Server_GetAllPlayers_Implementation(TFunction<void()> MyFunctionToCall);
+
+# pragma endregion
+
 # pragma region Update Radar Icons on Team Change
 
 	// Gets all players and calls Server_ComapreTeams(), Updates the visibility and the RadarIconImage
