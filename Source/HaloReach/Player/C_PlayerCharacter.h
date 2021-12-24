@@ -915,10 +915,18 @@ public:
 	void Client_SetPlayerNameVisibility(AC_PlayerCharacter* PlayerPTR, bool bVisibility);
 	void Client_SetPlayerNameVisibility_Implementation(AC_PlayerCharacter* PlayerPTR, bool bVisibility);
 
-	// Line trace to check if player is looking at another player
 	bool bIsLookingAtPlayer();
 
-	void ToggleEnemyName();
+	// Line trace to check if player is looking at another player
+	UFUNCTION(Server, Reliable)
+	void Server_IsLookingAtPlayer(AC_PlayerCharacter* PlayerPTR);
+	void Server_IsLookingAtPlayer_Implementation(AC_PlayerCharacter* PlayerPTR);
+
+	UFUNCTION(Client, Reliable)
+	void Client_ToggleEnemyName(AC_PlayerCharacter* PlayerPTR);
+	void Client_ToggleEnemyName_Implementation(AC_PlayerCharacter* PlayerPTR);
+
+	AC_PlayerCharacter* LastHitPlayer;
 
 #pragma endregion
 

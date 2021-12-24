@@ -305,7 +305,7 @@ void AC_PlayerCharacter::Tick(float DeltaTime)
 
 	SetControlRotation();
 
-	ToggleEnemyName();
+	bIsLookingAtPlayer();
 }
 
 void AC_PlayerCharacter::PostInitializeComponents()
@@ -1941,6 +1941,19 @@ void AC_PlayerCharacter::Client_SetPlayerNameVisibility_Implementation(AC_Player
 	}
 }
 
+void AC_PlayerCharacter::Server_IsLookingAtPlayer_Implementation(AC_PlayerCharacter* PlayerPTR)
+{
+	if(TeamsComp->GetTeam() == PlayerPTR->GetTeamsComponent()->GetTeam())
+	{
+		Client_ToggleEnemyName(PlayerPTR);
+	}
+}
+
+void AC_PlayerCharacter::Client_ToggleEnemyName_Implementation(AC_PlayerCharacter* PlayerPTR)
+{
+	PlayerPTR->PlayerNameWidget->SetVisibility(ESlateVisibility::Visible);
+}
+
 bool AC_PlayerCharacter::bIsLookingAtPlayer()
 {
 	// Linetrace as when using a long range weapon players will need to be able to see enemy name, even if enemy is at a distance.
@@ -1955,7 +1968,7 @@ bool AC_PlayerCharacter::bIsLookingAtPlayer()
 	FVector ShotDirection = EyeRotation.Vector();
 
 	AC_BaseGun* Gun = Cast<AC_BaseGun>(PrimaryWeapon);
-	if(Gun)
+	if (Gun)
 	{
 		FVector TraceEnd = EyeLocation + (ShotDirection * Gun->WeaponStats.WeaponRange);
 
@@ -1969,22 +1982,29 @@ bool AC_PlayerCharacter::bIsLookingAtPlayer()
 
 		AC_PlayerCharacter* PlayerHit = Cast<AC_PlayerCharacter>(Hit.GetActor());
 
-		if (bHit && PlayerHit && (TeamsComp->GetTeam() != PlayerHit->GetTeamsComponent()->GetTeam()))
+		if (bHit && PlayerHit && TeamsComp->GetTeam() != PlayerHit->GetTeamsComponent()->GetTeam())
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Looked at player name is: %s"), *PlayerHit->GetName()));
+
+			LastHitPlayer = PlayerHit;
+			PlayerHit->PlayerNameWidget->SetVisibility(ESlateVisibility::Visible);
+
 			return true;
 		}
+
+		else
+		{
+			if (LastHitPlayer)
+			{
+				LastHitPlayer->PlayerNameWidget->SetVisibility(ESlateVisibility::Hidden);
+			}
+		}
+
 	}
-	
 
 	return false;
 }
 
-void AC_PlayerCharacter::ToggleEnemyName()
-{
-	bIsLookingAtPlayer();
-
-}
 
 #pragma endregion
 
