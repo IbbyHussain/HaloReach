@@ -919,12 +919,8 @@ public:
 
 	// Line trace to check if player is looking at another player
 	UFUNCTION(Server, Reliable)
-	void Server_IsLookingAtPlayer(AC_PlayerCharacter* PlayerPTR);
-	void Server_IsLookingAtPlayer_Implementation(AC_PlayerCharacter* PlayerPTR);
-
-	UFUNCTION(Client, Reliable)
-	void Client_ToggleEnemyName(AC_PlayerCharacter* PlayerPTR);
-	void Client_ToggleEnemyName_Implementation(AC_PlayerCharacter* PlayerPTR);
+	void Server_IsLookingAtPlayer(AC_PlayerCharacter* PlayerPTR, bool bVisibility);
+	void Server_IsLookingAtPlayer_Implementation(AC_PlayerCharacter* PlayerPTR, bool bVisibility);
 
 	AC_PlayerCharacter* LastHitPlayer;
 

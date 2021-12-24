@@ -1941,17 +1941,12 @@ void AC_PlayerCharacter::Client_SetPlayerNameVisibility_Implementation(AC_Player
 	}
 }
 
-void AC_PlayerCharacter::Server_IsLookingAtPlayer_Implementation(AC_PlayerCharacter* PlayerPTR)
+void AC_PlayerCharacter::Server_IsLookingAtPlayer_Implementation(AC_PlayerCharacter* PlayerPTR, bool bVisibility)
 {
-	if(TeamsComp->GetTeam() == PlayerPTR->GetTeamsComponent()->GetTeam())
+	if(TeamsComp->GetTeam() != PlayerPTR->GetTeamsComponent()->GetTeam())
 	{
-		Client_ToggleEnemyName(PlayerPTR);
+		Client_SetPlayerNameVisibility(PlayerPTR, bVisibility);
 	}
-}
-
-void AC_PlayerCharacter::Client_ToggleEnemyName_Implementation(AC_PlayerCharacter* PlayerPTR)
-{
-	PlayerPTR->PlayerNameWidget->SetVisibility(ESlateVisibility::Visible);
 }
 
 bool AC_PlayerCharacter::bIsLookingAtPlayer()
@@ -1982,12 +1977,14 @@ bool AC_PlayerCharacter::bIsLookingAtPlayer()
 
 		AC_PlayerCharacter* PlayerHit = Cast<AC_PlayerCharacter>(Hit.GetActor());
 
-		if (bHit && PlayerHit && TeamsComp->GetTeam() != PlayerHit->GetTeamsComponent()->GetTeam())
+		if (bHit && PlayerHit) //&& TeamsComp->GetTeam() != PlayerHit->GetTeamsComponent()->GetTeam())
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Looked at player name is: %s"), *PlayerHit->GetName()));
 
 			LastHitPlayer = PlayerHit;
-			PlayerHit->PlayerNameWidget->SetVisibility(ESlateVisibility::Visible);
+			//PlayerHit->PlayerNameWidget->SetVisibility(ESlateVisibility::Visible);
+
+			Server_IsLookingAtPlayer(PlayerHit, true);
 
 			return true;
 		}
@@ -1996,7 +1993,8 @@ bool AC_PlayerCharacter::bIsLookingAtPlayer()
 		{
 			if (LastHitPlayer)
 			{
-				LastHitPlayer->PlayerNameWidget->SetVisibility(ESlateVisibility::Hidden);
+				//LastHitPlayer->PlayerNameWidget->SetVisibility(ESlateVisibility::Hidden);
+				Server_IsLookingAtPlayer(LastHitPlayer, false);
 			}
 		}
 
