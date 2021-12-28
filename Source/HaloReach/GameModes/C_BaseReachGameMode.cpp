@@ -13,22 +13,55 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "HaloReach/UI/HUD/C_PlayerHUD.h"
 #include "HaloReach/Player/PlayerExtra/C_ReachPlayerState.h"
+#include "HaloReach/GameModes/C_ReachGameStateBase.h"
 
 
 AC_BaseReachGameMode::AC_BaseReachGameMode()
 {
+	PrimaryActorTick.bCanEverTick = true;
+
 	PlayerStateClass = AC_ReachPlayerState::StaticClass();
 }
 
 void AC_BaseReachGameMode::BeginPlay()
 {
 	Super::BeginPlay();
+
+	GetWorldTimerManager().SetTimer(MatchTimerHandle, this, &AC_BaseReachGameMode::UpdateMatchTimer, 1.0f, true);
 }
 
-//AActor* AC_BaseReachGameMode::ChoosePlayerStart_Implementation(AController* Player)
-//{
-//	return nullptr;
-//}
+void AC_BaseReachGameMode::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
+
+void AC_BaseReachGameMode::UpdateMatchTimer()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("1")));
+	AC_ReachGameStateBase* GS = GetGameState<AC_ReachGameStateBase>();
+	if(GS)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("2")));
+		if(GS->GetMatchSeconds() == 0)
+		{
+			if(GS->GetMatchMinutes() == 0)
+			{
+				//Match is over
+			}
+
+			else
+			{
+				GS->SetMatchSeconds(59);
+				GS->SetMatchMinutes(GS->GetMatchMinutes() - 1);
+			}
+		}
+
+		else
+		{
+			GS->SetMatchSeconds(GS->GetMatchSeconds() - 1);
+		}
+	}
+}
 
 TTuple<APlayerController*, AC_PlayerCharacter*> AC_BaseReachGameMode::IterateOverPlayers()
 {
@@ -115,30 +148,6 @@ void AC_BaseReachGameMode::Server_RespawnPlayer_Implementation(AC_PlayerCharacte
 
 	
 }
-
-//void AC_BaseReachGameMode::RespawnPlayer()
-//{
-//	// Basic , temp respawn only works for server
-//
-//	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
-//	{
-//		APlayerController* PC = It->Get();
-//		if (PC && PC->GetPawn())
-//		{
-//			AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(PC->GetPawn());
-//			if (PlayerCharacter && PlayerCharacter->bIsDead)
-//			{
-//				PlayerCharacter->Destroy();
-//				PC->UnPossess();
-//
-//				// Spawn new player and possess
-//				FActorSpawnParameters SpawnParams;
-//				AC_PlayerCharacter* NewPlayerCharacter = GetWorld()->SpawnActor<AC_PlayerCharacter>(DefaultPawnClass, FVector(0.0f, 0.0f, 200.0f), FRotator::ZeroRotator, SpawnParams);
-//				PC->Possess(NewPlayerCharacter);
-//			}
-//		}
-//	}
-//}
 
 void  AC_BaseReachGameMode::StartPlay()
 {

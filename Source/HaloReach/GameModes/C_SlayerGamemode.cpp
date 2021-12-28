@@ -8,12 +8,21 @@
 
 AC_SlayerGamemode::AC_SlayerGamemode()
 {
+	PrimaryActorTick.bCanEverTick = true;
+
 	PlayerTeamIndex = { 0,1,2 }; // Find better way to assign number of teams to this array ,3,4,5,6,7
 }
 
 void AC_SlayerGamemode::BeginPlay()
 {
 	Super::BeginPlay();
+
+
+}
+
+void AC_SlayerGamemode::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
 
 
 }

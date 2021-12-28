@@ -19,20 +19,9 @@ protected:
 
 	virtual void BeginPlay() override;
 
-
-	//virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
-	
-	float MatchTime;
-
-	float CurrentMatchTime;
-
-	FString GameModeName;
+	virtual void Tick(float DeltaTime) override;
 
 public:
-
-	float GetMatchTime() const { return CurrentMatchTime; }
-
-	FString GetMatchName() const { return GameModeName; }
 
 	// Iterates over all players
 	TTuple<APlayerController* , AC_PlayerCharacter* > IterateOverPlayers();
@@ -48,5 +37,13 @@ public:
 # pragma endregion
 
 	virtual void StartPlay() override;
+
+# pragma region Match Timer
+
+	void UpdateMatchTimer();
+
+	FTimerHandle MatchTimerHandle;
+
+# pragma endregion
 	
 };

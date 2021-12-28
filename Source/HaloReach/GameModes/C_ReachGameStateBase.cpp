@@ -11,11 +11,12 @@
 #include "Kismet/GameplayStatics.h"
 #include "HaloReach/GameModes/C_ReachPlayerStart.h"
 #include "EngineUtils.h"
+#include <Runtime/Engine/Public/Net/UnrealNetwork.h>
 
 
 AC_ReachGameStateBase::AC_ReachGameStateBase()
 {
-	
+	PrimaryActorTick.bCanEverTick = true;
 }
 
 void AC_ReachGameStateBase::BeginPlay()
@@ -59,6 +60,16 @@ void AC_ReachGameStateBase::UpdateGlobalDeaths(FString A, FString B)
 		}
 	}
 }
+
+void AC_ReachGameStateBase::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AC_ReachGameStateBase, MatchMinutes);
+	DOREPLIFETIME(AC_ReachGameStateBase, MatchSeconds);
+
+}
+
 
 
 

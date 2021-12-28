@@ -26,4 +26,41 @@ public:
 	void UpdateGlobalDeaths(FString A, FString B);
 
 	TArray<AC_ReachPlayerStart*> PlayerStartArray;
+
+	// GameMode attributes
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GM Attributes")
+	FString GameModeName;
+
+	FString GetGMName() const { return GameModeName; }
+
+	// in minutes
+	int MatchLength;
+
+	UPROPERTY(Replicated)
+	int MatchMinutes;
+
+	UPROPERTY(Replicated)
+	int MatchSeconds;
+
+	UFUNCTION(BlueprintCallable)
+	int GetMatchLength() const { return MatchLength; }
+
+	UFUNCTION(BlueprintCallable)
+	int GetMatchMinutes() const { return MatchMinutes; }
+
+	UFUNCTION(BlueprintCallable)
+	int GetMatchSeconds() const { return MatchSeconds; }
+
+	void SetMatchMinutes(int NewMatchMinutes)
+	{
+		MatchMinutes = NewMatchMinutes;
+	}
+
+	void SetMatchSeconds(int NewMatchSeconds)
+	{
+		MatchSeconds = NewMatchSeconds;
+	}
+
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };

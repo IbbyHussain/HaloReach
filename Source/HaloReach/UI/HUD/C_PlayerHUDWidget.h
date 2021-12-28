@@ -168,4 +168,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	class UC_CardinalDirectionsWidget* CardinalWidget;
+
+
 };

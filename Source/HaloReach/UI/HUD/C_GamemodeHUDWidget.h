@@ -6,7 +6,26 @@
 #include "Blueprint/UserWidget.h"
 #include "C_GamemodeHUDWidget.generated.h"
 
+/*USTRUCT()
+struct FGameMode
+{
+	GENERATED_BODY()
+public:
+
+	float MatchTime;
+
+	FString GameModeName;
+
+	int 
+
+	FGameMode()
+	{
+		
+	}
+};*/
+
 class UTextBlock;
+class UImage;
 
 UCLASS()
 class HALOREACH_API UC_GamemodeHUDWidget : public UUserWidget
@@ -22,6 +41,8 @@ public:
 	
 	virtual void NativeConstruct() override;
 
+	//FGameMode GameMode;
+
 #pragma region Gamemode Data
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
@@ -30,7 +51,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* GamemodeNameText;
 
+	// other players / teams score
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UTextBlock* EnemyScore;
+
+	// This players / teams score
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UTextBlock* PlayerScore;
+
 # pragma endregion
 
+	float MatchTime;
 
+	FString GameModeName;
 };
