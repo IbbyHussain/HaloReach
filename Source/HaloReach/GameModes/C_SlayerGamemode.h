@@ -21,6 +21,6 @@ public:
 
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
-	TArray <FString> PlayerTeams;
+	TArray <uint8> PlayerTeamIndex;
 	
 };
