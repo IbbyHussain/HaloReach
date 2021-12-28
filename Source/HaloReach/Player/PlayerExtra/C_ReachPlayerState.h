@@ -50,4 +50,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player")
 	class AC_PlayerCharacter* PlayerOwner;
 
+	// GM uses this to track team, in gm team array
+	uint8 GMTeamIndex;
+
 };
