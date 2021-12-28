@@ -12,5 +12,15 @@ UCLASS()
 class HALOREACH_API AC_SlayerGamemode : public AC_BaseReachGameMode
 {
 	GENERATED_BODY()
+
+public:
+
+	AC_SlayerGamemode();
+
+	virtual void BeginPlay() override;
+
+	virtual void PostLogin(APlayerController* NewPlayer) override;
+
+	TArray <FString> PlayerTeams;
 	
 };

@@ -46,5 +46,7 @@ public:
 	void CheckAnyPlayersAlive();
 
 # pragma endregion
+
+	virtual void StartPlay() override;
 	
 };

@@ -77,28 +77,6 @@ void AC_BaseReachGameMode::Server_RespawnPlayer_Implementation(AC_PlayerCharacte
 
 	GEngine->AddOnScreenDebugMessage(-1, 4.5f, FColor::Magenta, FString::Printf(TEXT("DEAD PLAYER IS: %s"), *PlayerToRespawn->GetName()));
 
-
-	//APlayerController* PC = Cast<APlayerController>(PlayerToRespawn->GetController());
-	//if(PC)
-	//{
-	//	AC_PlayerHUD* HUD = Cast<AC_PlayerHUD>(PC->GetHUD());
-	//	if(HUD)
-	//	{
-	//		//HUD->PlayHUDFadeOutAnimation();
-	//		HUD->DestroyDeathWidget();
-	//		HUD->CreateHUDWidget();
-	//	}
-
-
-	//	//PlayerToRespawn->Destroy();
-	//	//PC->UnPossess();
-
-	//	////Spawn new player and possess
-	//	//FActorSpawnParameters SpawnParams;
-	//	//AC_PlayerCharacter* NewPlayerCharacter = GetWorld()->SpawnActor<AC_PlayerCharacter>(DefaultPawnClass, FVector(0.0f, 0.0f, 200.0f), FRotator::ZeroRotator, SpawnParams);
-	//	//PC->Possess(NewPlayerCharacter);
-	//}
-
 	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
 	{
 		APlayerController* PC = It->Get();
@@ -161,3 +139,14 @@ void AC_BaseReachGameMode::Server_RespawnPlayer_Implementation(AC_PlayerCharacte
 //		}
 //	}
 //}
+
+void  AC_BaseReachGameMode::StartPlay()
+{
+	Super::StartPlay();
+
+	//UE_LOG(LogTemp, Error, TEXT("Start Play called"));
+
+	//GEngine->AddOnScreenDebugMessage(-1, 4.5f, FColor::Magenta, FString::Printf(TEXT("Start Play called")));
+
+	
+}

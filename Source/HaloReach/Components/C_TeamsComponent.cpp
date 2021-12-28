@@ -12,11 +12,7 @@ void UC_TeamsComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//SetTeam(ETeam::RED);
-	//UpdateOwnerColour();
-
 	PlayerOwner = Cast<AC_PlayerCharacter>(GetOwner());
-
 }
 
 void UC_TeamsComponent::UpdateOwnerColour()

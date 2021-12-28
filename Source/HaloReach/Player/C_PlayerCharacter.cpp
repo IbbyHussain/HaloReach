@@ -1979,11 +1979,7 @@ bool AC_PlayerCharacter::bIsLookingAtPlayer()
 
 		if (bHit && PlayerHit) //&& TeamsComp->GetTeam() != PlayerHit->GetTeamsComponent()->GetTeam())
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Looked at player name is: %s"), *PlayerHit->GetName()));
-
 			LastHitPlayer = PlayerHit;
-			//PlayerHit->PlayerNameWidget->SetVisibility(ESlateVisibility::Visible);
-
 			Server_IsLookingAtPlayer(PlayerHit, true);
 
 			return true;
@@ -1993,13 +1989,10 @@ bool AC_PlayerCharacter::bIsLookingAtPlayer()
 		{
 			if (LastHitPlayer)
 			{
-				//LastHitPlayer->PlayerNameWidget->SetVisibility(ESlateVisibility::Hidden);
 				Server_IsLookingAtPlayer(LastHitPlayer, false);
 			}
 		}
-
 	}
-
 	return false;
 }
 

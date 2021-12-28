@@ -44,6 +44,11 @@ void AC_ReachPlayerState::Tick(float Delta)
 	}	*/
 }
 
+void AC_ReachPlayerState::Client_SetPlayerTeam_Implementation(ETeam NewTeam)
+{
+	PlayerTeam = NewTeam;
+}
+
 
 
 

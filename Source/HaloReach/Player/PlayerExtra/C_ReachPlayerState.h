@@ -39,7 +39,13 @@ public:
 	void SetPlayerTeam(ETeam NewTeam)
 	{
 		PlayerTeam = NewTeam;
+		Client_SetPlayerTeam(NewTeam);
 	}
+
+	UFUNCTION(Client, Reliable)
+	void Client_SetPlayerTeam(ETeam NewTeam);
+	void Client_SetPlayerTeam_Implementation(ETeam NewTeam);
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player")
 	class AC_PlayerCharacter* PlayerOwner;
