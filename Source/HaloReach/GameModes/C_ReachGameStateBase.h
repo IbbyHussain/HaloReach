@@ -29,22 +29,27 @@ public:
 
 	// GameMode attributes
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GM Attributes")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "GM Attributes")
 	FString GameModeName;
 
 	FString GetGMName() const { return GameModeName; }
 
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated, EditDefaultsOnly, Category = "GM Attributes")
 	int MatchMinutes;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated, EditDefaultsOnly, Category = "GM Attributes")
 	int MatchSeconds;
+
+	UPROPERTY(EditDefaultsOnly, Category = "GM Attributes")
+	int WinScore;
 
 	UFUNCTION(BlueprintCallable)
 	int GetMatchMinutes() const { return MatchMinutes; }
 
 	UFUNCTION(BlueprintCallable)
 	int GetMatchSeconds() const { return MatchSeconds; }
+
+	int GetWinScore() const { return WinScore; }
 
 	void SetMatchMinutes(int NewMatchMinutes)
 	{
@@ -63,10 +68,6 @@ public:
 	void OnRep_GameOver();
 
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
-	UFUNCTION(Client, Reliable)
-	void a();
-	void a_Implementation();
 
 	FTimerHandle DestroyGameHandle;
 

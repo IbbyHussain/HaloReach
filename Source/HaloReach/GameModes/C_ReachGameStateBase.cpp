@@ -34,8 +34,6 @@ void AC_ReachGameStateBase::BeginPlay()
 			PlayerStartArray.AddUnique(PlayerStart);
 		}
 	}
-
-	//GameOver();
 }
 
 void AC_ReachGameStateBase::Tick(float DeltaTime)
@@ -58,23 +56,6 @@ void AC_ReachGameStateBase::UpdateGlobalDeaths(FString A, FString B)
 				{
 					HUD->UpdateDeathWidget(A, B);
 				}
-			}
-		}
-	}
-}
-
-void AC_ReachGameStateBase::a_Implementation()
-{
-	for (auto x : PlayerArray)
-	{
-		AC_PlayerCharacter* Player = Cast<AC_PlayerCharacter>(x->GetPawn());
-		if (Player)
-		{
-			AC_PlayerHUD* HUD = Cast<AC_PlayerHUD>(Player->HUD);
-			if (HUD)
-			{
-				HUD->HideHUDWidget();
-				HUD->CreateScoreboardWidget();
 			}
 		}
 	}

@@ -11,4 +11,6 @@ AC_SlayerGameStateBase::AC_SlayerGameStateBase()
 
 	MatchMinutes = 0;
 	MatchSeconds = 15;
+
+	WinScore = 5;
 }

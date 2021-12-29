@@ -959,4 +959,12 @@ public:
 	void ToggleOptionsWidget();
 
 	void ShowScoreboard(bool bShow);
+
+	UFUNCTION(BlueprintCallable)
+	void UpdatePlayerScore();
+
+	UFUNCTION(Server, Reliable)
+	void Server_UpdatePlayerScore(int PlayerScore, const FString& PlayerKiller);
+	void Server_UpdatePlayerScore_Implementation(int PlayerScore, const FString& PlayerKiller);
+
 };

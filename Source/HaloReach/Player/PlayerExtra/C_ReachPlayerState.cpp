@@ -11,6 +11,7 @@
 #include "HaloReach/Player/C_PlayerCharacter.h"
 #include "HaloReach/GameModes/C_ReachGameStateBase.h"
 #include "Components/WidgetComponent.h"
+#include <Runtime/Engine/Public/Net/UnrealNetwork.h>
 
 
 
@@ -31,17 +32,6 @@ void AC_ReachPlayerState::BeginPlay()
 void AC_ReachPlayerState::Tick(float Delta)
 {
 	Super::Tick(Delta);
-
-	// this does nothing lol
-	/*AC_PlayerCharacter* PlayerCharacter = Cast<AC_PlayerCharacter>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn());
-	if(PlayerCharacter && PlayerCharacter->IsLocallyControlled())
-	{
-		UC_PlayerNameWidget* PlayerNameWidget = Cast<UC_PlayerNameWidget>(PlayerCharacter->PlayerNameWidgetComp->GetUserWidgetObject());
-		if(PlayerNameWidget)
-		{
-			SetPlayerName(PlayerNameWidget->DisplayedPlayerName);
-		}
-	}	*/
 }
 
 void AC_ReachPlayerState::Client_SetPlayerTeam_Implementation(ETeam NewTeam)
@@ -49,6 +39,13 @@ void AC_ReachPlayerState::Client_SetPlayerTeam_Implementation(ETeam NewTeam)
 	PlayerTeam = NewTeam;
 }
 
+void AC_ReachPlayerState::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AC_ReachPlayerState, PlayerScore);
+	
+}
 
 
 

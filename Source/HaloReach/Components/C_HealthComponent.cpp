@@ -62,6 +62,8 @@ void UC_HealthComponent::Client_Test_Implementation(float Damage, AActor* Killer
 			//Health = FMath::Clamp(Health - Shields, 0.0f, MaxHealth);
 			Shields = 0.0f;
 		}
+
+
 	}
 
 	else

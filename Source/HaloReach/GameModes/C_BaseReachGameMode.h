@@ -6,6 +6,9 @@
 #include "GameFramework/GameModeBase.h"
 #include "C_BaseReachGameMode.generated.h"
 
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPlayerScored, int, PlayerScore, FString, PlayerName);
+
 class AC_PlayerCharacter;
 
 UCLASS()
@@ -25,6 +28,14 @@ public:
 
 	// Iterates over all players
 	TTuple<APlayerController* , AC_PlayerCharacter* > IterateOverPlayers();
+
+	FOnPlayerScored OnPlayerScored;
+
+	bool bHasPlayerWon;
+
+	// Checks if a player orr team has won, can be customised for each gamemode
+	UFUNCTION()
+	void CheckWinCondition(int PlayerScore, FString PlayerName);
 
 # pragma region Respawn Player
 

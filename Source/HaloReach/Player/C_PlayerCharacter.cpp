@@ -39,6 +39,7 @@
 #include "HaloReach/Components/C_CardinalDirectionsComponent.h"
 #include "HaloReach/Interfaces/C_BaseSaveGame.h"
 #include "HaloReach/Components/C_TeamsComponent.h"
+#include "HaloReach/GameModes/C_BaseReachGameMode.h"
 
 //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("texthere: %f"), x));
 //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("t")));
@@ -1931,20 +1932,23 @@ void AC_PlayerCharacter::Server_CompareTeams_Implementation()
 
 void AC_PlayerCharacter::Client_SetPlayerNameVisibility_Implementation(AC_PlayerCharacter* PlayerPTR, bool bVisibility)
 {
-	if(bVisibility)
+	if(PlayerPTR && PlayerPTR->PlayerNameWidget)
 	{
-		PlayerPTR->PlayerNameWidget->SetVisibility(ESlateVisibility::Visible);
-	}
+		if (bVisibility)
+		{
+			PlayerPTR->PlayerNameWidget->SetVisibility(ESlateVisibility::Visible);
+		}
 
-	else
-	{
-		PlayerPTR->PlayerNameWidget->SetVisibility(ESlateVisibility::Hidden);
+		else
+		{
+			PlayerPTR->PlayerNameWidget->SetVisibility(ESlateVisibility::Hidden);
+		}
 	}
 }
 
 void AC_PlayerCharacter::Server_IsLookingAtPlayer_Implementation(AC_PlayerCharacter* PlayerPTR, bool bVisibility)
 {
-	if(TeamsComp->GetTeam() != PlayerPTR->GetTeamsComponent()->GetTeam())
+	if(PlayerPTR && TeamsComp->GetTeam() != PlayerPTR->GetTeamsComponent()->GetTeam())
 	{
 		Client_SetPlayerNameVisibility(PlayerPTR, bVisibility);
 	}
@@ -2086,16 +2090,19 @@ void AC_PlayerCharacter::ToggleOptionsWidget()
 	bOpenOptionsWidget = !bOpenOptionsWidget;
 }
 
+
+# pragma endregion
+
 void AC_PlayerCharacter::ShowScoreboard(bool bShow)
 {
-	if(HUD)
+	if (HUD)
 	{
-		if(bShow)
+		if (bShow)
 		{
 			HUD->HideHUDWidget();
 			HUD->CreateScoreboardWidget();
 		}
-		
+
 		else
 		{
 			HUD->ShowHUDWidget();
@@ -2104,6 +2111,26 @@ void AC_PlayerCharacter::ShowScoreboard(bool bShow)
 	}
 }
 
-# pragma endregion
+// called in bp
+void AC_PlayerCharacter::Server_UpdatePlayerScore_Implementation(int PlayerScore, const FString& PlayerKiller)
+{
+	AC_BaseReachGameMode* GM = Cast<AC_BaseReachGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+	if(GM)
+	{
+		GM->OnPlayerScored.Broadcast(PlayerScore, PlayerKiller);
+	}
+}
 
+void AC_PlayerCharacter::UpdatePlayerScore()
+{
+	AC_ReachPlayerState* PS = GetPlayerState<AC_ReachPlayerState>();
+	if(PS)
+	{
+		PS->PlayerScore += 1;
 
+		// Server RPC, used to update the gamemode, to check if this player has one
+		Server_UpdatePlayerScore(PS->PlayerScore, PlayerName);
+
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Name: %s | Score: %d"), *PlayerName, PS->PlayerScore));
+	}
+}

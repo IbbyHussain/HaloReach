@@ -27,6 +27,8 @@ void AC_BaseReachGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
+	OnPlayerScored.AddDynamic(this, &AC_BaseReachGameMode::CheckWinCondition);
+
 	GetWorldTimerManager().SetTimer(MatchTimerHandle, this, &AC_BaseReachGameMode::UpdateMatchTimer, 1.0f, true);
 }
 
@@ -47,7 +49,7 @@ void AC_BaseReachGameMode::UpdateMatchTimer()
 			if(GS->GetMatchMinutes() == 0)
 			{
 				// On rep can be used to communicate with gamestate
-				GS->bGameOver = true;
+				GS->bGameOver = !(GS->bGameOver);
 				GS->OnRep_GameOver();
 			}
 
@@ -82,6 +84,24 @@ TTuple<APlayerController*, AC_PlayerCharacter*> AC_BaseReachGameMode::IterateOve
 
 	return MakeTuple(nullptr, nullptr);
 }
+
+void AC_BaseReachGameMode::CheckWinCondition(int PlayerScore, FString PlayerName)
+{
+	if(!bHasPlayerWon)
+	{
+		AC_ReachGameStateBase* GS = GetGameState<AC_ReachGameStateBase>();
+		if (GS && PlayerScore >= GS->GetWinScore())
+		{
+			if (GS)
+			{
+				GS->bGameOver = !(GS->bGameOver);
+				GS->OnRep_GameOver();
+				bHasPlayerWon = true; //Only one player can win
+			}
+		}
+	}
+}
+
 
 void AC_BaseReachGameMode::CheckAnyPlayersAlive()
 {
