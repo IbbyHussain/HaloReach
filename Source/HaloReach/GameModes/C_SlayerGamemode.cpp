@@ -10,7 +10,7 @@ AC_SlayerGamemode::AC_SlayerGamemode()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	PlayerTeamIndex = { 0,1,2 }; // Find better way to assign number of teams to this array ,3,4,5,6,7
+	PlayerTeamIndex = { 0,1,2,3,4,5,6,7 }; // Find better way to assign number of teams to this array ,3,4,5,6,7
 }
 
 void AC_SlayerGamemode::BeginPlay()

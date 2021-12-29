@@ -166,13 +166,17 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	class UC_Radar* RadarWidget;
 
-# pragma region Gamemode Widget
+# pragma region Player Scoreboard 
 
-	//UPROPERTY(EditDefaultsOnly, Category = "Widgets")
-	//TSubclassOf<class UC_GamemodeHUDWidget>GMWidgetClass;
+	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
+	TSubclassOf<class UC_PlayerScoreBoardWidget> ScoreboardWidgetClass;
 
-	//UPROPERTY(BlueprintReadWrite)
-	//class UC_GamemodeHUDWidget* GMWidget;
+	UPROPERTY(BlueprintReadWrite)
+	class UC_PlayerScoreBoardWidget* ScoreboardWidget;
+
+	void CreateScoreboardWidget();
+
+	void DestroyScoreboardWidget();
 
 # pragma endregion
 

@@ -34,6 +34,8 @@ void AC_ReachGameStateBase::BeginPlay()
 			PlayerStartArray.AddUnique(PlayerStart);
 		}
 	}
+
+	//GameOver();
 }
 
 void AC_ReachGameStateBase::Tick(float DeltaTime)
@@ -61,13 +63,43 @@ void AC_ReachGameStateBase::UpdateGlobalDeaths(FString A, FString B)
 	}
 }
 
+void AC_ReachGameStateBase::a_Implementation()
+{
+	for (auto x : PlayerArray)
+	{
+		AC_PlayerCharacter* Player = Cast<AC_PlayerCharacter>(x->GetPawn());
+		if (Player)
+		{
+			AC_PlayerHUD* HUD = Cast<AC_PlayerHUD>(Player->HUD);
+			if (HUD)
+			{
+				HUD->HideHUDWidget();
+				HUD->CreateScoreboardWidget();
+			}
+		}
+	}
+}
+
+void AC_ReachGameStateBase::OnRep_GameOver()
+{
+	for (auto x : PlayerArray)
+	{
+		AC_PlayerCharacter* Player = Cast<AC_PlayerCharacter>(x->GetPawn());
+		if (Player)
+		{
+			Player->ShowScoreboard(true);
+			DestroyGameSession();
+		}
+	}
+}
+
 void AC_ReachGameStateBase::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AC_ReachGameStateBase, MatchMinutes);
 	DOREPLIFETIME(AC_ReachGameStateBase, MatchSeconds);
-
+	DOREPLIFETIME(AC_ReachGameStateBase, bGameOver);
 }
 
 

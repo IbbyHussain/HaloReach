@@ -9,8 +9,6 @@ AC_SlayerGameStateBase::AC_SlayerGameStateBase()
 
 	GameModeName = "Slayer";
 
-	MatchLength = 10;
-
-	MatchMinutes = 1;
-	MatchSeconds = 10;
+	MatchMinutes = 0;
+	MatchSeconds = 15;
 }

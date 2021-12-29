@@ -2086,6 +2086,24 @@ void AC_PlayerCharacter::ToggleOptionsWidget()
 	bOpenOptionsWidget = !bOpenOptionsWidget;
 }
 
+void AC_PlayerCharacter::ShowScoreboard(bool bShow)
+{
+	if(HUD)
+	{
+		if(bShow)
+		{
+			HUD->HideHUDWidget();
+			HUD->CreateScoreboardWidget();
+		}
+		
+		else
+		{
+			HUD->ShowHUDWidget();
+			HUD->DestroyScoreboardWidget();
+		}
+	}
+}
+
 # pragma endregion
 
 

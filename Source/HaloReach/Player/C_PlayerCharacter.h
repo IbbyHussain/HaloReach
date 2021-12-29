@@ -957,4 +957,6 @@ public:
 
 	// Will create and destroy the options widget
 	void ToggleOptionsWidget();
+
+	void ShowScoreboard(bool bShow);
 };

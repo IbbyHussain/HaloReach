@@ -36,8 +36,6 @@ public:
 
 # pragma endregion
 
-	virtual void StartPlay() override;
-
 # pragma region Match Timer
 
 	void UpdateMatchTimer();
@@ -45,5 +43,4 @@ public:
 	FTimerHandle MatchTimerHandle;
 
 # pragma endregion
-	
 };

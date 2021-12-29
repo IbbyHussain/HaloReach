@@ -34,17 +34,11 @@ public:
 
 	FString GetGMName() const { return GameModeName; }
 
-	// in minutes
-	int MatchLength;
-
 	UPROPERTY(Replicated)
 	int MatchMinutes;
 
 	UPROPERTY(Replicated)
 	int MatchSeconds;
-
-	UFUNCTION(BlueprintCallable)
-	int GetMatchLength() const { return MatchLength; }
 
 	UFUNCTION(BlueprintCallable)
 	int GetMatchMinutes() const { return MatchMinutes; }
@@ -62,5 +56,20 @@ public:
 		MatchSeconds = NewMatchSeconds;
 	}
 
+	UPROPERTY(ReplicatedUsing = OnRep_GameOver)
+	bool bGameOver;
+
+	UFUNCTION()
+	void OnRep_GameOver();
+
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	UFUNCTION(Client, Reliable)
+	void a();
+	void a_Implementation();
+
+	FTimerHandle DestroyGameHandle;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void DestroyGameSession();
 };

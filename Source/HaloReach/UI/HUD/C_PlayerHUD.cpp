@@ -17,6 +17,7 @@
 #include "HaloReach/UI/Names/C_GlobalAlertWidget.h"
 #include "Components/VerticalBox.h"
 #include "HaloReach/UI/Options/C_OptionsWidget.h"
+#include "HaloReach/UI/HUD/C_PlayerScoreBoardWidget.h"
 
 
 
@@ -280,4 +281,17 @@ void AC_PlayerHUD::UpdateDeathWidget(FString A, FString B)
 	}
 }
 
+void AC_PlayerHUD::CreateScoreboardWidget()
+{
+	ScoreboardWidget = UC_SpawnLibrary::SpawnWidget(GetWorld(), ScoreboardWidgetClass, ScoreboardWidget);
+}
+
+
+void AC_PlayerHUD::DestroyScoreboardWidget()
+{
+	if (ScoreboardWidget)
+	{
+		ScoreboardWidget->RemoveFromParent();
+	}
+}
 
