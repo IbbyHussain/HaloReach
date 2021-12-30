@@ -6,24 +6,6 @@
 #include "Blueprint/UserWidget.h"
 #include "C_GamemodeHUDWidget.generated.h"
 
-/*USTRUCT()
-struct FGameMode
-{
-	GENERATED_BODY()
-public:
-
-	float MatchTime;
-
-	FString GameModeName;
-
-	int 
-
-	FGameMode()
-	{
-		
-	}
-};*/
-
 class UTextBlock;
 class UImage;
 
@@ -40,8 +22,6 @@ public:
 	UC_GamemodeHUDWidget(const FObjectInitializer& ObjectInitializer);
 	
 	virtual void NativeConstruct() override;
-
-	//FGameMode GameMode;
 
 #pragma region Gamemode Data
 
@@ -64,4 +44,11 @@ public:
 	float MatchTime;
 
 	FString GameModeName;
+
+	// will get the enemy with the highest score's, score
+	UFUNCTION(BlueprintCallable)
+	int GetTopEnemyScore();
+
+	UFUNCTION(BlueprintCallable)
+	int GetPlayerScore();
 };

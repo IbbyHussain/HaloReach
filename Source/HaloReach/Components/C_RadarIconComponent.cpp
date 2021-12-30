@@ -266,7 +266,7 @@ void UC_RadarIconComponent::Server_ComapreTeams_Implementation()
 
 void UC_RadarIconComponent::Client_SetRadarIconOpacity_Implementation(bool bSameTeam, AC_PlayerCharacter* PlayerPTR)
 {
-	if(PlayerPTR)
+	if(PlayerPTR && PlayerPTR->GetRadarComponent() && PlayerPTR->GetRadarComponent()->RadarIcon)
 	{
 		if (bSameTeam)
 		{
