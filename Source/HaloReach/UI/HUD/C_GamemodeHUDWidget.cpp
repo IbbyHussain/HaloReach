@@ -16,7 +16,13 @@ UC_GamemodeHUDWidget::UC_GamemodeHUDWidget(const FObjectInitializer& ObjectIniti
 
 void UC_GamemodeHUDWidget::NativeConstruct()
 {
-	
+	Super::NativeConstruct();
+
+	StoreWidgetAnimation();
+
+	MovePlayerScoreAnimation = GetAnimationByName(TEXT("PlayerScoreBoxMove"));
+	MoveEnemyScoreAnimation = GetAnimationByName(TEXT("EnemyScoreBoxMove"));
+
 }
 
 int UC_GamemodeHUDWidget::GetTopEnemyScore()
@@ -44,6 +50,7 @@ int UC_GamemodeHUDWidget::GetTopEnemyScore()
 				if(PS->PlayerScore > HighestScore)
 				{
 					HighestScore = PS->PlayerScore;
+					//HighestEnemyScore = HighestScore;
 					return HighestScore;
 				}
 			}
@@ -62,4 +69,76 @@ int UC_GamemodeHUDWidget::GetPlayerScore()
 	}
 
 	return 0;
+}
+
+void UC_GamemodeHUDWidget::StoreWidgetAnimation()
+{
+	AnimationsMap.Empty();
+
+	UProperty* Prop = GetClass()->PropertyLink;
+
+	while (Prop)
+	{
+		// only evaluate object properties, skip rest
+		if (Prop->GetClass() == UObjectProperty::StaticClass())
+		{
+			UObjectProperty* ObjProp = Cast<UObjectProperty>(Prop);
+
+			// only get back properties that are of type widget animation
+			if (ObjProp->PropertyClass == UWidgetAnimation::StaticClass())
+			{
+				UObject* Obj = ObjProp->GetObjectPropertyValue_InContainer(this);
+				// only get back properties that are of type widget animation
+				UWidgetAnimation* WidgetAnimation = Cast<UWidgetAnimation>(Obj);
+				// if casting worked update map with new animation
+				if (WidgetAnimation && WidgetAnimation->MovieScene)
+				{
+					FName AnimName = WidgetAnimation->MovieScene->GetFName();
+					//GEngine->AddOnScreenDebugMessage(-1, 4.5f, FColor::Magenta, AnimName.ToString());
+					AnimationsMap.Add(AnimName, WidgetAnimation);
+				}
+			}
+		}
+		Prop = Prop->PropertyLinkNext;
+	}
+}
+
+UWidgetAnimation* UC_GamemodeHUDWidget::GetAnimationByName(FName AnimationName) const
+{
+	UWidgetAnimation* const* WidgetAnimation = AnimationsMap.Find(AnimationName);
+
+	if (WidgetAnimation)
+	{
+		return *WidgetAnimation;
+	}
+
+	return nullptr;
+}
+
+void UC_GamemodeHUDWidget::SwapScoreElements()
+{
+	AC_ReachPlayerState* PS = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetController()->GetPlayerState<AC_ReachPlayerState>();
+	if(1)
+	{
+		PlayAnimation(MovePlayerScoreAnimation, 0.0f, 1, EUMGSequencePlayMode::Forward, 1.0f);
+		PlayAnimation(MoveEnemyScoreAnimation, 0.0f, 1, EUMGSequencePlayMode::Forward, 1.0f);
+	}
+	
+	else
+	{
+		PlayAnimation(MovePlayerScoreAnimation, 0.0f, 1, EUMGSequencePlayMode::Reverse, 1.0f);
+		PlayAnimation(MoveEnemyScoreAnimation, 0.0f, 1, EUMGSequencePlayMode::Reverse, 1.0f);
+	}
+}
+
+void UC_GamemodeHUDWidget::LostLead()
+{
+	PlayAnimation(MovePlayerScoreAnimation, 0.0f, 1, EUMGSequencePlayMode::Reverse, 1.0f);
+	PlayAnimation(MoveEnemyScoreAnimation, 0.0f, 1, EUMGSequencePlayMode::Reverse, 1.0f);
+}
+
+void UC_GamemodeHUDWidget::GainedLead()
+{
+	PlayAnimation(MovePlayerScoreAnimation, 0.0f, 1, EUMGSequencePlayMode::Forward, 1.0f);
+	PlayAnimation(MoveEnemyScoreAnimation, 0.0f, 1, EUMGSequencePlayMode::Forward, 1.0f);
 }

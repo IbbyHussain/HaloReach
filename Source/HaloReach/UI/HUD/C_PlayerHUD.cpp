@@ -18,6 +18,7 @@
 #include "Components/VerticalBox.h"
 #include "HaloReach/UI/Options/C_OptionsWidget.h"
 #include "HaloReach/UI/HUD/C_PlayerScoreBoardWidget.h"
+#include "HaloReach/UI/HUD/C_GamemodeHUDWidget.h"
 
 
 
@@ -57,10 +58,11 @@ void AC_PlayerHUD::BeginPlay()
 
 	//CreateNameInputWidget();
 
-	// this is for testing only
 	CreateHUDWidget();
 
 	CreateDeathUpdateWidget();
+
+	GMHUDWidget = UC_SpawnLibrary::SpawnWidget(GetWorld(),GMHUDWidgetClass, GMHUDWidget);
 	
 }
 

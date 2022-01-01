@@ -53,7 +53,8 @@ public:
 	// GM uses this to track team, in gm team array
 	uint8 GMTeamIndex;
 
-	UPROPERTY(Replicated)
+	//Replicated, 
+	UPROPERTY(BlueprintReadWrite)
 	int PlayerScore;
 
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;

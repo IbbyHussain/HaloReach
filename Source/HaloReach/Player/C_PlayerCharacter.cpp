@@ -1994,7 +1994,7 @@ bool AC_PlayerCharacter::bIsLookingAtPlayer()
 		{
 			if (LastHitPlayer)
 			{
-				Server_IsLookingAtPlayer(LastHitPlayer, false);
+				//Server_IsLookingAtPlayer(LastHitPlayer, false);
 			}
 		}
 	}

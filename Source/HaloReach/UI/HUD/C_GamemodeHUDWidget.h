@@ -51,4 +51,31 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	int GetPlayerScore();
+
+# pragma region Player Score Animation
+
+	void StoreWidgetAnimation();
+
+	UWidgetAnimation* GetAnimationByName(FName AnimationName) const;
+
+	TMap<FName, UWidgetAnimation*> AnimationsMap;
+
+	UWidgetAnimation* MovePlayerScoreAnimation;
+
+	UWidgetAnimation* MoveEnemyScoreAnimation;
+
+	UFUNCTION(BlueprintCallable)
+	void SwapScoreElements();
+
+	UFUNCTION(BlueprintCallable)
+	void LostLead();
+
+	UFUNCTION(BlueprintCallable)
+	void GainedLead();
+
+	bool bSwap = true;
+
+	int HighestEnemyScore;
+
+#pragma endregion 
 };

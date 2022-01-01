@@ -180,4 +180,10 @@ public:
 
 # pragma endregion
 
+	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
+	TSubclassOf<class UC_GamemodeHUDWidget> GMHUDWidgetClass;
+
+	UPROPERTY(BlueprintReadWrite)
+	class UC_GamemodeHUDWidget* GMHUDWidget;
+
 };

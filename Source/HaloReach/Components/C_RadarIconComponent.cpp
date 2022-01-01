@@ -308,7 +308,11 @@ void UC_RadarIconComponent::Server_UpdateRadarIconsOnAction_Implementation(bool 
 
 void UC_RadarIconComponent::Client_ShowRadarIcon_Implementation(AC_PlayerCharacter* PlayerPTR, bool bAutoFadeOut)
 {
-	PlayerPTR->GetRadarComponent()->ShowRadarIcon2(bAutoFadeOut);
+	if(PlayerPTR)
+	{
+		PlayerPTR->GetRadarComponent()->ShowRadarIcon2(bAutoFadeOut);
+	}
+	
 }
 
 void UC_RadarIconComponent::Client_HideRadarIcon_Implementation(AC_PlayerCharacter* PlayerPTR, bool bAutoFadeOut)
