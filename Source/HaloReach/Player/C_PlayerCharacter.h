@@ -967,4 +967,7 @@ public:
 	void Server_UpdatePlayerScore(int PlayerScore, const FString& PlayerKiller);
 	void Server_UpdatePlayerScore_Implementation(int PlayerScore, const FString& PlayerKiller);
 
+	UFUNCTION(BlueprintImplementableEvent)
+		void OnPlayerDamaged(AActor* Killer, AActor* Victim);
+
 };

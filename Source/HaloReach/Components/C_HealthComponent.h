@@ -101,5 +101,9 @@ private:
 	void Client_Name_Implementation(AActor* Killer);
 
 	AActor* LocalKiller;
+
+public:
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnTakeDamageBP();
 };
 

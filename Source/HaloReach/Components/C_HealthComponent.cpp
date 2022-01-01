@@ -42,9 +42,20 @@ void UC_HealthComponent::BeginPlay()
 // THIS ONLY EXECUTES ON SERVER --- this is for anti cheat purposes
 void UC_HealthComponent::HandleTakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
+	OnTakeDamageBP();
+
 	// calls client RPC so code is EXECUTED on SERVER but CALLED on CLIENT --> As this function only executes on server
+	
 	Client_Test(Damage, DamageCauser); // An OnRep would not work in this case as if logic for being damaged is inside OnRep function, the HandleAnyDamage function does not work(no logic exeuted in it)and Apply damage would not damage player
 
+	AC_PlayerCharacter* Player = Cast<AC_PlayerCharacter>(GetOwner());
+	if(Player)
+	{
+		Player->OnPlayerDamaged(DamageCauser, DamagedActor);
+	}
+
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("PLAYER KILLER NAME: %s"), *DamageCauser->GetName()));
 }
 
 // Works on both client and server

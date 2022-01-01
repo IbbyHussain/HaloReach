@@ -1618,6 +1618,8 @@ void AC_PlayerCharacter::Death(AActor* PlayerKiller)
 {
 	bIsDead = true;
 
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("PLAYER KILLER NAME: %s"), *PlayerKiller->GetName()));
+
 	// Change to third person camera
 	CameraComp->SetActive(false);
 	DeathCameraComp->SetActive(true);
