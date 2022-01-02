@@ -1640,6 +1640,8 @@ void AC_PlayerCharacter::Death(AActor* PlayerKiller)
 	// Stops player mesh from moving with camera, as player will move 3P camera
 	bUseControllerRotationYaw = false;
 
+	Server_DeathCollisionSettings();
+
 	// Play random death montage and Update the global alert widget
 	if (HasAuthority())
 	{
@@ -1667,6 +1669,16 @@ void AC_PlayerCharacter::Death(AActor* PlayerKiller)
 void AC_PlayerCharacter::Server_Death_Implementation(bool bDead)
 {
 	bUseControllerRotationYaw = bDead;
+}
+
+void AC_PlayerCharacter::Server_DeathCollisionSettings_Implementation()
+{
+	// Ensures player's cannot damage player once they have died. Stops them from increasing score
+	FCollisionResponseContainer CollisionResponse;
+	CollisionResponse.SetResponse(COLLISION_MELEEDAMAGE, ECollisionResponse::ECR_Ignore);
+	CollisionResponse.SetResponse(COLLISION_WEAPON, ECollisionResponse::ECR_Ignore);
+
+	Mesh3P->SetCollisionResponseToChannels(CollisionResponse);
 }
 
 # pragma region Rgadoll
@@ -1790,6 +1802,10 @@ void AC_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	DOREPLIFETIME(AC_PlayerCharacter, bIsHoldingGrenade);
 	DOREPLIFETIME(AC_PlayerCharacter, EquippedGrenade);
 	DOREPLIFETIME(AC_PlayerCharacter, DefaultMesh);
+
+	DOREPLIFETIME(AC_PlayerCharacter, HighestEnemyScore);
+
+	
 
 
 	DOREPLIFETIME_CONDITION(AC_PlayerCharacter, ControlRotation, COND_SkipOwner);
@@ -2113,6 +2129,7 @@ void AC_PlayerCharacter::ShowScoreboard(bool bShow)
 	}
 }
 
+
 // called in bp
 void AC_PlayerCharacter::Server_UpdatePlayerScore_Implementation(int PlayerScore, const FString& PlayerKiller)
 {
@@ -2122,6 +2139,7 @@ void AC_PlayerCharacter::Server_UpdatePlayerScore_Implementation(int PlayerScore
 		GM->OnPlayerScored.Broadcast(PlayerScore, PlayerKiller);
 	}
 }
+
 
 void AC_PlayerCharacter::UpdatePlayerScore()
 {
@@ -2136,3 +2154,64 @@ void AC_PlayerCharacter::UpdatePlayerScore()
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Name: %s | Score: %d"), *PlayerName, PS->PlayerScore));
 	}
 }
+
+# pragma region Player Scoring
+
+void AC_PlayerCharacter::OnPlayerDamaged(AActor* Killer, AActor* Victim)
+{
+	AC_PlayerCharacter* PlayerKiller = Cast<AC_PlayerCharacter>(Killer);
+	AC_PlayerCharacter* PlayerVictim = Cast<AC_PlayerCharacter>(Victim);
+
+	if(PlayerKiller && PlayerVictim)
+	{
+		Server_CheckPlayerHealth(PlayerKiller, PlayerVictim);
+	}
+}
+
+void AC_PlayerCharacter::Server_CheckPlayerHealth_Implementation(AC_PlayerCharacter* Killer, AC_PlayerCharacter* Victim)
+{
+	Victim->Client_CheckPlayerHealth(Killer, Victim);
+}
+
+void AC_PlayerCharacter::Client_CheckPlayerHealth_Implementation(AC_PlayerCharacter* Killer, AC_PlayerCharacter* Victim)
+{
+	if(Victim->HealthComp->GetHealth() <= 0.0f)
+	{
+		Server_IncreasePoints(Killer);
+	}
+}
+
+void AC_PlayerCharacter::IncreasePoints()
+{
+	AC_ReachPlayerState* PS = GetPlayerState<AC_ReachPlayerState>();
+	if(PS)
+	{
+		PS->PlayerScore += 1;
+	}
+}
+
+void AC_PlayerCharacter::Server_IncreasePoints_Implementation(AC_PlayerCharacter* Killer)
+{
+	Killer->IncreasePoints();
+}
+
+void AC_PlayerCharacter::Server_GetHighestEnemyScore_Implementation(APlayerState* LocalPlayerState)
+{
+	for(auto i : UGameplayStatics::GetGameState(GetWorld())->PlayerArray)
+	{
+		if(i != LocalPlayerState)
+		{
+			AC_ReachPlayerState* PS = Cast<AC_ReachPlayerState>(i);
+			if(PS)
+			{
+				if(PS->PlayerScore > HighestEnemyScore)
+				{
+					HighestEnemyScore = PS->PlayerScore;
+				}
+			}
+		}
+	}
+	
+}
+
+# pragma endregion

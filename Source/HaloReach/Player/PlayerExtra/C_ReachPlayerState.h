@@ -54,7 +54,7 @@ public:
 	uint8 GMTeamIndex;
 
 	//Replicated, 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(Replicated, BlueprintReadWrite)
 	int PlayerScore;
 
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;

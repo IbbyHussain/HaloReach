@@ -815,6 +815,11 @@ public:
 	void Client_CheckKillerName(const FString& KillerActorName);
 	void Client_CheckKillerName_Implementation(const FString& KillerActorName);
 
+	UFUNCTION(Server, Reliable)
+	void Server_DeathCollisionSettings();
+	void Server_DeathCollisionSettings_Implementation();
+
+
 #pragma endregion
 
 #pragma region Player Name
@@ -967,7 +972,37 @@ public:
 	void Server_UpdatePlayerScore(int PlayerScore, const FString& PlayerKiller);
 	void Server_UpdatePlayerScore_Implementation(int PlayerScore, const FString& PlayerKiller);
 
+# pragma region Player Scoring
+
 	UFUNCTION(BlueprintImplementableEvent)
-		void OnPlayerDamaged(AActor* Killer, AActor* Victim);
+	void OnPlayerDamagedBP(AActor* Killer, AActor* Victim);
+	
+	// Called in Health Component
+	void OnPlayerDamaged(AActor* Killer, AActor* Victim);
+
+
+	UFUNCTION(Server, Reliable)
+	void Server_CheckPlayerHealth(AC_PlayerCharacter* Killer, AC_PlayerCharacter* Victim);
+	void Server_CheckPlayerHealth_Implementation(AC_PlayerCharacter* Killer, AC_PlayerCharacter* Victim);
+
+	UFUNCTION(Client, Reliable)
+	void Client_CheckPlayerHealth(AC_PlayerCharacter* Killer, AC_PlayerCharacter* Victim);
+	void Client_CheckPlayerHealth_Implementation(AC_PlayerCharacter* Killer, AC_PlayerCharacter* Victim);
+
+	void IncreasePoints();
+
+	UFUNCTION(Server, Reliable)
+	void Server_IncreasePoints(AC_PlayerCharacter* Killer);
+	void Server_IncreasePoints_Implementation(AC_PlayerCharacter* Killer);
+
+	// Gets the highest enemy score
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void Server_GetHighestEnemyScore(APlayerState* LocalPlayerState);
+	void Server_GetHighestEnemyScore_Implementation(APlayerState* LocalPlayerState);
+
+	UPROPERTY(Replicated, BlueprintReadWrite)
+	int HighestEnemyScore;
+
+# pragma endregion
 
 };
