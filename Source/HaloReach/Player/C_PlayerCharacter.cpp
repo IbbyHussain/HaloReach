@@ -2187,6 +2187,8 @@ void AC_PlayerCharacter::IncreasePoints()
 	if(PS)
 	{
 		PS->PlayerScore += 1;
+
+		Server_UpdatePlayerScore(PS->PlayerScore, PlayerName);
 	}
 }
 
