@@ -2195,6 +2195,7 @@ void AC_PlayerCharacter::IncreasePoints()
 void AC_PlayerCharacter::Server_IncreasePoints_Implementation(AC_PlayerCharacter* Killer)
 {
 	Killer->IncreasePoints();
+	Killer->SwapPlayerScores();
 }
 
 void AC_PlayerCharacter::Server_GetHighestEnemyScore_Implementation(APlayerState* LocalPlayerState)

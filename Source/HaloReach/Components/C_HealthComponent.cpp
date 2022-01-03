@@ -52,6 +52,7 @@ void UC_HealthComponent::HandleTakeAnyDamage(AActor* DamagedActor, float Damage,
 	if(Player)
 	{
 		Player->OnPlayerDamaged(DamageCauser, DamagedActor);
+		Player->OnPlayerDamagedBP(DamageCauser, DamagedActor);
 	}
 
 

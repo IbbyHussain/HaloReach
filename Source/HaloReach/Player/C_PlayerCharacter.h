@@ -1003,6 +1003,12 @@ public:
 	UPROPERTY(Replicated, BlueprintReadWrite)
 	int HighestEnemyScore;
 
+	UPROPERTY(BlueprintReadWrite)
+	bool bShouldSwapScores = true;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void SwapPlayerScores();
+
 # pragma endregion
 
 };

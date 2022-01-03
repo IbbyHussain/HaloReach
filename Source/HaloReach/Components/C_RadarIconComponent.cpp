@@ -207,15 +207,18 @@ void UC_RadarIconComponent::ClearRadarIconFadeHandle()
 
 void UC_RadarIconComponent::ShowRadarIcon2(bool bHide)
 {
-	RadarIcon->StopFadeOutAnimation();
-	RadarIcon->SetRenderOpacity(1.0f);
-
-	// When the current action will not manually call HideRadarIcon, Used for melee and firing weapon etc
-	if (bHide)
+	if(RadarIcon)
 	{
-		// Sets render opacity back to 0 after delay
-		RadarIconFadeDelegate.BindUFunction(this, FName("HideRadarIcon2"), true);
-		GetWorld()->GetTimerManager().SetTimer(RadarIconFadeHandle, RadarIconFadeDelegate, 1.0f, false);
+		RadarIcon->StopFadeOutAnimation();
+		RadarIcon->SetRenderOpacity(1.0f);
+
+		// When the current action will not manually call HideRadarIcon, Used for melee and firing weapon etc
+		if (bHide)
+		{
+			// Sets render opacity back to 0 after delay
+			RadarIconFadeDelegate.BindUFunction(this, FName("HideRadarIcon2"), true);
+			GetWorld()->GetTimerManager().SetTimer(RadarIconFadeHandle, RadarIconFadeDelegate, 1.0f, false);
+		}
 	}
 }
 
