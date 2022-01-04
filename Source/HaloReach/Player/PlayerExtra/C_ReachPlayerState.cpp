@@ -39,6 +39,11 @@ void AC_ReachPlayerState::Client_SetPlayerTeam_Implementation(ETeam NewTeam)
 	PlayerTeam = NewTeam;
 }
 
+void AC_ReachPlayerState::Server_SetPlayerTeam_Implementation(ETeam NewTeam)
+{
+	PlayerTeam = NewTeam;
+}
+
 void AC_ReachPlayerState::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

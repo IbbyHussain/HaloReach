@@ -9,7 +9,7 @@ enum class EWeaponType : uint8
 };
 
 // used in team comp and in player state
-UENUM()
+UENUM(BlueprintType)
 enum class ETeam : uint8
 {
 	RED,

@@ -1804,7 +1804,8 @@ void AC_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	DOREPLIFETIME(AC_PlayerCharacter, EquippedGrenade);
 	DOREPLIFETIME(AC_PlayerCharacter, DefaultMesh);
 
-	DOREPLIFETIME(AC_PlayerCharacter, HighestEnemyScore);
+	DOREPLIFETIME(AC_PlayerCharacter, HighestEnemyScore);	
+	DOREPLIFETIME(AC_PlayerCharacter, TopEnemyTeam);
 
 	
 
@@ -2141,7 +2142,6 @@ void AC_PlayerCharacter::Server_UpdatePlayerScore_Implementation(int PlayerScore
 	}
 }
 
-
 void AC_PlayerCharacter::UpdatePlayerScore()
 {
 	AC_ReachPlayerState* PS = GetPlayerState<AC_ReachPlayerState>();
@@ -2212,6 +2212,7 @@ void AC_PlayerCharacter::Server_GetHighestEnemyScore_Implementation(APlayerState
 				if(PS->PlayerScore > HighestEnemyScore)
 				{
 					HighestEnemyScore = PS->PlayerScore;
+					TopEnemyTeam = PS->GetPlayerTeam();
 				}
 			}
 		}

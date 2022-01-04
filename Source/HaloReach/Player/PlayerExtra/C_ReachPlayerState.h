@@ -38,6 +38,11 @@ public:
 
 	void SetPlayerTeam(ETeam NewTeam)
 	{
+		if (!GetPawn()->HasAuthority())
+		{
+			Server_SetPlayerTeam(NewTeam);
+		}
+
 		PlayerTeam = NewTeam;
 		Client_SetPlayerTeam(NewTeam);
 	}
@@ -46,6 +51,9 @@ public:
 	void Client_SetPlayerTeam(ETeam NewTeam);
 	void Client_SetPlayerTeam_Implementation(ETeam NewTeam);
 
+	UFUNCTION(Server, Reliable)
+	void Server_SetPlayerTeam(ETeam NewTeam);
+	void Server_SetPlayerTeam_Implementation(ETeam NewTeam);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player")
 	class AC_PlayerCharacter* PlayerOwner;
