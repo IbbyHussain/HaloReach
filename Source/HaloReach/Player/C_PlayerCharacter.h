@@ -1009,6 +1009,27 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void SwapPlayerScores();
 
+# pragma region Swap Player Score Widgets
+	 
+	// Will swap the player score widgets when the player gains the lead or loses the lead
+	void SwapPlayerScoreWidgets();
+
+	UFUNCTION(Server, Reliable)
+	void Server_GetAllPlayerCharacters();
+	void Server_GetAllPlayerCharacters_Implementation();
+
+	UFUNCTION(Server, Reliable)
+	void Server_IsPlayerInLead(AC_PlayerCharacter* Killer);
+	void Server_IsPlayerInLead_Implementation(AC_PlayerCharacter* Killer);
+
+	UFUNCTION(Client, Reliable)
+	void Client_IsPlayerInLead(bool bInLead);
+	void Client_IsPlayerInLead_Implementation(bool bInLead);
+
+
+# pragma endregion
+	
+
 # pragma endregion
 
 };

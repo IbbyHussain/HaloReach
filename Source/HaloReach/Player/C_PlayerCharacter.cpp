@@ -40,6 +40,7 @@
 #include "HaloReach/Interfaces/C_BaseSaveGame.h"
 #include "HaloReach/Components/C_TeamsComponent.h"
 #include "HaloReach/GameModes/C_BaseReachGameMode.h"
+#include "HaloReach/UI/HUD/C_GamemodeHUDWidget.h"
 
 //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("texthere: %f"), x));
 //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("t")));
@@ -2195,7 +2196,8 @@ void AC_PlayerCharacter::IncreasePoints()
 void AC_PlayerCharacter::Server_IncreasePoints_Implementation(AC_PlayerCharacter* Killer)
 {
 	Killer->IncreasePoints();
-	Killer->SwapPlayerScores();
+	//Killer->SwapPlayerScores();
+	Killer->SwapPlayerScoreWidgets();
 }
 
 void AC_PlayerCharacter::Server_GetHighestEnemyScore_Implementation(APlayerState* LocalPlayerState)
@@ -2217,4 +2219,53 @@ void AC_PlayerCharacter::Server_GetHighestEnemyScore_Implementation(APlayerState
 	
 }
 
+# pragma region Swap Player Score Widgets
+
+void AC_PlayerCharacter::SwapPlayerScoreWidgets()
+{
+	Server_GetAllPlayerCharacters();
+}
+
+void AC_PlayerCharacter::Server_GetAllPlayerCharacters_Implementation()
+{
+	for (auto i : GetWorld()->GetGameState()->PlayerArray)
+	{
+		i->GetPawn<AC_PlayerCharacter>()->Server_IsPlayerInLead(i->GetPawn<AC_PlayerCharacter>());
+	}
+}
+
+void AC_PlayerCharacter::Server_IsPlayerInLead_Implementation(AC_PlayerCharacter* Killer)
+{
+	Killer->Server_GetHighestEnemyScore(GetPlayerState());
+
+	AC_ReachPlayerState* RPS = GetPlayerState<AC_ReachPlayerState>();
+	if(RPS)
+	{
+		if(RPS->PlayerScore > HighestEnemyScore)
+		{
+			Client_IsPlayerInLead(true);
+		}
+
+		else if ((RPS->PlayerScore < HighestEnemyScore) && RPS->PlayerScore != 0) // Ensures that widgets are not swapped if player has a score of 0
+		{
+			Client_IsPlayerInLead(false);
+		}
+	}
+
+}
+
+void AC_PlayerCharacter::Client_IsPlayerInLead_Implementation(bool bInLead)
+{
+	if(HUD)
+	{
+		// Swaps widget positions, with widget animation
+		bInLead ? HUD->GMHUDWidget->GainedLead() : HUD->GMHUDWidget->LostLead();
+	}
+}
+
+
 # pragma endregion
+
+
+# pragma endregion
+
