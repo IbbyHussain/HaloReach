@@ -1026,7 +1026,7 @@ public:
 	void Client_IsPlayerInLead(bool bInLead);
 	void Client_IsPlayerInLead_Implementation(bool bInLead);
 
-
+	bool bInTheLead;
 # pragma endregion
 	
 
