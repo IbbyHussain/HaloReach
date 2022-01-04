@@ -1805,7 +1805,6 @@ void AC_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	DOREPLIFETIME(AC_PlayerCharacter, DefaultMesh);
 
 	DOREPLIFETIME(AC_PlayerCharacter, HighestEnemyScore);
-	DOREPLIFETIME(AC_PlayerCharacter, HSTeam);
 
 	
 
@@ -2197,6 +2196,7 @@ void AC_PlayerCharacter::IncreasePoints()
 void AC_PlayerCharacter::Server_IncreasePoints_Implementation(AC_PlayerCharacter* Killer)
 {
 	Killer->IncreasePoints();
+	//Killer->SwapPlayerScores();
 	Killer->SwapPlayerScoreWidgets();
 }
 
@@ -2212,11 +2212,11 @@ void AC_PlayerCharacter::Server_GetHighestEnemyScore_Implementation(APlayerState
 				if(PS->PlayerScore > HighestEnemyScore)
 				{
 					HighestEnemyScore = PS->PlayerScore;
-					HSTeam = PS->GetPlayerTeam();
 				}
 			}
 		}
 	}
+	
 }
 
 # pragma region Swap Player Score Widgets
@@ -2262,6 +2262,7 @@ void AC_PlayerCharacter::Client_IsPlayerInLead_Implementation(bool bInLead)
 		bInLead ? HUD->GMHUDWidget->GainedLead() : HUD->GMHUDWidget->LostLead();
 	}
 }
+
 
 # pragma endregion
 

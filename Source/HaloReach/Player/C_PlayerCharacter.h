@@ -1026,8 +1026,6 @@ public:
 	void Client_IsPlayerInLead(bool bInLead);
 	void Client_IsPlayerInLead_Implementation(bool bInLead);
 
-	UPROPERTY(Replicated, BlueprintReadWrite)
-	ETeam HSTeam;
 
 # pragma endregion
 	
