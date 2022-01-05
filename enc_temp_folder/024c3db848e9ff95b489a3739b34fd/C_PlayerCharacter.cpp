@@ -2252,23 +2252,6 @@ void AC_PlayerCharacter::Server_IsPlayerInLead_Implementation(AC_PlayerCharacter
 		{
 			Client_IsPlayerInLead(false);
 		}
-
-		for (auto i : GetWorld()->GetGameState()->PlayerArray)
-		{
-			AC_ReachPlayerState* RPS2 = Cast<AC_ReachPlayerState>(i);
-			if(RPS2)
-			{
-				if(RPS2->PlayerScore > HighestEnemyScore)
-				{
-					RPS2->GetPawn<AC_PlayerCharacter>()->bInTheLead = false;
-				}
-
-				else
-				{
-					RPS2->GetPawn<AC_PlayerCharacter>()->bInTheLead = true;
-				}
-			}
-		}
 	}
 
 }
