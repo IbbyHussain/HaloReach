@@ -2197,7 +2197,7 @@ void AC_PlayerCharacter::IncreasePoints()
 void AC_PlayerCharacter::Server_IncreasePoints_Implementation(AC_PlayerCharacter* Killer)
 {
 	Killer->IncreasePoints();
-	//Killer->SwapPlayerScores();
+	Killer->SwapPlayerScores();
 	Killer->SwapPlayerScoreWidgets();
 }
 
@@ -2239,10 +2239,12 @@ void AC_PlayerCharacter::Server_GetAllPlayerCharacters_Implementation()
 void AC_PlayerCharacter::Server_IsPlayerInLead_Implementation(AC_PlayerCharacter* Killer)
 {
 	Killer->Server_GetHighestEnemyScore(GetPlayerState());
-
 	AC_ReachPlayerState* RPS = GetPlayerState<AC_ReachPlayerState>();
 	if(RPS)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("PlayerScore is: %d || Enemy Score is: %d"), RPS->PlayerScore, HighestEnemyScore));
+		
+		// BUG -> this is true even though player score is not greater than enemies. Server gets 2 kills, player has 0, Player gets a kill and this is called.
 		if(RPS->PlayerScore > HighestEnemyScore)
 		{
 			Client_IsPlayerInLead(true);
@@ -2253,22 +2255,7 @@ void AC_PlayerCharacter::Server_IsPlayerInLead_Implementation(AC_PlayerCharacter
 			Client_IsPlayerInLead(false);
 		}
 
-		for (auto i : GetWorld()->GetGameState()->PlayerArray)
-		{
-			AC_ReachPlayerState* RPS2 = Cast<AC_ReachPlayerState>(i);
-			if(RPS2)
-			{
-				if(RPS2->PlayerScore > HighestEnemyScore)
-				{
-					RPS2->GetPawn<AC_PlayerCharacter>()->bInTheLead = false;
-				}
 
-				else
-				{
-					RPS2->GetPawn<AC_PlayerCharacter>()->bInTheLead = true;
-				}
-			}
-		}
 	}
 
 }
@@ -2281,6 +2268,7 @@ void AC_PlayerCharacter::Client_IsPlayerInLead_Implementation(bool bInLead)
 
 		if(bInLead && !bInTheLead)
 		{
+			
 			HUD->GMHUDWidget->GainedLead();
 			bInTheLead = true;
 		}
@@ -2290,8 +2278,6 @@ void AC_PlayerCharacter::Client_IsPlayerInLead_Implementation(bool bInLead)
 			HUD->GMHUDWidget->LostLead();
 			bInTheLead = false;
 		}
-
-		//bInLead ? HUD->GMHUDWidget->GainedLead() : HUD->GMHUDWidget->LostLead();
 	}
 }
 
