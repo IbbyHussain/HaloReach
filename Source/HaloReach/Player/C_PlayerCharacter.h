@@ -1026,7 +1026,14 @@ public:
 	void Client_IsPlayerInLead(bool bInLead);
 	void Client_IsPlayerInLead_Implementation(bool bInLead);
 
-	bool bInTheLead;
+	bool bInTheLead = false;
+
+	bool bGainedTheLead = false;
+	bool bLostTheLead = false;
+
+	bool bDoOnce = true;
+
+	bool bDoOnce2 = false;
 
 	// Used in FFA to change the widgets colour to top enemies team colour
 	UPROPERTY(Replicated, BlueprintReadWrite)
