@@ -1026,13 +1026,11 @@ public:
 	void Client_IsPlayerInLead(bool bInLead);
 	void Client_IsPlayerInLead_Implementation(bool bInLead);
 
-	bool bInTheLead = true;
+	bool bInTheLead;
 
 	// Used in FFA to change the widgets colour to top enemies team colour
 	UPROPERTY(Replicated, BlueprintReadWrite)
 	ETeam TopEnemyTeam;
-
-	bool bHasAlreadyBeenSwapped;
 # pragma endregion
 	
 

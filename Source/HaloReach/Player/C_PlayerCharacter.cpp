@@ -2261,19 +2261,16 @@ void AC_PlayerCharacter::Client_IsPlayerInLead_Implementation(bool bInLead)
 	{
 		// Swaps widget positions, with widget animation
 
-		if(bInLead )
+		if(bInLead && !bInTheLead)
 		{
-			if(!bHasAlreadyBeenSwapped)
-			{
-				HUD->GMHUDWidget->GainedLead();
-				bHasAlreadyBeenSwapped = true;
-			}
+			HUD->GMHUDWidget->GainedLead();
+			bInTheLead = true;
 		}
 
 		else if(!bInLead)
 		{
 			HUD->GMHUDWidget->LostLead();
-			
+			bInTheLead = false;
 		}
 
 		//bInLead ? HUD->GMHUDWidget->GainedLead() : HUD->GMHUDWidget->LostLead();
