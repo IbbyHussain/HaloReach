@@ -49,6 +49,7 @@ void AC_ReachPlayerState::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AC_ReachPlayerState, PlayerScore);
+	DOREPLIFETIME(AC_ReachPlayerState, PlayerTeam);
 	
 }
 

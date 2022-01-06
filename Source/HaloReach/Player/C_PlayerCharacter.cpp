@@ -41,6 +41,7 @@
 #include "HaloReach/Components/C_TeamsComponent.h"
 #include "HaloReach/GameModes/C_BaseReachGameMode.h"
 #include "HaloReach/UI/HUD/C_GamemodeHUDWidget.h"
+#include "HaloReach/GameModes/Slayer/C_SlayerGameStateBase.h"
 
 //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("texthere: %f"), x));
 //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("t")));
@@ -164,6 +165,12 @@ void AC_PlayerCharacter::BeginPlay()
 	PlayerNameWidget = Cast<UC_PlayerNameWidget>(PlayerNameWidgetComp->GetUserWidgetObject());
 
 	PC = Cast<APlayerController>(GetController());
+
+	/*AC_SlayerGameStateBase* SGSB = Cast<AC_SlayerGameStateBase>(UGameplayStatics::GetGameState(GetWorld()));
+	if(SGSB)
+	{
+		SGSB->AssignRandomTeam(GetPlayerState<AC_ReachPlayerState>());
+	}*/
 
 	GetPlayerMovementComponent()->SetPlayerSpeed(DefaultSpeed);
 
@@ -728,7 +735,7 @@ void AC_PlayerCharacter::SwitchWeapons()
 
 			
 
-			UE_LOG(LogTemp, Log, TEXT("Weapon switch length is: %f"), Gun->WeaponStats.SwitchLength);
+			//UE_LOG(LogTemp, Log, TEXT("Weapon switch length is: %f"), Gun->WeaponStats.SwitchLength);
 
 			GetWorldTimerManager().SetTimer(SwitchResetHandle, this, &AC_PlayerCharacter::ResetCanSwitch, Gun->WeaponStats.SwitchLength, false);
 		}
@@ -801,7 +808,7 @@ void AC_PlayerCharacter::Reload()
 	if(EquippedWeaponArray[0])
 	{
 		AC_BaseGun* Gun = Cast<AC_BaseGun>(EquippedWeaponArray[0]);
-		GEngine->AddOnScreenDebugMessage(-1, 4.5f, FColor::Purple, __FUNCTION__);
+		//GEngine->AddOnScreenDebugMessage(-1, 4.5f, FColor::Purple, __FUNCTION__);
 		if(Gun)
 		{
 			if(Gun->WeaponStats.CurrentAmmo != Gun->WeaponStats.MaxMagazineAmmo && Gun->WeaponStats.CurrentReservesAmmo != 0 && bCanReload)
@@ -1332,7 +1339,7 @@ void AC_PlayerCharacter::ReleaseGrenade()
 
 		bCanSwitchGrenades = true;
 
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("texthere: %d"), Grenades.EquippedGrenadeAmount));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("texthere: %d"), Grenades.EquippedGrenadeAmount));
 	}
 }
 
@@ -1392,7 +1399,7 @@ void AC_PlayerCharacter::SwitchGrenades()
 		Grenades.GrenadesArray.Swap(0, 1);
 		Grenades.EquippedGrenadeClass = Grenades.GrenadesArray[0];
 
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("Current grenade class: %s"), *Grenades.EquippedGrenadeClass->GetName()));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("Current grenade class: %s"), *Grenades.EquippedGrenadeClass->GetName()));
 
 		UpdateGrenadeAmount(false);
 	}
@@ -1425,8 +1432,8 @@ void AC_PlayerCharacter::UpdateGrenadeAmount(bool bDecrementGrenadeAmount)
 		Grenades.SecondaryGrenadeAmount = Grenades.FragGrenadeAmount;
 	}
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("FragGrenades: %d, PlasmaGrenades: %d, EquippedGrenades: %d"), 
-		Grenades.FragGrenadeAmount, Grenades.PlasmaGrenadeAmount, Grenades.EquippedGrenadeAmount));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("FragGrenades: %d, PlasmaGrenades: %d, EquippedGrenades: %d"), 
+		//Grenades.FragGrenadeAmount, Grenades.PlasmaGrenadeAmount, Grenades.EquippedGrenadeAmount));
 }
 
 	 
@@ -1999,7 +2006,7 @@ bool AC_PlayerCharacter::bIsLookingAtPlayer()
 		FHitResult Hit;
 
 		bool bHit = GetWorld()->LineTraceSingleByChannel(Hit, EyeLocation, TraceEnd, ECC_Visibility, QueryParams);
-		DrawDebugLine(GetWorld(), EyeLocation, TraceEnd, FColor::Red, false, 1.0f, 0, 1.0f);
+		//DrawDebugLine(GetWorld(), EyeLocation, TraceEnd, FColor::Red, false, 1.0f, 0, 1.0f);
 
 		AC_PlayerCharacter* PlayerHit = Cast<AC_PlayerCharacter>(Hit.GetActor());
 
@@ -2153,7 +2160,7 @@ void AC_PlayerCharacter::UpdatePlayerScore()
 		// Server RPC, used to update the gamemode, to check if this player has one
 		Server_UpdatePlayerScore(PS->PlayerScore, PlayerName);
 
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Name: %s | Score: %d"), *PlayerName, PS->PlayerScore));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Name: %s | Score: %d"), *PlayerName, PS->PlayerScore));
 	}
 }
 

@@ -39,11 +39,11 @@ void AC_BaseReachGameMode::Tick(float DeltaTime)
 
 void AC_BaseReachGameMode::UpdateMatchTimer()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("1")));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("1")));
 	AC_ReachGameStateBase* GS = GetGameState<AC_ReachGameStateBase>();
 	if(GS)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("2")));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("2")));
 		if(GS->GetMatchSeconds() == 0)
 		{
 			if(GS->GetMatchMinutes() == 0)
@@ -102,7 +102,6 @@ void AC_BaseReachGameMode::CheckWinCondition(int PlayerScore, FString PlayerName
 	}
 }
 
-
 void AC_BaseReachGameMode::CheckAnyPlayersAlive()
 {
 	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
@@ -127,7 +126,7 @@ void AC_BaseReachGameMode::CheckAnyPlayersAlive()
 void AC_BaseReachGameMode::Server_RespawnPlayer_Implementation(AC_PlayerCharacter* PlayerToRespawn)
 {
 	// Basic , temp respawn only works for server
-	GEngine->AddOnScreenDebugMessage(-1, 4.5f, FColor::Magenta, FString::Printf(TEXT("DEAD PLAYER IS: %s"), *PlayerToRespawn->GetName()));
+	//GEngine->AddOnScreenDebugMessage(-1, 4.5f, FColor::Magenta, FString::Printf(TEXT("DEAD PLAYER IS: %s"), *PlayerToRespawn->GetName()));
 
 	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
 	{

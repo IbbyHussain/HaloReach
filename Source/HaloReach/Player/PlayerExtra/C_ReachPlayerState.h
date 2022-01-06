@@ -20,7 +20,7 @@ public:
 
 	virtual void Tick(float Delta) override;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Team")
+	UPROPERTY(Replicated, EditDefaultsOnly, BlueprintReadWrite, Category = "Team")
 	ETeam PlayerTeam;
 
 	float number;
@@ -36,9 +36,10 @@ public:
 		return PlayerTeam;
 	}
 
+	UFUNCTION(BlueprintCallable)
 	void SetPlayerTeam(ETeam NewTeam)
 	{
-		if (!GetPawn()->HasAuthority())
+		if (GetPawn() && !GetPawn()->HasAuthority())
 		{
 			Server_SetPlayerTeam(NewTeam);
 		}

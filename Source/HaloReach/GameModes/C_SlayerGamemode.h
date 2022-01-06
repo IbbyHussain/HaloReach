@@ -24,12 +24,4 @@ public:
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
 	virtual void Logout(AController* Exiting) override;
-
-	UFUNCTION(BlueprintCallable)
-	void SetPlayerTeams(APlayerController* NewPlayer);
-
-	TArray <uint8> PlayerTeamIndex;
-
-	TArray<AC_ReachPlayerState*> PSArray;
-	
 };
