@@ -66,6 +66,16 @@ public:
 	UPROPERTY(Replicated, BlueprintReadWrite)
 	int PlayerScore;
 
+	int GetPlayerScore() const
+	{
+		return PlayerScore;
+	}
+
+	void SetPlayerScore(int NewPlayerScore)
+	{
+		PlayerScore = NewPlayerScore;
+	}
+
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 };

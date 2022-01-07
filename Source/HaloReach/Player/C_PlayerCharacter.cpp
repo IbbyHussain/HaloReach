@@ -166,12 +166,6 @@ void AC_PlayerCharacter::BeginPlay()
 
 	PC = Cast<APlayerController>(GetController());
 
-	/*AC_SlayerGameStateBase* SGSB = Cast<AC_SlayerGameStateBase>(UGameplayStatics::GetGameState(GetWorld()));
-	if(SGSB)
-	{
-		SGSB->AssignRandomTeam(GetPlayerState<AC_ReachPlayerState>());
-	}*/
-
 	GetPlayerMovementComponent()->SetPlayerSpeed(DefaultSpeed);
 
 	if(HasAuthority())
@@ -2022,7 +2016,7 @@ bool AC_PlayerCharacter::bIsLookingAtPlayer()
 		{
 			if (LastHitPlayer)
 			{
-				//Server_IsLookingAtPlayer(LastHitPlayer, false);
+				Server_IsLookingAtPlayer(LastHitPlayer, false);
 			}
 		}
 	}
@@ -2139,31 +2133,6 @@ void AC_PlayerCharacter::ShowScoreboard(bool bShow)
 	}
 }
 
-
-// called in bp
-void AC_PlayerCharacter::Server_UpdatePlayerScore_Implementation(int PlayerScore, const FString& PlayerKiller)
-{
-	AC_BaseReachGameMode* GM = Cast<AC_BaseReachGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
-	if(GM)
-	{
-		GM->OnPlayerScored.Broadcast(PlayerScore, PlayerKiller);
-	}
-}
-
-void AC_PlayerCharacter::UpdatePlayerScore()
-{
-	AC_ReachPlayerState* PS = GetPlayerState<AC_ReachPlayerState>();
-	if(PS)
-	{
-		PS->PlayerScore += 1;
-
-		// Server RPC, used to update the gamemode, to check if this player has one
-		Server_UpdatePlayerScore(PS->PlayerScore, PlayerName);
-
-		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Name: %s | Score: %d"), *PlayerName, PS->PlayerScore));
-	}
-}
-
 # pragma region Player Scoring
 
 void AC_PlayerCharacter::OnPlayerDamaged(AActor* Killer, AActor* Victim)
@@ -2197,14 +2166,13 @@ void AC_PlayerCharacter::IncreasePoints()
 	{
 		PS->PlayerScore += 1;
 
-		Server_UpdatePlayerScore(PS->PlayerScore, PlayerName);
+		Server_UpdatePlayerScore(PS->PlayerScore, PlayerName, PS->GetPlayerTeam());
 	}
 }
 
 void AC_PlayerCharacter::Server_IncreasePoints_Implementation(AC_PlayerCharacter* Killer)
 {
 	Killer->IncreasePoints();
-	//Killer->SwapPlayerScores();
 	Killer->SwapPlayerScoreWidgets();
 }
 
@@ -2226,6 +2194,15 @@ void AC_PlayerCharacter::Server_GetHighestEnemyScore_Implementation(APlayerState
 		}
 	}
 	
+}
+
+void AC_PlayerCharacter::Server_UpdatePlayerScore_Implementation(int PlayerScore, const FString& PlayerKiller, ETeam NewTeam)
+{
+	AC_BaseReachGameMode* GM = Cast<AC_BaseReachGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+	if (GM)
+	{
+		GM->OnPlayerScored.Broadcast(PlayerScore, PlayerKiller, NewTeam);
+	}
 }
 
 # pragma region Swap Player Score Widgets
@@ -2259,25 +2236,7 @@ void AC_PlayerCharacter::Server_IsPlayerInLead_Implementation(AC_PlayerCharacter
 		{
 			Client_IsPlayerInLead(false);
 		}
-
-		for (auto i : GetWorld()->GetGameState()->PlayerArray)
-		{
-			AC_ReachPlayerState* RPS2 = Cast<AC_ReachPlayerState>(i);
-			if(RPS2)
-			{
-				if(RPS2->PlayerScore > HighestEnemyScore)
-				{
-					RPS2->GetPawn<AC_PlayerCharacter>()->bInTheLead = false;
-				}
-
-				else
-				{
-					RPS2->GetPawn<AC_PlayerCharacter>()->bInTheLead = true;
-				}
-			}
-		}
 	}
-
 }
 
 void AC_PlayerCharacter::Client_IsPlayerInLead_Implementation(bool bInLead)

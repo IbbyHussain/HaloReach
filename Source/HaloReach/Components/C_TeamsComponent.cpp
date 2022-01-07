@@ -5,7 +5,7 @@
 
 UC_TeamsComponent::UC_TeamsComponent()
 {
-
+	TeamSlayerTeamsArray = {ETeam::RED, ETeam::BLUE};
 }
 
 void UC_TeamsComponent::BeginPlay()

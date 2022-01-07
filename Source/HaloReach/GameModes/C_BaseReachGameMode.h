@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "HaloReach/GlobalEnums.h"
 #include "C_BaseReachGameMode.generated.h"
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPlayerScored, int, PlayerScore, FString, PlayerName);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnPlayerScored, int, PlayerScore, FString, PlayerName, ETeam, PlayerTeam);
 
 class AC_PlayerCharacter;
 
@@ -35,7 +36,7 @@ public:
 
 	// Checks if a player orr team has won, can be customised for each gamemode
 	UFUNCTION()
-	void CheckWinCondition(int PlayerScore, FString PlayerName);
+	virtual void CheckWinCondition(int PlayerScore, FString PlayerName, ETeam PlayerTeam);
 
 # pragma region Respawn Player
 

@@ -13,10 +13,10 @@ AC_SlayerGameStateBase::AC_SlayerGameStateBase()
 
 	GameModeName = "Slayer";
 
-	MatchMinutes = 0;
-	MatchSeconds = 15;
+	MatchMinutes = 9;
+	MatchSeconds = 59;
 
-	WinScore = 5;
+	WinScore = 10;
 
 	PlayerTeamIndexArray = { 0,1,2,3,4,5,6,7 }; // Find better way to assign number of teams to this array ,4,5,6,7
 }

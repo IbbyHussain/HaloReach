@@ -67,6 +67,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Teams")
 	TArray<ETeam> TeamsArray;
 
+	UFUNCTION(BlueprintCallable)
+	TArray<ETeam> GetTeamSlayerTeams() const 
+	{
+		return TeamSlayerTeamsArray;
+	}
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Teams")
+	TArray<ETeam> TeamSlayerTeamsArray;
+
 	bool IsSameTeam(ETeam Team1, ETeam Team2);
 
 	class AC_PlayerCharacter* PlayerOwner;

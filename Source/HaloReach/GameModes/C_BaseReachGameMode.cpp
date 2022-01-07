@@ -85,7 +85,7 @@ TTuple<APlayerController*, AC_PlayerCharacter*> AC_BaseReachGameMode::IterateOve
 	return MakeTuple(nullptr, nullptr);
 }
 
-void AC_BaseReachGameMode::CheckWinCondition(int PlayerScore, FString PlayerName)
+void AC_BaseReachGameMode::CheckWinCondition(int PlayerScore, FString PlayerName, ETeam PlayerTeam)
 {
 	if(!bHasPlayerWon)
 	{
