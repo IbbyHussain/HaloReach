@@ -42,6 +42,7 @@
 #include "HaloReach/GameModes/C_BaseReachGameMode.h"
 #include "HaloReach/UI/HUD/C_GamemodeHUDWidget.h"
 #include "HaloReach/GameModes/Slayer/C_SlayerGameStateBase.h"
+#include "HaloReach/UI/Options/C_OptionsWidget.h"
 
 //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("texthere: %f"), x));
 //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("t")));
@@ -2091,13 +2092,15 @@ void AC_PlayerCharacter::ToggleOptionsWidget()
 				UpdateMovementSettings(EMovementState::DEAD);
 			}
 		}
+
+		bOpenOptionsWidget = !bOpenOptionsWidget;
 	}
 
 	else
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("CLOSE")));
 
-		if (HUD)
+		if (HUD && HUD->OptionsWidget->IsVisible())
 		{
 			HUD->DestroyOptionsWidget();
 			HUD->ShowHUDWidget();
@@ -2109,10 +2112,12 @@ void AC_PlayerCharacter::ToggleOptionsWidget()
 
 				UpdateMovementSettings(EMovementState::IDLE);
 			}
+
+			bOpenOptionsWidget = !bOpenOptionsWidget;
 		}
 	}
 
-	bOpenOptionsWidget = !bOpenOptionsWidget;
+	
 }
 
 
