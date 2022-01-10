@@ -1970,9 +1970,12 @@ void AC_PlayerCharacter::Client_SetPlayerNameVisibility_Implementation(AC_Player
 
 void AC_PlayerCharacter::Server_IsLookingAtPlayer_Implementation(AC_PlayerCharacter* PlayerPTR, bool bVisibility)
 {
-	if(PlayerPTR && TeamsComp->GetTeam() != PlayerPTR->GetTeamsComponent()->GetTeam())
+	if(PlayerPTR && PlayerPTR->GetTeamsComponent())
 	{
-		Client_SetPlayerNameVisibility(PlayerPTR, bVisibility);
+		if (TeamsComp->GetTeam() != PlayerPTR->GetTeamsComponent()->GetTeam())
+		{
+			Client_SetPlayerNameVisibility(PlayerPTR, bVisibility);
+		}
 	}
 }
 
