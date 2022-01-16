@@ -1012,7 +1012,7 @@ void AC_PlayerCharacter::MeleeTracking()
 
 		TArray<FHitResult> Hits;
 
-		bool bHit = UKismetSystemLibrary::BoxTraceMulti(GetWorld(), StartLocation, EndLocation, HalfSize, Orientation, BoxTrace, false, IgnoredActorsTracking, EDrawDebugTrace::ForDuration, Hits, true, FLinearColor::Blue, FLinearColor::Black);
+		bool bHit = UKismetSystemLibrary::BoxTraceMulti(GetWorld(), StartLocation, EndLocation, HalfSize, Orientation, BoxTrace, false, IgnoredActorsTracking, EDrawDebugTrace::None, Hits, true, FLinearColor::Blue, FLinearColor::Black);
 
 		for (auto x : Hits)
 		{
